@@ -1,0 +1,1907 @@
+
+==================================================
+任务名称：确定推力控制转速目标值的计算周期
+编号：D_7720
+功能：确定推力控制转速目标值的计算周期
+前置条件：1
+输入：
+输出：thrust_calculate_circle
+公式：thrust_calculate_circle = 60;
+==================================================
+
+==================================================
+任务名称：确定选定推力等级_无指定推力等级
+编号：R_8479
+功能：当发动机不处于慢车状态、慢车以上状态、高转速风车起动状态时，置选定推力等级为无指定推力等级
+前置条件：1
+输入：engine_state
+输出：thrust_level
+公式：if((engine_state != ES_idle) && (engine_state != ES_above_idle) && (engine_state !=  ES_Hwindmill_start))
+{
+thrust_level = level_default;
+}
+==================================================
+
+==================================================
+任务名称：高压换算转速控制目标计算_地面慢车
+编号：R_6268
+功能：控制软件应根据地面慢车调节计划表(PS_GI_H1~9)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_GI
+前置条件：1
+输入：H, Dtamb, Ma, PS_GI_H
+输出：N2R25Dem_GI
+公式：N2R25Dem_GI = interpolation(PS_GI_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：高压换算转速控制目标计算_空中慢车
+编号：R_6270
+功能：控制软件应根据地面慢车调节计划表(PS_FI_H1~15)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_FI
+前置条件：1
+输入：H, Dtamb, Ma, PS_FI_H
+输出：N2R25Dem_FI
+公式：N2R25Dem_FI = interpolation(PS_FI_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：高压换算转速控制目标计算_进近慢车
+编号：R_3879
+功能：控制软件应根据进近慢车调节计划表(PS_AI_H1~15)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_AI
+前置条件：1
+输入：H, Dtamb, Ma, PS_AI_H
+输出：N2R25Dem_AI
+公式：N2R25Dem_AI = interpolation(PS_AI_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：高压换算转速控制目标计算_反推慢车
+编号：R_6275
+功能：控制软件应根据反推慢车调节计划表(PS_RI_H1~9)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_RI
+前置条件：1
+输入：H, Dtamb, Ma, PS_RI_H
+输出：N2R25Dem_RI
+公式：N2R25Dem_RI = interpolation(PS_RI_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：N2R25Dem_BAK计算
+编号：R_6631
+功能：控制软件应根据N1RDem和Ma通过高低压换算转速N2R25-N1R转换关系表N2R25N1Rbak（可调）计算出N2R25备份控制目标N2R25Dem_BAK。
+前置条件：1
+输入：Ma, N1RDem, N2R25N1Rbak
+输出：N2R25Dem_BAK
+公式：N2R25Dem_BAK= interpolation(N2R25N1Rbak, N1RDem, Ma);
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_地面慢车
+编号：R_9948
+功能：当选定推力等级为地面慢车，控制软件应置N2R25Dem=N2R25Dem_GI
+前置条件：1
+输入：thrust_level, N2R25Dem_GI
+输出：N2R25Dem
+公式：if(thrust_level == level_GI)
+{
+N2R25Dem = N2R25Dem_GI;
+}
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_空中慢车
+编号：R_9949
+功能：当选定推力等级为空中慢车，控制软件应置N2R25Dem=N2R25Dem_FI
+前置条件：1
+输入：thrust_level, N2R25Dem_FI
+输出：N2R25Dem
+公式：if(thrust_level == level_FI)
+{
+N2R25Dem = N2R25Dem_FI;
+}
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_进近慢车
+编号：R_9950
+功能：当选定推力等级为进近慢车，控制软件应置N2R25Dem=N2R25Dem_AI
+前置条件：1
+输入：thrust_level, N2R25Dem_AI
+输出：N2R25Dem
+公式：if(thrust_level == level_AI)
+{
+N2R25Dem = N2R25Dem_AI;
+}
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_反推慢车
+编号：R_9951
+功能：当选定推力等级为反推慢车，控制软件应置N2R25Dem=N2R25Dem_RI
+前置条件：1
+输入：thrust_level, N2R25Dem_RI
+输出：N2R25Dem
+公式：if(thrust_level == level_RI)
+{
+N2R25Dem = N2R25Dem_RI;
+}
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_补充1
+编号：R_9952
+功能：当选定推力等级为除：地面慢车、空中慢车、进近慢车、反推慢车、无指定推力等级以外的推力等级，N2R25Dem=N2R25Dem_BAK。
+前置条件：1
+输入：thrust_level, N2R25Dem_ BAK
+输出：N2R25Dem
+公式：if(thrust_level != level_GI && thrust_level != level_FI && thrust_level != level_AI && thrust_level != level_RI && thrust_level != level_default)
+{
+N2R25Dem = N2R25Dem_ BAK;
+}
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_补充2
+编号：D_6354
+功能：当选定推力等级为无指定推力等级，且发动机状态为正常地面起动状态，应用软件应置N2R25控制目标N2R25Dem=N2R25Dem_GI。
+前置条件：1
+输入：thrust_level, engine_state, N2R25Dem_GI
+输出：N2R25Dem
+公式：if(thrust_level == level_default && engine_state == ES_ ground_start)
+{
+N2R25Dem = N2R25Dem_GI;
+}
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_补充3
+编号：D_6355
+功能：当选定推力等级为无指定推力等级，且发动机状态为稳态风车起动状态、快速风车起动状态、空中辅助起动状态，应用软件应置N2R25控制目标N2R25Dem=N2R25Dem_FI。
+前置条件：1
+输入：thrust_level, engine_state, N2R25Dem_FI
+输出：N2R25Dem
+公式：if(thrust_level == level_default && (engine_state == ES_windmill_start || engine_state == ES_Qwindmill_start || engine_state == ES_assist_start))
+{
+N2R25Dem = N2R25Dem_FI;
+}
+==================================================
+
+==================================================
+任务名称：N2R25Dem选择_补充4
+编号：D_6357
+功能：当选定推力等级为无指定推力等级，且发动机状态为初始状态、地面待机状态、空中待机状态、冷运转、假开车/油封/启封、正常停车、紧急停车、地面起动中止、空中起动中止状态，应用软件应置N2R25控制目标N2R25Dem=0。
+前置条件：1
+输入：thrust_level, engine_state
+输出：N2R25Dem
+公式：if(thrust_level == level_default && (engine_state == ES_origin || engine_state == ES_ground_standby || engine_state == ES_flight_standby || engine_state == ES_cold_operation || engine_state == ES_DR_OS_Us || engine_state == ES_normal_stop || engine_state == ES_emergency_stop || engine_state == ES_ground_start_termination || engine_state == ES_flight_start_terminnation ))
+{
+N2R25Dem = 0;
+}
+==================================================
+
+==================================================
+任务名称：设置起飞锁定指令_有效
+编号：R_6536
+功能：当同时满足以下条件时，置起飞锁定指令有效：
+前置条件：1
+输入：airdis_WOW, CAS, PLA, PD_ToLockCASHigh
+输出：to_lock_sig
+公式：if (airdis_WOW ==1 && CAS > PD_ToLockCASHigh && PLA >71 && PLA <= 76)
+{
+to_lock_sig = 1;
+}
+==================================================
+
+==================================================
+任务名称：设置起飞锁定指令_无效
+编号：R_6544
+功能：满足以下任一条件时，置起飞锁定指令无效；
+前置条件：1
+输入：H, H_TO, airdis_WOW, PD_ToLockHLow, CAS, PD_ToLockCASLow, engine_state
+输出：to_lock_sig
+公式：if (H–H_TO>PD_ToLockHLow || airdis_WOW==1&&CAS<PD_ToLockCASLow || engine_state == ES_flight_interrupt )
+{
+to_lock_sig = 0;
+}
+==================================================
+
+==================================================
+任务名称：设置起飞锁定指令_无效优先
+编号：R_10633
+功能：当置起飞锁定指令有效的条件和置起飞锁定指令无效的条件同时满足时，置起飞锁定指令无效优先。
+前置条件：1
+输入：airdis_WOW, CAS, PLA, PD_ToLockCASHigh, H, H_TO, PD_ToLockHLow, PD_ToLockCASLow, engine_state
+输出：to_lock_sig
+公式：if (airdis_WOW ==1 && CAS > PD_ToLockCASHigh && PLA >71 && PLA <= 76
+&& (H – H_TO == PD_ToLockHLow ||( airdis_WOW == 1 &&CAS <PD_ToLockCASLow ) && engine_state == ES_flight_interrupt))
+{
+to_lock_sig = 0;
+}
+==================================================
+
+==================================================
+任务名称：设置起飞阶段指令_有效
+编号：R_6547
+功能：同时满足以下条件，置起飞阶段指令有效：
+前置条件：1
+输入：WOW_ground_time, airdis_WOW, CAS, PD_ToPhaseCASHigh, PLA, PD_ToPhaseTime1
+输出：to_phase_sig
+公式：if (airdis_WOW == 1 && WOW_ground_time > PD_ToPhaseTime1&&CAS < PD_ToPhaseCASHigh && PLA >71 && PLA <= 76)
+{
+to_phase_sig = 1;
+}
+==================================================
+
+==================================================
+任务名称：设置起飞阶段指令_无效
+编号：R_6551
+功能：满足以下任一条件时，置起飞阶段指令无效：
+前置条件：1
+输入：WOW_to_ground_time, H, H_TO, PD_ToPhaseHLow, PD_ToPhaseCASLow, CAS, PD_ToPhaseTime2, engine_state
+输出：to_phase_sig
+公式：if (WOW_to_ground_time > PD_ToPhaseTime2 || H-H_TO > PD_ToPhaseHLow || CAS > PD_ToPhaseCASLow || engine_state == ES_flight_interrupt)
+{
+to_phase_sig = 0;
+}
+==================================================
+
+==================================================
+任务名称：设置起飞阶段指令_无效优先
+编号：R_10634
+功能：当置起飞阶段指令有效的条件和置起飞阶段指令无效的条件同时满足时，置起飞阶段指令无效优先。
+前置条件：1
+输入：WOW_ground_time, airdis_WOW, CAS, PD_ToPhaseTime1, PD_ToPhaseCASHigh, PLA, WOW_to_ground_time, H, H_TO, PD_ToPhaseHLow, PD_ToPhaseCASLow, PD_ToPhaseTime2, engine_state
+输出：to_phase_sig
+公式：if (airdis_WOW == 1 && WOW_ground_time > PD_ToPhaseTime1&&CAS < PD_ToPhaseCASHigh && PLA >71 && PLA <= 76 && (WOW_to_ground_time > PD_ToPhaseTime2 || H-H_TO > PD_ToPhaseHLow || CAS > PD_ToPhaseCASLow || engine_state == ES_flight_interrupt))
+{
+to_phase_sig = 0;
+}
+==================================================
+
+==================================================
+任务名称：起飞锁定指令有效后锁定参数
+编号：R_6555
+功能：起飞锁定指令有效后，应用软件应锁定环境温差Dtamb、灵活温度、NAI、WAI和ECS引气构型和推力等级需求为锁定时刻的前一时刻值。
+前置条件：1
+输入：to_lock_sig
+输出：lock_to_params_flag
+公式：if (to_lock_sig == 1)
+{
+lock_to_params_flag = 1;
+}
+==================================================
+
+==================================================
+任务名称：起飞阶段指令与起飞锁定指令同时无效采用实时参数
+编号：R_6563
+功能：起飞阶段指令与起飞锁定指令同时无效时，应采用实时的环境温差Dtamb、推力等级需求、灵活温度、NAI、WAI和ECS引气构型参与控制。
+前置条件：1
+输入：to_lock_sig, to_phase_sig
+输出：lock_to_params_flag
+公式：if (to_lock_sig == 0 && to_phase_sig == 0)
+{
+lock_to_params_flag = 0;
+}
+==================================================
+
+==================================================
+任务名称：起飞锁定指令失效后禁止再次启动起飞锁定指令
+编号：R_8267
+功能：当起飞锁定指令失效后，禁止再次启动起飞锁定指令直到飞机再次回到地面（即轮载信号由空中变为地面）后并且飞机校准表速CAS小于PD_ToLockCASLow（可调）。
+前置条件：1
+输入：to_lock_sig, airdis_WOW, CAS, PD_ToLockCASLow
+输出：to_lock_sig_enable
+公式：if (to_lock_sig == 0)
+{
+to_lock_sig_enable = 0;
+}
+if (airdis_WOW == 1 && CAS < PD_ToLockCASLow)
+{
+to_lock_sig_enable = 1;
+}
+==================================================
+
+==================================================
+任务名称：起飞阶段指令失效后禁止再次启动起飞阶段指令
+编号：R_9267
+功能：当起飞阶段指令失效后，禁止再次启动起飞阶段指令直到飞机再次回到地面（即轮载信号由空中变为地面）后并且飞机校准表速CAS小于PD_ToLockCASLow（可调）。
+前置条件：1
+输入：to_phase_sig, airdis_WOW, CAS, PD_ToLockCASLow
+输出：to_phase_sig_enable
+公式：if (to_phase_sig == 0)
+{
+to_phase_sig_enable = 0;
+}
+if (airdis_WOW == 1 && CAS < PD_ToLockCASLow)
+{
+to_phase_sig_enable = 1;
+}
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_最大起飞（MTO）
+编号：R_6284
+功能：应用软件应根据最大起飞调节计划(PS_MTO_H1~21)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大起飞N1R基准控制目标N1RDemBase_MTO。
+前置条件：1
+输入：H, Dtamb, Ma, PS_MTO_H
+输出：N1RDemBase_MTO
+公式：N1RDemBase_MTO = interpolation(PS_MTO_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_复飞（GA）
+编号：R_6297
+功能：应用软件应根据复飞调节计划（PS_GA_H1~21），通过高度H、马赫数Ma、环境温差Dtamb线性插值计算复飞N1R基准控制目标N1RDemBase_GA。
+前置条件：1
+输入：H, Dtamb, Ma, PS_GA_H
+输出：N1RDemBase_GA
+公式：N1RDemBase_GA= interpolation(PS_GA_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_减推力起飞1（DTO1）
+编号：R_6300
+功能：应用软件应根据减推力起飞1调节计划（PS_DTO1_H1~21），通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力起飞1N1R基准控制目标N1RDemBase_DTO1。
+前置条件：1
+输入：H, Dtamb, Ma, PS_DTO1_H
+输出：N1RDemBase_DTO1
+公式：N1RDemBase_DTO1 = interpolation(PS_DTO1_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_减推力起飞2（DTO2）
+编号：R_6311
+功能：应用软件应根据减推力起飞2调节计划（PS_DTO2_H1~21），通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力起飞2N1R基准控制目标N1RDemBase_DTO2。
+前置条件：1
+输入：H, Dtamb, Ma, PS_DTO2_H
+输出：N1RDemBase_DTO2
+公式：N1RDemBase_DTO2 = interpolation(PS_DTO2_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_增推力起飞（Bump）
+编号：R_6313
+功能：应用软件应根据增推力起飞调节计划（PS_Bump_H1~21），通过高度H、马赫数Ma、环境温差Dtamb线性插值计算增推力起飞N1R基准控制目标N1RDemBase_Bump。
+前置条件：1
+输入：H, Dtamb, Ma, PS_Bump_H
+输出：N1RDemBase_Bump
+公式：N1RDemBase_Bump = interpolation(PS_Bump_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_ 灵活起飞（FLEXTO）
+编号：R_6315
+功能：应用软件应根据最大起飞调节计划，通过高度H、马赫数Ma、灵活温差DTFLEX插值计算得到灵活起飞N1R目标转速N1RDem_FLEXTO，计算过程中用灵活温差DTFLEX代替环境温差Dtamb进行插值计算。
+前置条件：1
+输入：H, DTFLEX, Ma, PS_MTO_H
+输出：N1RDem_FLEXTO
+公式：N1RDem_FLEXTO = interpolation(PS_MTO_H, H, DTFLEX, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_最大连续（MCT）
+编号：R_6317
+功能：应用软件应根据最大连续调节计划（PS_MCT_H1~21），通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大连续N1R基准控制目标N1RDemBase_MCT。
+前置条件：1
+输入：H, Dtamb, Ma, PS_MCT_H
+输出：N1RDemBase_MCT
+公式：N1RDemBase_MCT = interpolation(PS_MCT_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_最大爬升（MCL）
+编号：R_6319
+功能：应用软件应根据最大爬升调节计划（PS_MCL_H1~18），通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大爬升N1R基准控制目标N1RDemBase_MCL。
+前置条件：1
+输入：H, Dtamb, Ma, PS_MCL_H
+输出：N1RDemBase_MCL
+公式：N1RDemBase_MCL = interpolation(PS_MCL_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_减推力爬升1
+编号：R_6321
+功能：应用软件应根据减推力爬升1调节计划（PS_DCL1_H1~18），通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力爬升1N1R基准控制目标N1RDemBase_DCL1。
+前置条件：1
+输入：H, Dtamb, Ma, PS_DCL1_H
+输出：N1RDemBase_DCL1
+公式：N1RDemBase_DCL1 = interpolation(PS_DCL1_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_减推力爬升2
+编号：R_6324
+功能：应用软件应根据减推力爬升2调节计划(PS_DCL2_H1~18)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力爬升2N1R基准控制目标N1RDemBase_DCL2。
+前置条件：1
+输入：H, Dtamb, Ma, PS_DCL2_H
+输出：N1RDemBase_DCL2
+公式：N1RDemBase_DCL2 = interpolation(PS_DCL2_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：基本推力计划计算_最大巡航（MCR）
+编号：R_6326
+功能：应用软件应根据最大巡航调节计划(PS_MCR_H1~15)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大巡航N1R基准控制目标N1RDemBase_MCR。
+前置条件：1
+输入：H, Dtamb, Ma, PS_MCR_H
+输出：N1RDemBase_MCR
+公式：N1RDemBase_MCR = interpolation(PS_MCR_H, H, Dtamb, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大起飞正常引气修正
+编号：R_10794
+功能：应用软件应根据最大起飞MTO的ECS正常引气修正表（可调，PS_ECSNormalMTO）通过高度H、马赫数Ma线性插值计算得到DN1RECSmto1
+前置条件：1
+输入：PS_ECSNormalMTO, H, Ma
+输出：DN1RECSmto1
+公式：DN1RECSmto1 = interpolation(PS_ECSNormalMTO, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大连续正常引气修正
+编号：R_10795
+功能：应用软件应根据最大连续MCT的ECS正常引气修正表（可调，PS_ECSNormalMCT）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmct1。
+前置条件：1
+输入：PS_ECSNormalMCT, H, Ma
+输出：DN1RECSmct1
+公式：DN1RECSmct1 = interpolation(PS_ECSNormalMCT, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大爬升正常引气修正
+编号：R_10796
+功能：应用软件应根据最大爬升MCL的ECS正常引气修正表（可调，PS_ECSNormalMCL）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcl1。
+前置条件：1
+输入：PS_ECSNormalMCL, H, Ma
+输出：DN1RECSmcl1
+公式：DN1RECSmcl1 = interpolation(PS_ECSNormalMCL, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大巡航正常引气修正
+编号：R_10797
+功能：应用软件应根据最大巡航MCR的ECS正常引气修正表（可调，PS_ECSNormalMCR）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcr1。
+前置条件：1
+输入：PS_ECSNormalMCR, H, Ma
+输出：DN1RECSmcr1
+公式：DN1RECSmcr1 = interpolation(PS_ECSNormalMCR, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大起飞异常低引气修正
+编号：R_10798
+功能：应用软件应根据最大起飞MTO的ECS异常低引气修正表（可调，PS_ECSAbnLowMTO）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmto2。
+前置条件：1
+输入：PS_ECSAbnLowMTO, H, Ma
+输出：DN1RECSmto2
+公式：DN1RECSmto2 = interpolation(PS_ECSAbnLowMTO, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大连续异常低引气修正
+编号：R_10799
+功能：应用软件应根据最大连续MCT的ECS异常低引气修正表（可调，PS_ECSAbnLowMCT）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmct2。
+前置条件：1
+输入：PS_ECSAbnLowMCT, H, Ma
+输出：DN1RECSmct2
+公式：DN1RECSmct2 = interpolation(PS_ECSAbnLowMCT, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大爬升异常低引气修正
+编号：R_10800
+功能：应用软件应根据最大爬升MCL的ECS异常低引气修正表（可调，PS_ECSAbnLowMCL）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcl2。
+前置条件：1
+输入：PS_ECSAbnLowMCL, H, Ma
+输出：DN1RECSmcl2
+公式：DN1RECSmcl2 = interpolation(PS_ECSAbnLowMCL, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大巡航异常低引气修正
+编号：R_10801
+功能：应用软件应根据最大巡航MCR的ECS异常低引气修正表（可调，PS_ECSAbnLowMCR）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcr2。
+前置条件：1
+输入：PS_ECSAbnLowMCR, H, Ma
+输出：DN1RECSmcr2
+公式：DN1RECSmcr2 = interpolation(PS_ECSAbnLowMCR, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大起飞异常高引气修正
+编号：R_10802
+功能：应用软件应根据最大起飞MTO的ECS异常高引气修正表（可调，PS_ECSAbnHighMTO）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmto3。
+前置条件：1
+输入：PS_ECSAbnHighMTO, H, Ma
+输出：DN1RECSmto3
+公式：DN1RECSmto3 = interpolation(PS_ECSAbnHighMTO, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大连续异常高引气修正
+编号：R_10803
+功能：应用软件应根据最大连续MCT的ECS异常高引气修正表（可调，PS_ECSAbnHighMCT）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmct3。
+前置条件：1
+输入：PS_ECSAbnHighMCT, H, Ma
+输出：DN1RECSmct3
+公式：DN1RECSmct3 = interpolation(PS_ECSAbnHighMCT, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大爬升异常高引气修正
+编号：R_10804
+功能：应用软件应根据最大爬升MCL的ECS异常高引气修正表（可调，PS_ECSAbnHighMCL）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcl3。
+前置条件：1
+输入：PS_ECSAbnHighMCL, H, Ma
+输出：DN1RECSmcl3
+公式：DN1RECSmcl3 = interpolation(PS_ECSAbnHighMCL, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算最大巡航异常高引气修正
+编号：R_10805
+功能：应用软件应根据最大巡航MCR的异常高引气修正表（PS_ECSAbnHighMCR）通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcr3。
+前置条件：1
+输入：PS_ECSAbnHighMCR, H, Ma
+输出：DN1RECSmcr3
+公式：DN1RECSmcr3 = interpolation(PS_ECSAbnHighMCR, H, Ma);
+==================================================
+
+==================================================
+任务名称：设置ECS参数（无引气）
+编号：R_10806
+功能：当ECS引气构型ECSBleedCfg为无引气，DN1RECSmto=0，DN1RECSmct=0，DN1RECSmcl=0，DN1RECSmcr=0。
+前置条件：1
+输入：ECSBleedCfg
+输出：DN1RECSmto, DN1RECSmct, DN1RECSmcl, DN1RECSmcr
+公式：if(ECSBleedCfg == no_bleed)
+{
+DN1RECSmto=0;
+DN1RECSmct=0;
+DN1RECSmcl=0;
+DN1RECSmcr=0;
+}
+==================================================
+
+==================================================
+任务名称：设置ECS参数（正常引气）
+编号：R_10807
+功能：当ECS引气构型ECSBleedCfg为正常引气，DN1RECSmto=DN1RECSmto1，DN1RECSmct=DN1RECSmct1，DN1RECSmcl=DN1RECSmcl1，DN1RECSmcr=DN1RECSmcr1。
+前置条件：1
+输入：ECSBleedCfg, DN1RECSmto1, DN1RECSmct1, DN1RECSmcl1, DN1RECSmcr1
+输出：DN1RECSmto, DN1RECSmct, DN1RECSmcl, DN1RECSmcr
+公式：if(ECSBleedCfg == norm_bleed)
+{
+DN1RECSmto=DN1RECSmto1;
+DN1RECSmct=DN1RECSmct1;
+DN1RECSmcl=DN1RECSmcl1;
+DN1RECSmcr=DN1RECSmcr1;
+}
+==================================================
+
+==================================================
+任务名称：设置ECS参数（异常低引气）
+编号：R_10808
+功能：当ECS引气构型ECSBleedCfg为异常低引气，DN1RECSmto=DN1RECSmto2，DN1RECSmct=DN1RECSmct2，DN1RECSmcl=DN1RECSmcl2，DN1RECSmcr=DN1RECSmcr2。
+前置条件：1
+输入：ECSBleedCfg, DN1RECSmto2, DN1RECSmct2, DN1RECSmcl2, DN1RECSmcr2
+输出：DN1RECSmto, DN1RECSmct, DN1RECSmcl, DN1RECSmcr
+公式：if(ECSBleedCfg == abn_low_bleed)
+{
+DN1RECSmto=DN1RECSmto2;
+DN1RECSmct=DN1RECSmct2;
+DN1RECSmcl=DN1RECSmcl2;
+DN1RECSmcr=DN1RECSmcr2;
+}
+==================================================
+
+==================================================
+任务名称：设置ECS参数（异常高引气）
+编号：R_10809
+功能：当ECS引气构型ECSBleedCfg为异常高引气，DN1RECSmto=DN1RECSmto3，DN1RECSmct=DN1RECSmct3，DN1RECSmcl=DN1RECSmcl3，DN1RECSmcr=DN1RECSmcr3
+前置条件：1
+输入：ECSBleedCfg, DN1RECSmto3, DN1RECSmct3, DN1RECSmcl3, DN1RECSmcr3
+输出：DN1RECSmto, DN1RECSmct, DN1RECSmcl, DN1RECSmcr
+公式：if(ECSBleedCfg == abn_high_bleed)
+{
+DN1RECSmto=DN1RECSmto3;
+DN1RECSmct=DN1RECSmct3;
+DN1RECSmcl=DN1RECSmcl3;
+DN1RECSmcr=DN1RECSmcr3;
+}
+==================================================
+
+==================================================
+任务名称：计算N1RDemWAI1_MTO
+编号：R_10813
+功能：应用软件应通过H、Ma、根据最大起飞WAI正常引气修正系数表（可调，PS_WAINormalMTO）线性插值得到DDTwaimto1，通过H、Ma和Dtamb+DDTwaimto1根据最大起飞调节计划表计算得到N1RDemWAI1_MTO
+前置条件：1
+输入：PS_WAINormalMTO, H, Ma, Dtamb, PS_MTO_H, Temp
+输出：N1RDemWAI1_MTO
+公式：DDTwaimto1 = interpolation(PS_WAINormalMTO, H, Ma);
+Temp = Dtamb+DDTwaimto1;
+N1RDemWAI1_MTO = interpolation(PS_MTO_H, H, Ma,Temp);
+==================================================
+
+==================================================
+任务名称：计算N1RDemWAI1_MCT
+编号：R_10814
+功能：应用软件应通过H、Ma、根据最大连续WAI正常引气修正系数表（可调，PS_WAINormalMCT）线性插值得到DDTwaimct1，通过H、Ma和Dtamb+DDTwaimct1根据最大连续调节计划表计算得到N1RDemWAI1_MCT。
+前置条件：1
+输入：PS_WAINormalMCT, H, Ma, PS_MCT_H, Dtamb, Temp
+输出：N1RDemWAI1_MCT
+公式：DDTwaimct1 = interpolation(PS_WAINormalMCT, H, Ma);
+Temp = Dtamb+DDTwaimct1;
+N1RDemWAI1_MCT = interpolation(PS_MCT_H, H, Ma, Temp);
+==================================================
+
+==================================================
+任务名称：计算N1RDemWAI2_MTO
+编号：R_10815
+功能：应用软件应通过H、Ma、根据最大起飞WAI异常高引气修正系数表（可调，PS_WAIAbnHighMTO）线性插值得到DDTwaimto2，通过H、Ma和Dtamb+DDTwaimto2根据最大起飞调节计划表计算得到N1RDemWAI2_MTO。
+前置条件：1
+输入：PS_WAIAbnHighMTO, H, Ma, PS_MTO_H, Dtamb, Temp
+输出：N1RDemWAI2_MTO
+公式：DDTwaimto2 = interpolation(PS_WAIAbnHighMTO, H, Ma);
+Temp = Dtamb+ DDTwaimto2;
+N1RDemWAI2_MTO = interpolation(PS_MTO_H, H, Ma,Temp);
+==================================================
+
+==================================================
+任务名称：计算N1RDemWAI2_MCT
+编号：R_10816
+功能：应用软件应通过H、Ma、根据最大连续WAI异常高引气修正系数表（可调，PS_WAIAbnHighMCT）线性插值得到DDTwaimct2，通过H、Ma和Dtamb+DDTwaimct2根据最大连续调节计划表计算得到N1RDemWAI2_MCT。
+前置条件：1
+输入：PS_WAIAbnHighMCT, H, Ma, PS_MCT_H, Dtamb, Temp
+输出：N1RDemWAI2_MCT
+公式：DDTwaimct2 = interpolation(PS_WAIAbnHighMCT, H, Ma);
+Temp = Dtamb+DDTwaimct2;
+N1RDemWAI2_MCT = interpolation(PS_MCT_H, H, Ma,Temp);
+==================================================
+
+==================================================
+任务名称：计算DN1RWAImcl1
+编号：R_10817
+功能：应用软件应根据最大爬升MCL的WAI正常引气修正系数表（可调，PS_WAINormalMCL）通过高度H、马赫数Ma线性插值计算得到DN1RWAImcl1。
+前置条件：1
+输入：PS_WAINormalMCL, H, Ma
+输出：DN1RWAImcl1
+公式：DN1RWAImcl1 = interpolation(PS_WAINormalMCL, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算DN1RWAImcr1
+编号：R_10818
+功能：应用软件应根据最大巡航MCR的WAI正常引气修正系数表（可调，PS_WAINormalMCR）通过高度H、马赫数Ma线性插值计算得到DN1RWAImcr1
+前置条件：1
+输入：PS_WAINormalMCR, H, Ma
+输出：DN1RWAImcr1
+公式：DN1RWAImcr1 = interpolation(PS_WAINormalMCR, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算DN1RWAImcl2
+编号：R_10819
+功能：应用软件应根据最大爬升MCL的WAI异常高引气修正系数表（可调，PS_WAIAbnHighMCL）通过高度H、马赫数Ma线性插值计算得到DN1RWAImcl2。
+前置条件：1
+输入：PS_WAIAbnHighMCL, H, Ma
+输出：DN1RWAImcl2
+公式：DN1RWAImcl2 = interpolation(PS_WAIAbnHighMCL, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算DN1RWAImcr2
+编号：R_10820
+功能：应用软件应根据最大巡航MCR的WAI异常高引气修正系数表（可调，PS_WAIAbnHighMCR）通过高度H、马赫数Ma线性插值计算得到DN1RWAImcr2。
+前置条件：1
+输入：PS_WAIAbnHighMCR, H, Ma
+输出：DN1RWAImcr2
+公式：DN1RWAImcr2 = interpolation(PS_WAIAbnHighMCR, H, Ma);
+==================================================
+
+==================================================
+任务名称：设置WAI参数（无引气）
+编号：R_10821
+功能：当WAI引气构型WAIBleedCfg为无引气，DN1RWAImto=0，DN1RWAImct=0，DN1RWAImcl=0，DN1RWAImcr=0。
+前置条件：1
+输入：WAIBleedCfg
+输出：DN1RWAImto, DN1RWAImct, DN1RWAImcl, DN1RWAImcr
+公式：if(WAIBleedCfg == no_bleed)
+{
+DN1RWAImto=0;
+DN1RWAImct=0;
+DN1RWAImcl=0;
+DN1RWAImcr=0;
+}
+==================================================
+
+==================================================
+任务名称：设置WAI参数（正常引气）
+编号：R_10822
+功能：当WAI引气构型WAIBleedCfg为正常引气，
+前置条件：1
+输入：WAIBleedCfg, N1RDemWAI1_MTO, N1RDemBase_MTO, N1RDemWAI1_MCT, N1RDemBase_MCT, DN1RWAImcl1, DN1RWAImcr1
+输出：DN1RWAImto, DN1RWAImct, DN1RWAImcl, DN1RWAImcr
+公式：if(WAIBleedCfg == norm_bleed)
+{
+DN1RWAImto=N1RDemWAI1_MTO-N1RDemBase_MTO;
+DN1RWAImct=N1RDemWAI1_MCT-N1RDemBase_MCT;
+DN1RWAImcl=DN1RWAImcl1;
+DN1RWAImcr=DN1RWAImcr1;
+}
+==================================================
+
+==================================================
+任务名称：设置WAI参数（异常高引气）
+编号：R_10823
+功能：当WAI引气构型WAIBleedCfg为异常高引气
+前置条件：1
+输入：WAIBleedCfg, N1RDemWAI2_MTO, N1RDemBase_MTO, N1RDemWAI2_MCT, N1RDemBase_MCT, DN1RWAImcl2, DN1RWAImcr2
+输出：DN1RWAImto, DN1RWAImct, DN1RWAImcl, DN1RWAImcr
+公式：if(WAIBleedCfg == abn_high_bleed)
+{
+DN1RWAImto=N1RDemWAI2_MTO-N1RDemBase_MTO;
+DN1RWAImct=N1RDemWAI2_MCT-N1RDemBase_MCT;
+DN1RWAImcl=DN1RWAImcl2;
+DN1RWAImcr=DN1RWAImcr2;
+}
+==================================================
+
+==================================================
+任务名称：计算N1RDemNAI1_MTO
+编号：R_10824
+功能：应用软件应通过H、Ma根据最大起飞NAI引气修正系数表（可调，PS_NAIOpenMTO ）线性插值得到DDTnaimto1，通过H、Ma和Dtamb+ DDTnaimto1根据最大起飞调节计划表计算得到N1RDemNAI1_MTO。
+前置条件：1
+输入：PS_NAIOpenMTO, H, Ma, PS_MTO_H, Dtamb, Temp
+输出：N1RDemNAI1_MTO
+公式：DDTnaimto1 = interpolation(PS_NAIOpenMTO, H, Ma);
+Temp = Dtamb+ DDTnaimto1;
+N1RDemNAI1_MTO = interpolation(PS_MTO_H, H, Ma, Temp);
+==================================================
+
+==================================================
+任务名称：计算N1RDemNAI1_MCT
+编号：R_10825
+功能：应用软件应通过H、Ma根据最大连续NAI引气修正系数表（可调，PS_NAIOpenMCT）线性插值得到DDTnaimct1，通过H、Ma和Dtamb+ DDTnaimct1根据最大连续调节计划表计算得到N1RDemNAI1_MCT。
+前置条件：1
+输入：PS_NAIOpenMCT, H, Ma, PS_MCT_H, Dtamb, Temp
+输出：N1RDemNAI1_MCT
+公式：DDTnaimct1 = interpolation(PS_NAIOpenMCT, H, Ma);
+Temp = Dtamb+ DDTnaimct1;
+N1RDemNAI1_MCT = interpolation(PS_MCT_H, H, Ma,Temp);
+==================================================
+
+==================================================
+任务名称：计算DN1RNAImcl1
+编号：R_10826
+功能：应用软件应根据最大爬升MCL的NAI引气修正表（可调，PS_NAIOpenMCL）通过高度H、马赫数Ma线性插值计算得到DN1RNAImcl1。
+前置条件：1
+输入：PS_NAIOpenMCL, H, Ma
+输出：DN1RNAImcl1
+公式：DN1RNAImcl1 = interpolation(PS_NAIOpenMCL, H, Ma);
+==================================================
+
+==================================================
+任务名称：计算DN1RNAImcr1
+编号：R_10827
+功能：应用软件应根据最大巡航MCR的NAI引气修正表（可调，PS_NAIOpenMCR）通过高度H、马赫数Ma线性插值计算得到DN1RNAImcr1。
+前置条件：1
+输入：PS_NAIOpenMCR, H, Ma
+输出：DN1RNAImcr1
+公式：DN1RNAImcr1 = interpolation(PS_NAIOpenMCR, H, Ma);
+==================================================
+
+==================================================
+任务名称：设置NAI参数（关闭）
+编号：R_10828
+功能：当短舱防冰控制指令为关闭，DN1RNAImto=0，DN1RNAImct=0，DN1RNAImcl=0，DN1RNAImcr=0。
+前置条件：1
+输入：nai_control
+输出：DN1RNAImto, DN1RNAImct, DN1RNAImcl, DN1RNAImcr
+公式：if(nai_control == 0)
+{
+DN1RNAImto=0;
+DN1RNAImct=0;
+DN1RNAImcl=0;
+DN1RNAImcr=0;
+}
+==================================================
+
+==================================================
+任务名称：设置NAI参数（打开）
+编号：R_10829
+功能：当短舱防冰控制指令为打开
+前置条件：1
+输入：nai_control, N1RDemNAI1_MTO, N1RDemBase_MTO, N1RDemNAI1_MCT, N1RDemBase_MCT, DN1RNAImcl1, DN1RNAImcr1
+输出：DN1RNAImto, DN1RNAImct, DN1RNAImcl, DN1RNAImcr
+公式：if(nai_control == 1)
+{
+DN1RNAImto=N1RDemNAI1_MTO-N1RDemBase_MTO;
+DN1RNAImct=N1RDemNAI1_MCT-N1RDemBase_MCT;
+DN1RNAImcl=DN1RNAImcl1;
+DN1RNAImcr=DN1RNAImcr1;
+}
+==================================================
+
+==================================================
+任务名称：计算最大起飞引气修正量
+编号：R_10830
+功能：应用软件应根据以下公式计算最大起飞引气修正量 DN1Rbleedmto: DN1Rbleedmto=DN1RECSmto+DN1RWAImto+DN1RNAImto。
+前置条件：1
+输入：DN1RECSmto, DN1RWAImto, DN1RNAImto
+输出：DN1Rbleedmto
+公式：DN1Rbleedmto=DN1RECSmto+DN1RWAImto+DN1RNAImto;
+==================================================
+
+==================================================
+任务名称：计算最大连续引气修正量
+编号：R_10831
+功能：应用软件应根据以下公式计算最大连续引气修正量 DN1Rbleedmct: DN1Rbleedmct=DN1RECSmct+DN1RWAImct+DN1RNAImct。
+前置条件：1
+输入：DN1RECSmct, DN1RWAImct, DN1RNAImct
+输出：DN1Rbleedmct
+公式：DN1Rbleedmct=DN1RECSmct+DN1RWAImct+DN1RNAImct;
+==================================================
+
+==================================================
+任务名称：计算最大爬升引气修正量
+编号：R_10832
+功能：应用软件应根据以下公式计算最大爬升引气修正量 DN1Rbleedmcl: DN1Rbleedmcl=DN1RECSmcl+DN1RWAImcl+DN1RNAImcl。
+前置条件：1
+输入：DN1RECSmcl, DN1RWAImcl, DN1RNAImcl
+输出：DN1Rbleedmcl
+公式：DN1Rbleedmcl=DN1RECSmcl+DN1RWAImcl+DN1RNAImcl;
+==================================================
+
+==================================================
+任务名称：计算最大巡航引气修正量
+编号：R_10833
+功能：应用软件应根据以下公式计算最大巡航引气修正量DN1Rbleedmcr: DN1Rbleedmcr=DN1RECSmcr+DN1RWAImcr+DN1RNAImcr。
+前置条件：1
+输入：DN1RECSmcr, DN1RWAImcr, DN1RNAImcr
+输出：DN1Rbleedmcr
+公式：DN1Rbleedmcr=DN1RECSmcr+DN1RWAImcr+DN1RNAImcr;
+==================================================
+
+==================================================
+任务名称：设置减推力起飞DTO1、DTO2、灵活起飞FLEXTO、复飞GA、增推力起飞Bump的引气修正量
+编号：R_10834
+功能：减推力起飞DTO1、DTO2、灵活起飞FLEXTO、复飞GA、增推力起飞Bump的引气修正量与最大起飞MTO相同，即DN1Rbleeddto1=DN1Rbleeddto2= DN1Rbleedflexto=DN1Rbleedga=DN1Rbleedbump=DN1Rbleedmto。
+前置条件：1
+输入：DN1Rbleedmto
+输出：DN1Rbleeddto1, DN1Rbleeddto2, DN1Rbleedflexto, DN1Rbleedga, DN1Rbleedbump
+公式：DN1Rbleeddto1 = DN1Rbleedmto;
+DN1Rbleeddto2 = DN1Rbleedmto;
+DN1Rbleedflexto = DN1Rbleedmto;
+DN1Rbleedga = DN1Rbleedmto;
+DN1Rbleedbump = DN1Rbleedmto;
+==================================================
+
+==================================================
+任务名称：设置减推力爬升DCL1、DCL2的引气修正量
+编号：R_10835
+功能：减推力爬升DCL1、DCL2的引气修正量与最大爬升MCL相同，即DN1Rbleeddcl1=DN1Rbleeddcl2=DN1Rbleedmcl
+前置条件：1
+输入：DN1Rbleedmcl
+输出：DN1Rbleeddcl1, DN1Rbleeddcl2
+公式：DN1Rbleeddcl1 = DN1Rbleedmcl;
+DN1Rbleeddcl2 = DN1Rbleedmcl;
+==================================================
+
+==================================================
+任务名称：推力配平判断
+编号：R_6526
+功能：应用软件进行推力配平判断，置推力配平标志atrim=1或atrim=0
+前置条件：1
+输入：N1_trim_enable, N1Trim_signal, airdis_WOW, thrust_level, dspeed_state, dPLA, PD_atrimpla
+输出：atrim
+公式：if((N1_trim_enable == 1) && (N1Trim_signal == 1) && (airdis_WOW == 0) && ((thrust_level == level_MCR) || (thrust_level == level_MCT) || (thrust_level == level_MCL) || (thrust_level == level_CR) || (thrust_level == level_CT) || (thrust_level == level_CL) || (thrust_level == level_DCL1) || (thrust_level == level_DCL2)) && ((dspeed_state == 0) || (((dspeed_state == 1) || (dspeed_state == 2)) && (dPLA < PD_atrimpla))))
+{
+atrim=1;
+}
+else
+{
+atrim=0;
+}
+==================================================
+
+==================================================
+任务名称：计算推力配平修正量
+编号：R_6519
+功能：推力配平修正量DN1RDemTrim计算公式应为：
+前置条件：1
+输入：PD_N1TrimLowCo, N1Trim, PD_N1TrimUpCo, N1Design, atrim, T12
+输出：DN1RDemTrim
+公式：DN1DemTrim = min(max(PD_N1TrimLowCo, N1Trim), PD_N1TrimUpCo) * N1Design * 0.01 * atrim;
+DN1RDemTrim = DN1DemTrim / sqrt(T12 / 288.15);
+==================================================
+
+==================================================
+任务名称：设置最大巡航、最大爬升、减推力爬升1、减推力爬升2、最大连续的推力配平修正量
+编号：R_10837
+功能：设置最大巡航、最大爬升、减推力爬升1、减推力爬升2、最大连续的推力配平修正量
+前置条件：1
+输入：DN1RDemTrim
+输出：DN1RTrimmcr, DN1RTrimmcl, DN1RTrimdcl1, DN1RTrimdcl2, DN1RTrimmct
+公式：DN1RTrimmcr = DN1RDemTrim;
+DN1RTrimmcl = DN1RDemTrim;
+DN1RTrimdcl1 = DN1RDemTrim;
+DN1RTrimdcl2 = DN1RDemTrim;
+DN1RTrimmct = DN1RDemTrim;
+==================================================
+
+==================================================
+任务名称：设置最大起飞、减推力起飞1、减推力起飞2、复飞、灵活起飞、增推力起飞的推力配平修正量
+编号：R_10838
+功能：设置最大起飞、减推力起飞1、减推力起飞2、复飞、灵活起飞、增推力起飞的推力配平修正量
+前置条件：1
+输入：
+输出：DN1RTrimmto, DN1RTrimdto1, DN1RTrimdto2, DN1RTrimga, DN1RTrimflexto, DN1RTrimbump
+公式：DN1RTrimmto = 0;
+DN1RTrimdto1 = 0;
+DN1RTrimdto2 = 0;
+DN1RTrimga = 0;
+DN1RTrimflexto = 0;
+DN1RTrimbump = 0;
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-最大起飞
+编号：R_10850
+功能：应用软件应按照以下公式计算用于油门杆插值的最大起飞N1R控制目标N1RDem_MTO。其中PD_N1RDemTOLmt为可调。
+前置条件：1
+输入：N1RDem_MAX, N1RDemBase_MTO, DN1Rbleedmto, DN1RTrimmto, PD_N1RDemTOLmt, N1RDesign
+输出：N1RDem_MTO
+公式：N1RDem_MTO=min(N1RDem_MAX,max(N1RDemBase_MTO+DN1Rbleedmto+DN1RTrimmto,PD_N1RDemTOLmt*N1RDesign));
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-复飞
+编号：R_10865
+功能：应用软件应按照以下公式计算用于油门杆插值的复飞N1R控制目标N1RDem_GA.
+前置条件：1
+输入：N1RDem_MAX, N1RDemBase_GA, DN1Rbleedga, DN1RTrimga, PD_N1RDemTOLmt, N1RDesign
+输出：N1RDem_GA
+公式：N1RDem_GA=min(N1RDem_MAX,max(N1RDemBase_GA+DN1Rbleedga+DN1RTrimga,PD_N1RDemTOLmt*N1RDesign));
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-减推力起飞1
+编号：R_10871
+功能：应用软件应按照以下公式计算用于油门杆插值的减推力起飞1 N1R控制目标N1RDem_DTO1
+前置条件：1
+输入：N1RDem_MAX, N1RDemBase_DTO1, DN1Rbleeddto1, DN1RTrimdto1, PD_N1RDemTOLmt, N1RDesign
+输出：N1RDem_DTO1
+公式：N1RDem_DTO1=min(N1RDem_MAX,max(N1RDemBase_DTO1+DN1Rbleeddto1+DN1RTrimdto1,PD_N1RDemTOLmt*N1RDesign));
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-减推力起飞2
+编号：R_10874
+功能：应用软件应按照以下公式计算用于油门杆插值的减推力起飞2 N1R控制目标N1RDem_DTO2
+前置条件：1
+输入：N1RDem_MAX, N1RDemBase_DTO2, DN1Rbleeddto2, DN1RTrimdto2, PD_N1RDemTOLmt, N1RDesign
+输出：N1RDem_DTO2
+公式：N1RDem_DTO2=min(N1RDem_MAX,max(N1RDemBase_DTO2+DN1Rbleeddto2+DN1RTrimdto2,PD_N1RDemTOLmt* N1RDesign));
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-增推力起飞
+编号：R_10877
+功能：应用软件应按照以下公式计算用于油门杆插值的增推力起飞N1R控制目标N1RDem_Bump。
+前置条件：1
+输入：N1RDem_MAX, N1RDemBase_Bump, DN1Rbleedbump, DN1RTrimbump, PD_N1RDemTOLmt, N1RDesign
+输出：N1RDem_Bump
+公式：N1RDem_Bump = min( N1RDem_MAX ,max(N1RDemBase_Bump+DN1Rbleedbump+DN1RTrimbump,PD_N1RDemTOLmt*N1RDesign));
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-灵活起飞
+编号：R_10880
+功能：应用软件应按照以下公式计算用于油门杆插值的灵活起飞N1R控制目标N1RDem_FLEXTO。其中PD_N1RdemFlexLmt为可调。
+前置条件：1
+输入：N1RDem_MAX, N1RDemBase_FLEXTO, DN1Rbleedflexto, DN1RTrimflexto, PD_N1RDemFlexLmt, N1RDesign
+输出：N1RDem_FLEXTO
+公式：N1RDem_FLEXTO = min(N1RDem_MAX,max(N1RDemBase_FLEXTO+DN1Rbleedflexto+DN1RTrimflexto,PD_N1RDemFlexLmt*N1RDesign));
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-最大连续
+编号：R_10884
+功能：应用软件应按照以下公式计算用于油门杆插值的最大连续N1R控制目标N1RDem_MCT。
+前置条件：1
+输入：N1RDemBase_MCT, DN1Rbleedmct, DN1RTrimmct, N1RDem_PLATO
+输出：N1RDem_MCT
+公式：N1RDem_MCT = min(N1RDemBase_MCT +DN1Rbleedmct +DN1RTrimmct,N1RDem_PLATO);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-最大爬升
+编号：R_10887
+功能：应用软件应按照以下公式计算用于油门杆插值的最大爬升N1R控制目标N1RDem_MCL。
+前置条件：1
+输入：N1RDemBase_MCL, DN1Rbleedmcl, DN1RTrimmcl, N1RDem_MCT
+输出：N1RDem_MCL
+公式：N1RDem_MCL = min(N1RDemBase_MCL +DN1Rbleedmcl+DN1RTrimmcl,N1RDem_MCT);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-减推力爬升1
+编号：R_10890
+功能：应用软件应按照以下公式计算用于油门杆插值的减推力爬升1 N1R控制目标N1RDem_DCL1。
+前置条件：1
+输入：N1RDemBase_DCL1, DN1Rbleeddcl1, DN1RTrimdcl1, N1RDem_MCT
+输出：N1RDem_DCL1
+公式：N1RDem_DCL1 = min(N1RDemBase_DCL1 + DN1Rbleeddcl1 + DN1RTrimdcl1 ，N1RDem_MCT );
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-减推力爬升2
+编号：R_10893
+功能：应用软件应按照以下公式计算用于油门杆插值的减推力爬升2 N1R控制目标N1RDem_DCL2。
+前置条件：1
+输入：N1RDemBase_DCL2, DN1Rbleeddcl2, DN1RTrimdcl2, N1RDem_MCT
+输出：N1RDem_DCL2
+公式：N1RDem_DCL2 = min(N1RDemBase_DCL2 + DN1Rbleeddcl2 + DN1RTrimdcl2 ，N1RDem_MCT );
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-最大巡航
+编号：R_10896
+功能：应用软件应按照以下公式计算用于油门杆插值的最大巡航N1R控制目标N1RDem_MCR。
+前置条件：1
+输入：N1RDemBase_MCR, DN1Rbleedmcr, DN1RTrimmcr, N1RDem_PLACL
+输出：N1RDem_MCR
+公式：N1RDem_MCR = min(N1RDemBase_MCR+ DN1Rbleedmcr + DN1RTrimmcr ，N1RDem_PLACL );
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-最大反推(MREV)
+编号：R_6279
+功能：应用软件应根据最大反推调节计划(PS_MREV_H1~10)，通过高度H、马赫数Ma计算、环境温差Dtamb线性插值计算最大反推N1R控制目标N1RDem_MREV。
+前置条件：1
+输入：PS_MREV_H, H, Ma, Dtamb
+输出：N1RDem_MREV
+公式：N1RDem_MREV=interpolation(PS_MREV_H, H, Ma, Dtamb);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-最大推力增量计算
+编号：R_9500
+功能：应用软件应根据最大推力增量调节计划表(PS_MAX_Ma1~3)，通过高度H、马赫数Ma计算、环境温差Dtamb线性插值计算最大推力N1R控制目标增量dN1RDem_MAX。
+前置条件：1
+输入：PS_MAX_Ma, H, Ma, Dtamb
+输出：dN1RDem_MAX
+公式：dN1RDem_MAX = interpolation(PS_MAX_Ma, H, Ma, Dtamb);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-最大推力计算
+编号：R_7656
+功能：应用软件应根据公式计算最大推力N1R控制目标N1RDem_MAX。
+前置条件：1
+输入：N1RDem_MTO, dN1RDem_MAX
+输出：N1RDem_MAX
+公式：N1RDem_MAX = N1RDem_MTO + dN1RDem_MAX;
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-N1RDem_PLATO计算
+编号：R_8443
+功能：应用软件应根据飞机信号按照表7825计算起飞域N1R控制目标N1RDem_PLATO。
+前置条件：1
+输入：TL_require, DTO1, DTO2, GA, Bump, FLEXTO, flex_dT_flag, N1RDem_MTO, N1RDem_DTO1, N1RDem_DTO2, N1RDem_GA, N1RDem_FLEXTO, N1RDem_Bump
+输出：N1RDem_PLATO
+公式：if(TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&(TL_require!=FLEXTO||(TL_require==FLEXTO&&flex_dT_flag==0)))
+{
+N1RDem_PLATO=N1RDem_MTO;
+}
+else
+{
+if(TL_require==DTO1)
+{
+N1RDem_PLATO=N1RDem_DTO1;
+}
+else
+{
+if(TL_require==DTO2)
+{
+N1RDem_PLATO=N1RDem_DTO2;
+}
+else
+	{
+if(TL_require==GA)
+{
+N1RDem_PLATO=N1RDem_GA;
+}
+else
+{
+if(TL_require==FLEXTO&&flex_dT_flag==1)
+{
+N1RDem_PLATO=N1RDem_FLEXTO;
+}
+else
+{
+if(TL_require==Bump)
+{
+N1RDem_PLATO=N1RDem_Bump;
+}
+}
+}
+}
+}
+}
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-N1RDem_PLACL计算
+编号：R_8447
+功能：应用软件应根据飞机信号按照表8217计算爬升域N1R控制目标N1RDem_PLACL。
+前置条件：1
+输入：TL_require, DCL1, DCL2, N1RDem_MCL, N1RDem_DCL1, N1RDem_DCL2
+输出：N1RDem_PLACL
+公式：if(TL_require!=DCL1&&TL_require!=DCL2)
+{
+N1RDem_PLACL=N1RDem_MCL;
+}
+else
+{
+if(TL_require==DCL1)
+{
+N1RDem_PLACL=N1RDem_DCL1;
+}
+else
+{
+if(TL_require==DCL2)
+{
+N1RDem_PLACL=N1RDem_DCL2;
+}
+}
+}
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-转换点转速N1Rtr计算-慢车域实时N2R25控制目标计算
+编号：R_9501
+功能：应用软件应根据飞机信号按照表9953计算慢车域实时N2R25控制目标N2R25Dem_PLAIdle（慢车转速）。
+前置条件：1
+输入：airdis_WOW, PLA, N2R25Dem_RI, N2R25Dem_GI, approach_air, N2R25Dem_FI, N2R25Dem_AI
+输出：N2R25Dem_PLAIdle
+公式：if(airdis_WOW==1&&PLA<0)
+{
+N2R25Dem_PLAIdle=N2R25Dem_RI;
+}
+else
+{
+if(airdis_WOW==1&&PLA>=0)
+{
+N2R25Dem_PLAIdle=N2R25Dem_GI;
+}
+else
+{
+if(airdis_WOW==0&&approach_air==1)
+{
+N2R25Dem_PLAIdle=N2R25Dem_FI;
+}
+else
+{
+if(airdis_WOW==0&&approach_air==0)
+{
+N2R25Dem_PLAIdle=N2R25Dem_AI;
+}
+}
+}
+}
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-转换点转速N1Rtr计算-高低压换算转速
+编号：R_6376
+功能：应用软件应将N2R25Dem_PLAIdle通过“高低压换算转速N2R25-N1R转换关系”表N2R25N1Rbak（可调）转换为N1RDem_PLAIdle。
+前置条件：1
+输入：N2R25N1Rbak, N2R25Dem_PLAIdle
+输出：N1RDem_PLAIdle
+公式：N1RDem_PLAIdle=interpolation(N2R25N1Rbak, N2R25Dem_PLAIdle);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-转换点转速N1Rtr计算-N1r-PLAIdle
+编号：R_10898
+功能：转换点转速N1Rtr应为转换前一时刻慢车状态（距当前时刻最近的慢车状态时刻）的N1r与N1RDem_PLAIdle两者的高选值。
+前置条件：1
+输入：N1r, N1RDem_PLAIdle
+输出：N1Rtr
+公式：if(N1r>N1RDem_PLAIdle)
+{
+N1Rtr=N1r;
+}
+else
+{
+		N1Rtr=N1RDem_PLAIdle;
+}
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-转换点转速N1Rtr计算-MCR
+编号：R_6388
+功能：若N2R25Dem_PLAIdle选择N2R25Dem_GI、N2R25Dem_FI或N2R25Dem_AI，且N1Rtr>N1RDem_MCR，则应用软件应置N1Rtr = N1RDem_MCR。
+前置条件：1
+输入：N2R25Dem_PLAIdle, N2R25Dem_GI, N2R25Dem_FI, N2R25Dem_AI, N1RDem_MCR, N1Rtr
+输出：N1Rtr
+公式：if(N2R25Dem_PLAIdle==N2R25Dem_GI||N2R25Dem_PLAIdle==N2R25Dem_FI||N2R25Dem_PLAIdle==N2R25Dem_AI&&(N1Rtr>N1RDem_MCR))
+{
+N1Rtr=N1RDem_MCR;
+}
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-转换点转速N1Rtr计算-MREV
+编号：R_7831
+功能：若N2R25Dem_PLAIdle选择N2R25Dem_RI，且N1Rtr>N1RDem_MREV，则将应用软件应置N1Rtr = N1RDem_MREV。
+前置条件：1
+输入：N2R25Dem_PLAIdle, N2R25Dem_RI, N1Rtr, N1RDem_MREV
+输出：N1Rtr
+公式：if(N2R25Dem_PLAIdle==N2R25Dem_RI&&N1Rtr>N1RDem_MREV)
+{
+N1Rtr=N1RDem_MREV;
+}
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-准最大推力
+编号：R_6345
+功能：应用软件应根据PLA在N1RDem_PLATO和N1RDem_MAX之间进行一维线性插值得到准最大推力N1R控制目标N1RDem_TO2MAX。
+前置条件：1
+输入：PS_PLA_N1RDem_PLATO_MAX, PLA, N1RDem_PLATO, N1RDem_MAX
+输出：N1RDem_TO2MAX
+公式：N1RDem_TO2MAX=interpolation(PS_PLA_N1RDem_PLATO_MAX, PLA, N1RDem_PLATO, N1RDem_MAX);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-起飞（TO）
+编号：R_6333
+功能：应用软件应根据PLA在N1RDem_MCT和N1RDem_PLATO之间进行一维线性插值得到起飞N1R控制目标N1RDem_TO。
+前置条件：1
+输入：PS_PLA_N1RDem_MCT_PLATO, PLA, N1RDem_MCT, N1RDem_PLATO
+输出：N1RDem_TO
+公式：N1RDem_TO=interpolation(PS_PLA_N1RDem_MCT_PLATO, PLA, N1RDem_MCT, N1RDem_PLATO);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-连续（CT）
+编号：R_6335
+功能：应用软件应根据PLA在N1RDem_PLACL和N1RDem_MCT之间进行一维线性插值得到连续N1R控制目标N1RDem_CT。
+前置条件：1
+输入：PS_PLA_N1RDem_PLACL_MCT, PLA, N1RDem_PLACL, N1RDem_MCT
+输出：N1RDem_CT
+公式：N1RDem_CT=interpolation(PS_PLA_N1RDem_PLACL_MCT, PLA, N1RDem_PLACL, N1RDem_MCT);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-爬升（CL）
+编号：R_6337
+功能：应用软件应根据PLA在N1RDem_MCR和N1RDem_PLACL之间进行一维线性插值得到爬升N1R控制目标N1RDem_CL。
+前置条件：1
+输入：PS_PLA_N1RDem_MCR_PLACL, PLA, N1RDem_MCR, N1RDem_PLACL
+输出：N1RDem_CL
+公式：N1RDem_CL=interpolation(PS_PLA_N1RDem_MCR_PLACL, PLA, N1RDem_MCR, N1RDem_PLACL);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-巡航（CR）
+编号：R_6339
+功能：应用软件应根据PLA在转换点转速N1Rtr和最大巡航N1R控制目标N1RDem_MCR之间进行一维线性插值得到巡航N1R控制目标N1RDem_CR。
+前置条件：1
+输入：PS_PLA_N1Rtr_N1RDem_MCR, PLA, N1Rtr, N1RDem_MCR
+输出：N1RDem_CR
+公式：N1RDem_CR=interpolation(PS_PLA_N1Rtr_N1RDem_MCR, PLA, N1Rtr, N1RDem_MCR);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-反推（REV）
+编号：R_6352
+功能：应用软件应根据PLA在转换点转速N1Rtr和N1RDem_MREV之间进行一维线性插值得到反推N1R控制目标值N1RDem_REV。
+前置条件：1
+输入：PS_PLA_N1Rtr_N1RDem_MREV, PLA, N1Rtr, N1RDem_MREV
+输出：N1RDem_REV
+公式：N1RDem_REV=interpolation(PS_PLA_N1Rtr_N1RDem_MREV, PLA, N1Rtr, N1RDem_MREV);
+==================================================
+
+==================================================
+任务名称：油门杆插值目标计算-N1RDem_BAK计算
+编号：R_6347
+功能：应用软件应根据N2R25Dem和Ma通过高低压换算转速N2R25-N1R转换关系表N2R25N1Rbak（可调）反算出N1R备份控制目标N1RDem_BAK。
+前置条件：1
+输入：N2R25N1Rbak, N2R25Dem, Ma
+输出：N1RDem_BAK
+公式：N1RDem_BAK = interpolation(N2R25N1Rbak, N2R25Dem, Ma);
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（最大反推）
+编号：R_9970
+功能：当选定推力等级为最大反推时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_MREV, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_MREV)
+{
+N1RDemInd = N1RDem_MREV;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（反推）
+编号：R_9976
+功能：当选定推力等级为反推时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_REV, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_REV)
+{
+N1RDemInd = N1RDem_REV;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（反推慢车、地面慢车、空中慢车、进近慢车）
+编号：R_9972
+功能：当选定推力等级为反推慢车、地面慢车、空中慢车、进近慢车时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_BAK, thrust_level
+输出：N1RDemInd
+公式：if( thrust_level == level_RI || thrust_level == level_GI || thrust_level == level_FI || thrust_level == level_AI)
+{
+N1RDemInd = N1RDem_BAK;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（巡航）
+编号：R_9974
+功能：当选定推力等级为巡航时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_CR, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_CR)
+{
+N1RDemInd = N1RDem_CR;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（最大巡航）
+编号：R_9969
+功能：当选定推力等级为最大巡航时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_MCR, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_MCR)
+{
+N1RDemInd = N1RDem_MCR;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（爬升）
+编号：R_9977
+功能：当选定推力等级为爬升时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_CL, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_CL)
+{
+N1RDemInd = N1RDem_CL;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（最大爬升）
+编号：R_9966
+功能：当选定推力等级为最大爬升时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_MCL, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_MCL)
+{
+N1RDemInd = N1RDem_MCL;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（减推力爬升1）
+编号：R_9967
+功能：当选定推力等级为减推力爬升1时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_DCL1, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_DCL1)
+{
+N1RDemInd = N1RDem_DCL1;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（减推力爬升2）
+编号：R_9968
+功能：当选定推力等级为减推力爬升2时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_DCL2, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_DCL2)
+{
+N1RDemInd = N1RDem_DCL2;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（连续）
+编号：R_9973
+功能：当选定推力等级为连续时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_CT, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_CT)
+{
+N1RDemInd = N1RDem_CT;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（最大连续）
+编号：R_9965
+功能：当选定推力等级为最大连续时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_MCT, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_MCT)
+{
+N1RDemInd = N1RDem_MCT;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（起飞）
+编号：R_9978
+功能：当选定推力等级为起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_TO, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_TO)
+{
+N1RDemInd = N1RDem_TO;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（最大起飞）
+编号：R_9959
+功能：当选定推力等级为最大起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_MTO, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_MTO)
+{
+N1RDemInd = N1RDem_MTO;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（减推力起飞1）
+编号：R_9961
+功能：当选定推力等级为减推力起飞1时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_DTO1, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_DTO1)
+{
+N1RDemInd = N1RDem_DTO1;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（减推力起飞2）
+编号：R_9962
+功能：当选定推力等级为减推力起飞2时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_DTO2, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_DTO2)
+{
+N1RDemInd = N1RDem_DTO2;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（复飞）
+编号：R_9960
+功能：当选定推力等级为复飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_GA, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_GA)
+{
+N1RDemInd = N1RDem_GA;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（增推力起飞）
+编号：R_9963
+功能：当选定推力等级为增推力起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_Bump, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_Bump)
+{
+N1RDemInd = N1RDem_Bump;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（灵活起飞）
+编号：R_9964
+功能：当选定推力等级为灵活起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_FLEXTO, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_FLEXTO)
+{
+N1RDemInd = N1RDem_FLEXTO;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（准最大推力）
+编号：R_9975
+功能：当选定推力等级为准最大推力时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_TO2MAX, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_TO2MAX)
+{
+N1RDemInd = N1RDem_TO2MAX;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（最大推力）
+编号：R_9971
+功能：当选定推力等级为最大推力时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。
+前置条件：1
+输入：N1RDem_MAX, thrust_level
+输出：N1RDemInd
+公式：if(thrust_level == level_MAX)
+{
+N1RDemInd = N1RDem_MAX;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（无指定推力等级补充1）
+编号：D_7842
+功能：当选定推力等级为无指定推力等级，且发动机状态为正常地面起动状态、稳态风车起动、快速风车起动、空中辅助起动状态，应用软件应置N1RDemInd = N1RDem_BAK。
+前置条件：1
+输入：N1RDem_BAK, thrust_level, engine_state
+输出：N1RDemInd
+公式：if(thrust_level == level_default && (engine_state == ES_ground_start || engine_state == ES_windmill_start || engine_state == ES_Qwindmill_start || engine_state == ES_assist_start))
+{
+N1RDemInd = N1RDem_BAK;
+}
+==================================================
+
+==================================================
+任务名称：N1R指示量N1RDemInd计算（无指定推力等级补充2）
+编号：D_7843
+功能：当选定推力等级为无指定推力等级，且发动机状态为初始状态、地面待机状态、空中待机状态、冷运转、假开车/油封/启封、正常停车、紧急停车、地面起动中止、空中起动中止状态，应用软件应置N1RDemInd = 0。
+前置条件：1
+输入：thrust_level, engine_state
+输出：N1RDemInd
+公式：if(thrust_level == level_default && (engine_state == ES_origin || engine_state == ES_ground_standby || engine_state == ES_flight_standby || engine_state == ES_cold_operation || engine_state == ES_DR_OS_Us || engine_state == ES_normal_stop || engine_state == ES_emergency_stop || engine_state == ES_ground_start_termination || engine_state == ES_flight_start_terminnation))
+{
+N1RDemInd = 0;
+}
+==================================================
+
+==================================================
+任务名称：N1公差修正量计算
+编号：R_7661
+功能：应用软件应根据N1公差修正等级PD_N1RMod1~8选择对应的N1公差修正量DN1RMod。
+前置条件：1
+输入：DN1RMod
+输出：
+公式：
+==================================================
+
+==================================================
+任务名称：N1R控制量N1RDem计算（推力等级为无指定推力等级、最大反推、反推、反推慢车、地面慢车、空中慢车、进近慢车、巡航、最大巡航、最大推力）
+编号：R_10901
+功能：当选定推力等级为无指定推力等级、最大反推、反推、反推慢车、地面慢车、空中慢车、进近慢车、巡航、最大巡航、最大推力，N1RDem = N1RDemInd。
+前置条件：1
+输入：N1RDemInd, thrust_level
+输出：N1RDem
+公式：if(thrust_level == level_default || thrust_level == level_MREV || thrust_level == level_REV || thrust_level == level_RI || thrust_level == level_GI || thrust_level == level_FI || thrust_level == level_AI || thrust_level == level_CR || thrust_level == level_MCR || thrust_level == level_MAX)
+{
+N1RDem = N1RDemInd;
+}
+==================================================
+
+==================================================
+任务名称：N1R控制量N1RDem计算（推力等级为最大爬升、减推力爬升1、减推力爬升2、连续、最大连续、起飞、最大起飞、减推力起飞1、减推力起飞2、复飞、增推力起飞、灵活起飞）
+编号：R_10902
+功能：当选定推力等级为最大爬升、减推力爬升1、减推力爬升2、连续、最大连续、起飞、最大起飞、减推力起飞1、减推力起飞2、复飞、增推力起飞、灵活起飞，N1RDem = N1RDemInd + DN1RMod。
+前置条件：1
+输入：N1RDemInd, thrust_level, DN1RMod
+输出：N1RDem
+公式：if(thrust_level == level_MCL || thrust_level == level_DCL1 || thrust_level == level_DCL2 || thrust_level == level_CT || thrust_level == level_MCT || thrust_level == level_TO || thrust_level == level_MTO || thrust_level == level_DTO1 || thrust_level == level_DTO2 || thrust_level == level_GA || thrust_level == level_Bump || thrust_level == level_FLEXTO)
+{
+N1RDem = N1RDemInd + DN1RMod;
+}
+==================================================
+
+==================================================
+任务名称：N1R控制量N1RDem计算（推力等级为爬升）
+编号：R_10903
+功能：当选定推力等级为爬升，应用软件应根据PLA在N1RDem_MCR和N1RDem_PLACL+DN1RMod之间进行一维线性插值得到N1RDem。
+前置条件：1
+输入：PLA, thrust_level, N1RDem_MCR, N1RDem_PLACL, DN1RMod, level_CL, PS_PLA_N1RDem_MCR_N1RDem_PLACL_Plus_DN1RMod, Temp
+输出：N1RDem
+公式：if(thrust_level == level_CL)
+{
+Temp = N1RDem_PLACL+DN1RMod;
+N1RDem =interpolation(PS_PLA_N1RDem_MCR_N1RDem_PLACL_Plus_DN1RMod, PLA, N1RDem_MCR,Temp);
+}
+==================================================
+
+==================================================
+任务名称：N1R控制量N1RDem计算（推力等级为准最大推力）
+编号：R_10904
+功能：当选定推力等级为准最大推力，应用软件应根据PLA在N1RDem_PLATO+DN1RMod和N1RDem_MAX之间进行一维线性插值得到N1RDem。
+前置条件：1
+输入：PLA, thrust_level, N1RDem_PLATO, N1RDem_MAX, DN1RMod, level_TO2MAX, PS_PLA_N1RDem_PLATO_Plus_DN1RMod_N1RDem_MAX, Temp
+输出：N1RDem
+公式：if(thrust_level == level_TO2MAX)
+{
+Temp = N1RDem_PLATO+DN1RMod;
+N1RDem =interpolation(PS_PLA_N1RDem_PLATO_Plus_DN1RMod_N1RDem_	MAX, PLA, Temp, N1RDem_MAX);
+}
+==================================================
+
+==================================================
+任务名称：高低压切换控制（无N2双通道传感器故障）
+编号：R_10254
+功能：当无N2双通道传感器故障，控制模式应按以下逻辑设置：
+前置条件：N2_dual_channel_sensor_fault_flag == 0
+输入：engine_state, PLA, thrust_level, N2R25Dem, N1RDem, software_control_mode, PD_IdleSwitchPlaThsld
+输出：N2r25Dmd, N1rDmd, software_control_mode
+公式：if(engine_state == ES_idle)
+{
+software_control_mode = High_Press_Control_Mode;
+N2r25Dmd = N2R25Dem;
+N1rDmd = N1RDem;
+}
+if(engine_state == ES_above_idle && ((PLA<2 + PD_IdleSwitchPlaThsld && PLA>2) && (last(PLA)<=2 && last(PLA)>=0)) || ((PLA>-6-PD_IdleSwitchPlaThsld && PLA<-6) && (last(PLA)<0 && last(PLA)>-6)))
+{
+			software_control_mode = Low_Press_Control_Mode;
+}
+if(engine_state == ES_above_idle && (PLA<0 && PLA >=-6 && last(PLA)>=-33 && last(PLA)<-6 || PLA<=2 && PLA >=0 && last(PLA)>2 && last(PLA)<=85))
+{
+			software_control_mode = High_Press_Control_Mode;
+}
+if(engine_state == ES_above_idle && (PLA >= 2 + PD_IdleSwitchPlaThsld || PLA <= 2 || last(PLA) > 2 || last(PLA) < 0) && (PLA <= -6 - PD_IdleSwitchPlaThsld || PLA >= -6 || last(PLA) >= 0 || last(PLA) <= -6) && (PLA < -6 || PLA > 2))
+{
+			software_control_mode = Low_Press_Control_Mode;
+N1rDmd = N1RDem;
+N2r25Dmd = N2R25Dem;
+}
+if(engine_state == ES_above_idle && ((PLA >= 2 + PD_IdleSwitchPlaThsld || PLA <= 2 || last(PLA) > 2 || last(PLA) < 0) && (PLA <= -6 - PD_IdleSwitchPlaThsld || PLA >= -6 || last(PLA) >= 0 || last(PLA) <= -6) && (PLA >= 0 || PLA < -6 || last(PLA) < -33 || last(PLA) >= -6) && (PLA > 2 || PLA < 0 || last(PLA) <= 2 || last(PLA) > 85) && PLA <= 2 && PLA >= -6))
+{
+			software_control_mode = High_Press_Control_Mode;
+N1rDmd = N1RDem;
+N2r25Dmd = N2R25Dem;
+}
+if(engine_state == ES_Hwindmill_start && thrust_level != level_RI && thrust_level != level_GI && thrust_level != level_FI && thrust_level != level_AI)
+{
+			software_control_mode = Low_Press_Control_Mode;
+N1rDmd = N1RDem;
+N2r25Dmd = N2R25Dem;
+}
+if(engine_state == ES_Hwindmill_start && thrust_level == level_RI && thrust_level == level_GI && thrust_level == level_FI && thrust_level == level_AI)
+{
+			software_control_mode = High_Press_Control_Mode;
+N1rDmd = N1RDem;
+N2r25Dmd = N2R25Dem;
+}
+if(engine_state != ES_Hwindmill_start && engine_state != ES_above_idle && engine_state != ES_idle)
+{
+			software_control_mode = High_Press_Control_Mode;
+N1rDmd = N1RDem;
+N2r25Dmd = N2R25Dem;
+}
+==================================================
+
+==================================================
+任务名称：高低压切换控制（N2双通道传感器故障）
+编号：R_10905
+功能：当N2双通道传感器故障，应用软件应该设置控制模式为低压控制模式，置N2R25最终控制目标N2r25Dmd = N2R25Dem,并按如下公式计算N1R最终控制目标N1rDmd：
+前置条件：N2_dual_channel_sensor_fault_flag == 1
+输入：N1r, N2R25Dem, N1RDem, N1RDesign, PD_DN1RCoN2Flt
+输出：N2r25Dmd, N1rDmd, software_control_mode
+公式：software_control_mode = Low_Press_Control_Mode;
+N2r25Dmd = N2R25Dem;
+N1rDmd = min(N1r + N1RDesign * PD_DN1RCoN2Flt, max(N1RDem, N1r-N1RDesign*PD_DN1RCoN2Flt));
+==================================================
+
+==================================================
+任务名称：慢车到慢车以上切换控制（进入转换逻辑一）
+编号：R_8107
+功能：当满足以下任一条件时，应用软件应进入转换逻辑一：
+前置条件：1
+输入：PLA, PD_IdleSwitchPlaThsld
+输出：software_control_mode
+公式：if( ((PLA<2 + PD_IdleSwitchPlaThsld && PLA>2) && (last(PLA)<=2 && last(PLA)>=0)) || ((PLA>-6-PD_IdleSwitchPlaThsld && PLA<-6) && (last(PLA)<0 && last(PLA)>-6)) ){
+software_control_mode = Low_Press_Control_Mode;
+}
+==================================================
+
+==================================================
+任务名称：慢车到慢车以上切换控制（处于转换逻辑一，控制模式设置）
+编号：R_10209
+功能：处于转换逻辑一过程中，应用软件应设置控制模式为低压控制模式。
+前置条件：1
+输入：PLA, PD_IdleSwitchPlaThsld
+输出：software_control_mode
+公式：if(((PLA<2 + PD_IdleSwitchPlaThsld && PLA>2) && (last(PLA)<=2 && last(PLA)>=0)) || ((PLA>-6-PD_IdleSwitchPlaThsld && PLA<-6) && (last(PLA)<0 && last(PLA)>-6))  ){
+software_control_mode = Low_Press_Control_Mode;
+}
+==================================================
+
+==================================================
+任务名称：慢车到慢车以上切换控制（处于转换逻辑一，N1R最终控制目标设置）
+编号：R_10210
+功能：处于转换逻辑一过程中，应用软件应置N1R最终控制目标N1rDmd = N1Rrd。
+前置条件：1
+输入：N1Rrd, PLA, PD_IdleSwitchPlaThsld
+输出：N1rDmd
+公式：if(((PLA<2 + PD_IdleSwitchPlaThsld && PLA>2) && (last(PLA)<=2 && last(PLA)>=0)) || ((PLA>-6-PD_IdleSwitchPlaThsld && PLA<-6) && (last(PLA)<0 && last(PLA)>-6))  ){
+N1rDmd = N1Rrd;
+}
+==================================================
+
+==================================================
+任务名称：慢车到慢车以上切换控制（处于转换逻辑一，N2R25最终控制目标设置）
+编号：R_10473
+功能：处于转换逻辑一过程中，应用软件应置N2R25最终控制目标N2r25Dmd = N2R25Dem。
+前置条件：1
+输入：N2R25Dem, PLA, PD_IdleSwitchPlaThsld
+输出：N2r25Dmd
+公式：if(((PLA<2 + PD_IdleSwitchPlaThsld && PLA>2) && (last(PLA)<=2 && last(PLA)>=0)) || ((PLA>-6-PD_IdleSwitchPlaThsld && PLA<-6) && (last(PLA)<0 && last(PLA)>-6))  ){
+N2r25Dmd = N2R25Dem;
+}
+==================================================
+
+==================================================
+任务名称：慢车到慢车以上切换控制（PLA大于等于零，计算转换过程N1R控制目标）
+编号：R_10211
+功能：若油门杆PLA大于等于零，应用软件应按以下逻辑计算转换过程N1R控制目标N1Rrd:
+前置条件：1
+输入：N1Rtr, N1RDem_MCR, PLA, N1RPre, PD_DeltN1RCo, PS_PLA_N1Rtr_N1RDem_MCR
+输出：N1Rrd
+公式：if(PLA >= 0){
+N1R_1 = interpolation( PS_PLA_N1Rtr_N1RDem_MCR, N1Rtr, N1RDem_MCR, PLA);
+		N1R_2 = N1RPre + N1RPre*PD_DeltN1RCo;
+N1Rrd = min(N1R_1,N1R_2);
+}
+==================================================
+
+==================================================
+任务名称：慢车到慢车以上切换控制（PLA小于零，计算转换过程N1R控制目标N1Rrd）
+编号：R_10217
+功能：若油门杆PLA小于零，应用软件应按以下逻辑计算转换过程N1R控制目标N1Rrd:
+前置条件：1
+输入：N1Rtr, N1RDem_MREV, PLA, N1RPre, PD_DeltN1RCo
+输出：N1Rrd
+公式：if(PLA < 0){
+N1R_1=interpolation(PS_PLA_N1Rtr_N1RDem_MREV, N1Rtr, N1RDem_MREV, PLA);
+		N1R_2=N1RPre + N1RPre*PD_DeltN1RCo;
+N1Rrd=min(N1R_1,N1R_2);
+}
+==================================================
+
+==================================================
+任务名称：慢车到慢车以上切换控制（应用软件应退出转换逻辑一）
+编号：R_8109
+功能：当满足以下任一条件时，应用软件应退出转换逻辑一：
+前置条件：1
+输入：N1Rtr, N1Rrd, PD_N1RpIdleOut, N1RDesign, PLA, PD_IdleOutTime, N2R25p, N1Rp, PD_IdleSwitchN2R25pMax, PD_IdleSwitchN1RpMax, PD_IdleSwitchPlaThsld, software_control_mode
+输出：software_control_mode
+公式：if((abs(N1Rrd - N1Rtr) < PD_N1RpIdleOut * N1RDesign) || (duration(PD_IdleOutTime , ms, PLA > 2)) || (duration(PD_IdleOutTime, ms, PLA < -6)) || (N2R25p > PD_IdleSwitchN2R25pMax) || (N1Rp > PD_IdleSwitchN1RpMax) || (PLA <= -6 - PD_IdleSwitchPlaThsld) || (PLA >= 2 + PD_IdleSwitchPlaThsld) || ((PLA <= 2) && (PLA >= -6)) || (duration(PD_IdleOutTime , ms, logic_transition_mode == Logic1_Control_Mode))) {
+software_control_mode = last(software_control_mode);
+}
+==================================================
+
+==================================================
+任务名称：慢车以上到慢车切换控制（油门杆从(2,85]推至[0,2]时）
+编号：R_6424
+功能：油门杆从(2,85]推至[0,2]时，若N2r25 转速进入N2R25Dem±N2R25Design*PD_DN2R25Switch（可调）范围内，应用软件应进入转换逻辑二
+前置条件：1
+输入：PLA, N2r25, N2R25Dem, N2R25Design, PD_DN2R25Switch
+输出：software_control_mode
+公式：if ((PLA <= 2 && PLA >= 0) && (last(PLA) > 2 && last(PLA) <= 85) && (N2r25 <= (N2R25Dem + N2R25Design * PD_DN2R25Switch)) && (N2r25 >= (N2R25Dem - N2R25Design * PD_DN2R25Switch))) {
+software_control_mode = High_Press_Control_Mode;
+}
+==================================================
+
+==================================================
+任务名称：慢车以上到慢车切换控制（油门杆从[-33,-6)推至[-6,0)时）
+编号：R_10222
+功能：油门杆从[-33,-6)推至[-6,0)时，若N2r25 转速进入N2R25Dem±N2R25Design*PD_DN2R25Switch（可调）范围内，应用软件应进入转换逻辑二
+前置条件：1
+输入：PLA, N2r25, N2R25Dem, N2R25Design, PD_DN2R25Switch
+输出：software_control_mode
+公式：if ((PLA < 0) && (PLA >= -6) && (last(PLA) >= -33) && (last(PLA) < -6) && (N2r25 <= (N2R25Dem + N2R25Design * PD_DN2R25Switch)) && (N2r25 >= (N2R25Dem - N2R25Design * PD_DN2R25Switch))) {
+software_control_mode = High_Press_Control_Mode;
+}
+==================================================
+
+==================================================
+任务名称：慢车以上到慢车切换控制（处于转换逻辑二，控制模式设置）
+编号：R_10220
+功能：处于转换逻辑二过程中，应用软件应设置控制模式为高压控制模式。
+前置条件：1
+输入：PLA
+输出：software_control_mode
+公式：if((PLA<0 && PLA >=-6 && last(PLA)>=-33 && last(PLA)<-6 || PLA<=2 && PLA >=0 && last(PLA)>2 && last(PLA)<=85)){
+software_control_mode = High_Press_Control_Mode;
+}
+==================================================
+
+==================================================
+任务名称：慢车以上到慢车切换控制（处于转换逻辑二，N1R最终控制目标设置）
+编号：R_10474
+功能：PLA处于转换逻辑二过程中，应用软件应置N1R最终控制目标N1rDmd = N1RDem。
+前置条件：1
+输入：N1RDem, PLA
+输出：N1rDmd
+公式：if((PLA<0 && PLA >=-6 && last(PLA)>=-33 && last(PLA)<-6 || PLA<=2 && PLA >=0 && last(PLA)>2 && last(PLA)<=85)){
+N1rDmd = N1RDem;
+}
+==================================================
+
+==================================================
+任务名称：慢车以上到慢车切换控制（处于转换逻辑二，N2R25最终控制目标设置）
+编号：R_10221
+功能：处于转换逻辑二过程中，应用软件应置N2R25最终控制目标N2r25Dmd = N2R25rd。
+前置条件：1
+输入：N2R25rd, PLA
+输出：N2r25Dmd
+公式：if((PLA<0 && PLA >=-6 && last(PLA)>=-33 && last(PLA)<-6 || PLA<=2 && PLA >=0 && last(PLA)>2 && last(PLA)<=85)){
+N2r25Dmd = N2R25rd;
+}
+==================================================
+
+==================================================
+任务名称：慢车以上到慢车切换控制（计算转换过程N2R25控制目标N2R25rd）
+编号：R_10224
+功能：应用软件应按以下逻辑计算转换过程N2R25控制目标N2R25rd:
+前置条件：1
+输入：N2R25Dem, N2r25, N2R25Design, PD_DeltN2R25Co
+输出：N2R25rd
+公式：N2R25_1 = N2R25Dem;
+if(N2r25<=N2R25_1){
+N2R25rd=N2r25+N2R25Design*PD_DeltN2R25Co;
+}else {
+N2R25rd=N2r25-N2R25Design*PD_DeltN2R25Co;
+}
+==================================================
+
+==================================================
+任务名称：慢车以上到慢车切换控制（应用软件应退出转换逻辑二）
+编号：R_6450
+功能：当满足以下任一条件时，应用软件应退出转换逻辑二：
+前置条件：1
+输入：N2R25rd, N2R25Dem, N2R25Design, PD_N2R25pIdleIn, PD_IdleInTime, N2r25p, PD_IdleSwitchN2R25pMin, N1rp, PD_IdleSwitchN1RpMin, N2r25, N2R25Dem, PLA, software_control_mode
+输出：software_control_mode
+公式：N2R25_1 = N2R25Dem;
+if ((abs(N2R25rd - N2R25_1) < N2R25Design * PD_N2R25pIdleIn1) || (duration(PD_IdleInTime , ms, logic_transition_mode == Logic2_Control_Mode)) || (N2r25p < PD_IdleSwitchN2R25pMin) || (N1rp < PD_IdleSwitchN1RpMin) || (abs(N2r25 - N2R25Dem) > N2R25Design * PD_N2R25pIdleIn3) || (PLA > 2 && last(PLA) <= 2) || (last(PLA) >= -6 && PLA < -6)) {
+software_control_mode = last(software_control_mode);
+}
+==================================================
