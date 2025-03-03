@@ -6,6 +6,7 @@ class DocumentParser:
         self.data_manager = TestDataManager()
     
     def parse_variable_doc(self, file_path):
+        """解析变量文档，识别常量和变量"""
         doc = docx.Document(file_path)
         
         print(f"找到 {len(doc.tables)} 个表格")
@@ -21,19 +22,26 @@ class DocumentParser:
                 
                 if len(cells) >= 9:  # 确保有足够的列
                     try:
-                        variable = Variable(
-                            name=cells[0],          # 变量名
-                            symbol=cells[1],        # 变量符号
-                            var_type=cells[2],      # 类型
-                            type_desc=cells[3],     # 类型解释
-                            initial_value=cells[4],  # 初始值
-                            comment=cells[5],       # 变量注释
-                            identifier=cells[6],    # 变量标识位
-                            min_value=float(cells[7]),  # 最小值
-                            max_value=float(cells[8])   # 最大值
-                        )
-                        self.data_manager.variables[variable.symbol] = variable
-                        print(f"成功添加变量: {variable.symbol}")
+                        min_val = float(cells[7])
+                        max_val = float(cells[8])
+                        
+                        # 如果最大值等于最小值，则为常量
+                        if min_val == max_val:
+                            self.data_manager.constants[cells[1]] = min_val
+                        else:
+                            variable = Variable(
+                                name=cells[0],          # 变量名
+                                symbol=cells[1],        # 变量符号
+                                var_type=cells[2],      # 类型
+                                type_desc=cells[3],     # 类型解释
+                                initial_value=cells[4],  # 初始值
+                                comment=cells[5],       # 变量注释
+                                identifier=cells[6],    # 变量标识位
+                                min_value=min_val,       # 最小值
+                                max_value=max_val        # 最大值
+                            )
+                            self.data_manager.variables[variable.symbol] = variable
+                            print(f"成功添加变量: {variable.symbol}")
                     except ValueError as e:
                         print(f"警告：处理行 {cells} 时出错：{e}")
     

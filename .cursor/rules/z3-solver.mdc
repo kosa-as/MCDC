@@ -1,0 +1,17 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- You can @ files here
+- You can use markdown but dont have to
+从 [Data.docx](mdc:input/Data.docx)中读出数据字典，并且保存在 [data_structures.py](mdc:data_structures.py) 中的类Variable
+从 [Module.docx](mdc:input/Module.docx)中读出模块，并且保存在 [data_structures.py](mdc:data_structures.py) 中的类Module
+依据从 [Module.docx](mdc:input/Module.docx) 读出来的Module中的内容，使用Z3求解器生成符合MCDC准则的测试用例
+首先构建一个常量字典，在 [Data.docx](mdc:input/Data.docx)中表格的每行数据，如果最大值等于最小值，那么这个数据就是常量数据
+然后遍历每一个Module，针对每一个Module分别构建一个AST，来解析C代码，提取if表达式。如果Module.fomula中没有if则跳过
+在提取之后，针对符号转换，需要注意的是，所有的变量类型都在 [Data.docx](mdc:input/Data.docx) 中有定义，必须与之保持一直。在提取表达式的时候，变量来自与输入或者常量数据。这里要自行区分
+然后生成约束要求严格符合规范。最后生成所有的测试用例都输入到 [test_cases.xlsx](mdc:test_cases.xlsx)中，这个excel中表头从左到右依次是需求编号，模块名称，前置条件，判断条件，测试用例和预期结果。并且判断条件是完整的布尔逻辑表达式

@@ -23,5 +23,6 @@ class Module:
 
 class TestDataManager:
     def __init__(self):
-        self.variables = {}   # 存储所有变量及其范围
-        self.modules = {}     # 存储所有模块
+        self.variables = {}   # 存储变量
+        self.constants = {}   # 存储常量
+        self.modules = {}     # 存储模块
