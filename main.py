@@ -29,6 +29,5 @@ def main():
     
     # 保存所有测试用例
     test_generator.save_workbook("test_cases.xlsx")
-
 if __name__ == "__main__":
     main() 

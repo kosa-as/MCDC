@@ -4,6 +4,7 @@ from openpyxl import Workbook
 import ast
 import sys
 from contextlib import contextmanager
+import traceback
 
 @contextmanager
 def log_to_file(log_file):
@@ -131,11 +132,14 @@ class TestCaseGenerator:
         
     def _generate_mcdc_conditions(self, condition, variables):
         """生成MCDC测试条件"""
-        # 创建一个基本的解析器来处理特殊函数和复杂表达式
+        # 预处理条件
         def preprocess_condition(cond):
             """预处理条件，处理特殊函数和复杂表达式"""
             # 替换&&和||为and和or
             cond = cond.replace('&&', ' and ').replace('||', ' or ')
+            
+            # 替换特殊字符，如破折号为减号
+            cond = cond.replace('–', '-')  # 替换破折号为减号
             
             # 处理abs函数
             def replace_abs(match):
@@ -143,23 +147,19 @@ class TestCaseGenerator:
                 return f"(({expr}) if ({expr}) >= 0 else -({expr}))"
             cond = re.sub(r'abs\(([^)]+)\)', replace_abs, cond)
             
-            # 处理duration函数 - 我们将其视为常量True，因为它是时序相关的
+            # 处理duration函数 - 将其视为常量True
             def replace_duration(match):
                 return "True"
             cond = re.sub(r'duration\([^)]*\)', replace_duration, cond)
             
-            # 移除函数中不必要的参数（如ms）
+            # 移除函数中不必要的参数
             cond = re.sub(r',\s*ms\s*,', ',', cond)
             
             return cond
         
         # 预处理条件
-        try:
-            processed_condition = preprocess_condition(condition)
-            print(f"预处理后的条件: {processed_condition}")
-        except Exception as e:
-            print(f"预处理条件时出错: {str(e)}")
-            return []
+        processed_condition = preprocess_condition(condition)
+        print(f"预处理后的条件: {processed_condition}")
         
         # 创建Z3变量
         z3_vars = {}
@@ -173,6 +173,8 @@ class TestCaseGenerator:
                 original_var = self.data_manager.variables[var['original_var']]
                 if original_var.var_type == 'int':
                     z3_vars[var_name] = Int(var_name)
+                elif original_var.var_type == 'bool':
+                    z3_vars[var_name] = Bool(var_name)
                 else:
                     z3_vars[var_name] = Real(var_name)
         
@@ -185,94 +187,264 @@ class TestCaseGenerator:
             if not var.get('var_type') == 'constant':
                 var_expr = z3_vars[var_name]
                 original_var = self.data_manager.variables[var['original_var']]
-                if original_var.var_type == 'int':
+                
+                if original_var.var_type == 'bool':
+                    # 对布尔变量不添加数值范围约束
+                    pass
+                elif original_var.var_type == 'int':
                     s.add(var_expr >= int(original_var.min_value))
                     s.add(var_expr <= int(original_var.max_value))
                 else:
                     s.add(var_expr >= float(original_var.min_value))
                     s.add(var_expr <= float(original_var.max_value))
         
-        # 直接使用Z3解析条件
-        def parse_z3_condition(condition):
-            # 将条件转换为可解析的表达式
-            try:
-                # 替换所有变量名为z3变量
-                for var_name, var_expr in z3_vars.items():
-                    # 确保我们匹配完整的变量名（不匹配子字符串）
-                    pattern = r'\b' + var_name + r'\b'
-                    condition = re.sub(pattern, f'z3_vars["{var_name}"]', condition)
+        # 提取原子条件和操作符信息
+        def extract_expression_structure(expr_str):
+            """提取表达式结构，包括原子条件和连接符"""
+            # 替换所有表达式为占位符，以便后续解析
+            placeholders = {}
+            atomic_conditions = []
+            
+            # 递归解析表达式
+            def parse_recursive(expr, level=0):
+                # 去除表达式两端的括号
+                expr = expr.strip()
+                if expr.startswith('(') and expr.endswith(')') and is_balanced_parentheses(expr[1:-1]):
+                    return parse_recursive(expr[1:-1], level)
                 
-                # 替换逻辑操作符
-                condition = condition.replace(' and ', ' & ').replace(' or ', ' | ').replace(' not ', ' ~ ')
+                # 查找顶层的连接符
+                top_and_pos = find_top_level_operator(expr, ' and ')
+                top_or_pos = find_top_level_operator(expr, ' or ')
                 
-                # 替换比较操作符
-                condition = condition.replace('!=', '!=').replace('==', '==').replace('>=', '>=').replace('<=', '<=')
-                
-                # 添加Z3函数
-                scope = {
-                    'z3_vars': z3_vars,
-                    'And': And,
-                    'Or': Or,
-                    'Not': Not,
-                    'If': If,
-                    'True': BoolVal(True),
-                    'False': BoolVal(False)
-                }
-                
-                # 调试输出
-                print(f"解析的Z3条件: {condition}")
-                
-                # 安全地评估表达式
-                result = eval(condition, scope)
-                print(f"成功解析为Z3表达式: {result}")
-                return result
-            except Exception as e:
-                print(f"Z3条件解析错误: {str(e)}")
-                # 提供更详细的错误信息，显示当前作用域中的变量
-                print(f"变量作用域: {list(z3_vars.keys())}")
-                raise
+                if top_or_pos:  # 优先处理OR，因为它的优先级较低
+                    # 以OR分割表达式
+                    parts = []
+                    last_pos = 0
+                    for pos in top_or_pos:
+                        parts.append(expr[last_pos:pos])
+                        last_pos = pos + 4  # ' or '的长度
+                    parts.append(expr[last_pos:])
+                    
+                    # 递归处理每个部分
+                    sub_exprs = [parse_recursive(part, level+1) for part in parts]
+                    
+                    # 组合成OR表达式
+                    placeholder = f"OR_EXPR_{level}"
+                    placeholders[placeholder] = ('or', sub_exprs)
+                    return placeholder
+                    
+                elif top_and_pos:  # 然后处理AND
+                    # 以AND分割表达式
+                    parts = []
+                    last_pos = 0
+                    for pos in top_and_pos:
+                        parts.append(expr[last_pos:pos])
+                        last_pos = pos + 5  # ' and '的长度
+                    parts.append(expr[last_pos:])
+                    
+                    # 递归处理每个部分
+                    sub_exprs = [parse_recursive(part, level+1) for part in parts]
+                    
+                    # 组合成AND表达式
+                    placeholder = f"AND_EXPR_{level}"
+                    placeholders[placeholder] = ('and', sub_exprs)
+                    return placeholder
+                    
+                else:  # 原子条件
+                    # 解析比较表达式
+                    if '==' in expr:
+                        left, right = [s.strip() for s in expr.split('==', 1)]
+                        atomic_conditions.append((left, '==', right))
+                    elif '!=' in expr:
+                        left, right = [s.strip() for s in expr.split('!=', 1)]
+                        atomic_conditions.append((left, '!=', right))
+                    elif '>=' in expr:
+                        left, right = [s.strip() for s in expr.split('>=', 1)]
+                        atomic_conditions.append((left, '>=', right))
+                    elif '<=' in expr:
+                        left, right = [s.strip() for s in expr.split('<=', 1)]
+                        atomic_conditions.append((left, '<=', right))
+                    elif '>' in expr:
+                        left, right = [s.strip() for s in expr.split('>', 1)]
+                        atomic_conditions.append((left, '>', right))
+                    elif '<' in expr:
+                        left, right = [s.strip() for s in expr.split('<', 1)]
+                        atomic_conditions.append((left, '<', right))
+                    
+                    # 返回原子条件的索引
+                    placeholder = f"ATOM_{len(atomic_conditions)-1}"
+                    return placeholder
+            
+            # 查找顶层操作符位置
+            def find_top_level_operator(expr, op):
+                positions = []
+                level = 0
+                for i in range(len(expr) - len(op) + 1):
+                    if expr[i] == '(':
+                        level += 1
+                    elif expr[i] == ')':
+                        level -= 1
+                    elif level == 0 and expr[i:i+len(op)] == op:
+                        positions.append(i)
+                return positions
+            
+            # 检查括号平衡
+            def is_balanced_parentheses(s):
+                count = 0
+                for char in s:
+                    if char == '(':
+                        count += 1
+                    elif char == ')':
+                        count -= 1
+                        if count < 0:
+                            return False
+                return count == 0
+            
+            # 解析表达式结构
+            root = parse_recursive(expr_str)
+            
+            return atomic_conditions, placeholders, root
         
+        # 提取表达式结构
+        atomic_conditions, expr_structure, root_expr = extract_expression_structure(processed_condition)
+        print(f"提取的原子条件: {atomic_conditions}")
+        print(f"表达式结构: {expr_structure}")
+        print(f"根表达式: {root_expr}")
+        
+        # 构建Z3表达式
+        def build_z3_expression(expr_id, structure, atomic_conds):
+            if expr_id.startswith('ATOM_'):
+                idx = int(expr_id.split('_')[1])
+                left, op, right = atomic_conds[idx]
+                
+                # 处理复合表达式如H-H_TO
+                def resolve_variable(var_name):
+                    if var_name in z3_vars:
+                        return z3_vars[var_name]
+                    
+                    # 尝试解析复合表达式如H-H_TO
+                    for op_char in ['+', '-', '*', '/']:
+                        if op_char in var_name:
+                            parts = var_name.split(op_char)
+                            if all(part.strip() in z3_vars for part in parts):
+                                if op_char == '+':
+                                    return z3_vars[parts[0].strip()] + z3_vars[parts[1].strip()]
+                                elif op_char == '-':
+                                    return z3_vars[parts[0].strip()] - z3_vars[parts[1].strip()]
+                                elif op_char == '*':
+                                    return z3_vars[parts[0].strip()] * z3_vars[parts[1].strip()]
+                                elif op_char == '/':
+                                    return z3_vars[parts[0].strip()] / z3_vars[parts[1].strip()]
+                
+                    print(f"警告: 无法解析变量 {var_name}")
+                    return None
+                
+                left_expr = resolve_variable(left)
+                right_expr = resolve_variable(right)
+                
+                if left_expr is None or right_expr is None:
+                    print(f"警告: 无法解析表达式 {left} {op} {right}")
+                    return BoolVal(True)
+                
+                if op == '==':
+                    return left_expr == right_expr
+                elif op == '!=':
+                    return left_expr != right_expr
+                elif op == '>=':
+                    return left_expr >= right_expr
+                elif op == '<=':
+                    return left_expr <= right_expr
+                elif op == '>':
+                    return left_expr > right_expr
+                elif op == '<':
+                    return left_expr < right_expr
+            else:
+                op_type, sub_exprs = structure[expr_id]
+                sub_results = [build_z3_expression(sub_expr, structure, atomic_conds) for sub_expr in sub_exprs]
+                
+                if op_type == 'and':
+                    return And(*sub_results)
+                elif op_type == 'or':
+                    return Or(*sub_results)
+        
+        # 构建完整的Z3表达式
         try:
-            # 尝试解析条件
-            base_expr = parse_z3_condition(processed_condition)
+            base_expr = build_z3_expression(root_expr, expr_structure, atomic_conditions)
+            print(f"构建的Z3表达式: {base_expr}")
         except Exception as e:
-            print(f"无法解析条件: {processed_condition}")
-            print(f"错误: {str(e)}")
+            print(f"构建Z3表达式出错: {str(e)}")
+            traceback.print_exc()
             return []
         
-        # 生成测试条件
+        # 辅助函数
+        def safe_convert_z3_value(val):
+            """安全地将Z3值转换为Python值"""
+            if is_int(val):
+                return val.as_long()
+            elif is_real(val):
+                try:
+                    decimal_str = val.as_decimal(10)
+                    if '?' in decimal_str:
+                        decimal_str = decimal_str.split('?')[0]
+                    return float(decimal_str)
+                except ValueError:
+                    try:
+                        num = val.numerator().as_long()
+                        den = val.denominator().as_long()
+                        if den == 0:
+                            return 0.0
+                        return float(num) / float(den)
+                    except:
+                        return 0.0
+            elif is_bool(val):
+                return val.__bool__()
+            else:
+                return float(str(val))
+        
+        # 为每个原子条件生成MCDC测试用例
         test_conditions = []
-        for var in variables:
-            var_name = var['name']
-            # 跳过常量，因为它们不能作为MCDC条件的变量
-            if var.get('var_type') == 'constant':
+        for idx, (left, op, right) in enumerate(atomic_conditions):
+            # 确定变量
+            def get_var_name(expr):
+                # 处理复合表达式
+                for op_char in ['+', '-', '*', '/']:
+                    if op_char in expr:
+                        parts = expr.split(op_char)
+                        for part in parts:
+                            part = part.strip()
+                            if part in z3_vars and not any(v['name'] == part and v.get('var_type') == 'constant' for v in variables):
+                                return part
+                
+                # 普通变量
+                if expr in z3_vars and not any(v['name'] == expr and v.get('var_type') == 'constant' for v in variables):
+                    return expr
+                return None
+            
+            left_var = get_var_name(left)
+            right_var = get_var_name(right)
+            
+            # 必须至少有一个变量才能进行MCDC测试
+            if left_var is None and right_var is None:
+                print(f"跳过只包含常量的条件: {left} {op} {right}")
                 continue
             
-            # 获取变量的Z3表达式
-            var_expr = z3_vars[var_name]
+            # 创建当前原子条件的Z3表达式
+            atom_expr = build_z3_expression(f"ATOM_{idx}", expr_structure, atomic_conditions)
             
-            # 使用Z3求解器测试每个变量是否会影响条件
-            # 首先尝试找到一个使条件为True的变量值
+            # 测试当前原子条件对整体表达式的影响
+            # 步骤1: 找到一个情况使得原子条件为真且整体表达式为真
             s.push()
-            s.add(base_expr)
+            s.add(atom_expr)  # 原子条件为真
+            s.add(base_expr)  # 整体表达式为真
+            
             if s.check() == sat:
                 model_true = s.model()
                 s.pop()
                 
-                # 然后尝试找到相同条件下，改变当前变量使条件为False的值
+                # 步骤2: 找到一个情况使得原子条件为假且整体表达式为假
                 s.push()
-                var_value_true = model_true.eval(var_expr)
-                # 添加约束：所有其他变量保持相同值
-                for other_var in variables:
-                    other_name = other_var['name']
-                    if other_name != var_name and not other_var.get('var_type') == 'constant':
-                        other_expr = z3_vars[other_name]
-                        if other_name in [str(d) for d in model_true.decls()]:
-                            s.add(other_expr == model_true.eval(other_expr))
-                
-                # 添加当前变量取不同值的约束
-                s.add(var_expr != var_value_true)
-                s.add(Not(base_expr))
+                s.add(Not(atom_expr))  # 原子条件为假
+                s.add(Not(base_expr))  # 整体表达式为假
                 
                 if s.check() == sat:
                     model_false = s.model()
@@ -281,57 +453,47 @@ class TestCaseGenerator:
                     test_case_true = {}
                     test_case_false = {}
                     
-                    # 填充测试用例
-                    for test_var in variables:
-                        test_name = test_var['name']
-                        if test_var.get('var_type') == 'constant':
+                    # 填充所有变量的值
+                    for var in variables:
+                        name = var['name']
+                        if var.get('var_type') == 'constant':
                             # 常量使用固定值
-                            value = float(test_var['constant_value'])
-                            test_case_true[test_name] = value
-                            test_case_false[test_name] = value
+                            val = float(var['constant_value'])
+                            test_case_true[name] = val
+                            test_case_false[name] = val
                         else:
                             # 变量使用模型中的值
-                            test_expr = z3_vars[test_name]
-                            if test_name == var_name:
-                                # 当前变量使用不同的值
-                                true_val = model_true.eval(test_expr)
-                                false_val = model_false.eval(test_expr)
-                                
-                                # 确保我们得到具体值而不是表达式
-                                if is_int(true_val):
-                                    test_case_true[test_name] = true_val.as_long()
-                                else:
-                                    test_case_true[test_name] = float(true_val.as_decimal(10))
-                                    
-                                if is_int(false_val):
-                                    test_case_false[test_name] = false_val.as_long()
-                                else:
-                                    test_case_false[test_name] = float(false_val.as_decimal(10))
+                            var_expr = z3_vars[name]
+                            
+                            # True case
+                            if name in [str(d) for d in model_true.decls()]:
+                                val = model_true.eval(var_expr)
+                                test_case_true[name] = safe_convert_z3_value(val)
                             else:
-                                # 其他变量使用相同的值（来自model_true）
-                                if test_name in [str(d) for d in model_true.decls()]:
-                                    val = model_true.eval(test_expr)
-                                    if is_int(val):
-                                        value = val.as_long()
-                                    else:
-                                        value = float(val.as_decimal(10))
-                                    test_case_true[test_name] = value
-                                    test_case_false[test_name] = value
-                                else:
-                                    # 如果模型中没有值，使用变量范围的中点
-                                    mid = (float(test_var['min_value']) + float(test_var['max_value'])) / 2
-                                    if self.data_manager.variables[test_var['original_var']].var_type == 'int':
-                                        mid = int(mid)
-                                    test_case_true[test_name] = mid
-                                    test_case_false[test_name] = mid
+                                # 默认使用中点值
+                                mid = (float(var['min_value']) + float(var['max_value'])) / 2
+                                if var.get('var_type') == 'int':
+                                    mid = int(mid)
+                                test_case_true[name] = mid
+                            
+                            # False case
+                            if name in [str(d) for d in model_false.decls()]:
+                                val = model_false.eval(var_expr)
+                                test_case_false[name] = safe_convert_z3_value(val)
+                            else:
+                                # 默认使用与true_case相同的值
+                                test_case_false[name] = test_case_true[name]
                     
-                    # 添加测试条件（一对使条件结果不同的测试用例）
+                    # 添加测试用例对
                     test_conditions.append((test_case_true, test_case_false))
+                    print(f"为原子条件 '{left} {op} {right}' 生成MCDC测试用例")
                 
                 s.pop()
             else:
                 s.pop()
+                print(f"无法找到使原子条件 '{left} {op} {right}' 影响整体结果的情况")
         
+        print(f"生成的MCDC条件数量: {len(test_conditions)}")
         return test_conditions
         
     def generate_mcdc_cases(self, module):
