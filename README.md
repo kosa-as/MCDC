@@ -14,7 +14,7 @@
 
 1. 克隆本仓库：
 ```bash
-git clone [仓库URL]
+git clone https://github.com/kosa-as/MCDC.git
 cd MCDC
 ```
 
