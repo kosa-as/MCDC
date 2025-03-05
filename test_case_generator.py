@@ -599,7 +599,7 @@ class TestCaseGenerator:
                             "编号": module.number,
                             "模块名称": module.name,
                             "前置条件": module.precondition,
-                            "判断条件": condition,  # 使用原始条件
+                            "判断条件": self._format_condition(condition,test_case),  # 使用原始条件
                             "测试用例": self._format_test_case(test_case),
                             "预期结果": "True" if eval(processed_condition, {"__builtins__": {}}, eval_env) else "False"
                         })
@@ -608,7 +608,7 @@ class TestCaseGenerator:
                             "编号": module.number,
                             "模块名称": module.name,
                             "前置条件": module.precondition,
-                            "判断条件": condition,  # 使用原始条件
+                            "判断条件": self._format_condition(condition,test_case),  # 使用原始条件
                             "测试用例": self._format_test_case(opposite_case),
                             "预期结果": "True" if eval(processed_condition, {"__builtins__": {}}, opposite_eval_env) else "False"
                         })
