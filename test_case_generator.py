@@ -68,7 +68,7 @@ class TestCaseGenerator:
         condition = re.sub(r'!=', ' != ', condition)
         condition = re.sub(r'&&', ' and ', condition)
         condition = re.sub(r'\|\|', ' or ', condition)
-        condition = re.sub(r'(?<![=<>!])=(?![=])', ' == ', condition)  # 单独的 = 转换为 ==
+        # condition = re.sub(r'(?<![=<>!])=(?![=])', ' == ', condition)  # 单独的 = 转换为 ==
         condition = re.sub(r'(?<![<>])>(?![=])', ' > ', condition)  # 单独的 >
         condition = re.sub(r'(?<![<>])<(?![=])', ' < ', condition)  # 单独的 <
         condition = re.sub(r'!(?![=])', ' not ', condition)  # 单独的 !
@@ -608,7 +608,7 @@ class TestCaseGenerator:
                             "编号": module.number,
                             "模块名称": module.name,
                             "前置条件": module.precondition,
-                            "判断条件": self._format_condition(condition,test_case),  # 使用原始条件
+                            "判断条件": self._format_condition(condition,opposite_case),  # 使用原始条件
                             "测试用例": self._format_test_case(opposite_case),
                             "预期结果": "True" if eval(processed_condition, {"__builtins__": {}}, opposite_eval_env) else "False"
                         })
@@ -617,8 +617,56 @@ class TestCaseGenerator:
     
     def _format_condition(self, original_condition, test_case):
         """格式化判断条件，显示具体的取反情况"""
-        # 直接返回原始条件，不做任何替换
-        return original_condition.strip()
+        """
+        根据测试用例约束格式化条件，显示具体的取反情况
+        对于为False的子条件，添加取反操作
+        """
+        # 创建评估环境，包括测试用例值和常量
+        eval_env = {**test_case}
+        
+        # 使用正则表达式分割条件
+        import re
+        # 先替换and/or为&&/||以便处理
+        processed_condition = original_condition.replace(" and ", " && ").replace(" or ", " || ")
+        
+        # 分割条件，保留分隔符
+        pattern = r'(&&|\|\|)'
+        parts = re.split(pattern, processed_condition)
+        
+        formatted_parts = []
+        for i in range(0, len(parts), 2):
+            sub_condition = parts[i].strip()
+            
+            # 评估子条件
+            try:
+                # 将子条件转换为Python语法进行评估
+                eval_condition = sub_condition.replace("&&", " and ").replace("||", " or ")        
+                # 处理常量，将其替换为对应得常数值
+                for const_name, const_value in self.data_manager.constants.items():
+                    pattern = r'\b' + re.escape(const_name) + r'\b'
+                    eval_condition = re.sub(pattern, str(const_value), eval_condition)
+                result = eval(eval_condition, {"__builtins__": {}}, eval_env)
+                
+                # 如果结果为False，添加取反操作
+                if not result:
+                    formatted_parts.append(f"!({sub_condition})")
+                else:
+                    formatted_parts.append(sub_condition)
+            except Exception as e:
+                # 如果评估失败，保持原样
+                print(f"评估子条件时出错: {e}")
+                formatted_parts.append(sub_condition)
+            
+            # 添加分隔符（如果有）
+            if i + 1 < len(parts):
+                formatted_parts.append(parts[i + 1])
+        
+        # 重新组合条件
+        formatted_condition = " ".join(formatted_parts)
+        # 转换回原始的and/or格式
+        formatted_condition = formatted_condition.replace(" and ", " && ").replace(" or ", " || ")
+        
+        return formatted_condition.strip()
     
     def _format_test_case(self, test_case):
         """格式化测试用例为字符串"""
