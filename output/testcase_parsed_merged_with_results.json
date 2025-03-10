@@ -1,0 +1,1556 @@
+[
+    {
+        "requirement_id": "R_8479",
+        "module_name": "确定选定推力等级_无指定推力等级",
+        "precondition": "True",
+        "condition": "engine_state!=ES_idle&&engine_state!=ES_above_idle&&engine_state!=ES_Hwindmill_start",
+        "true_test_case": [
+            "engine_state = 0;",
+            "engine_state = 1;",
+            "engine_state = 2;"
+        ],
+        "false_test_case": [
+            "engine_state = 14;",
+            "engine_state = 15;",
+            "engine_state = 12;"
+        ],
+        "true_result": "thrust_level=level_default;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9948",
+        "module_name": "N2R25Dem选择_地面慢车",
+        "precondition": "True",
+        "condition": "thrust_level==level_GI",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 7;"
+        ],
+        "true_result": "N2R25Dem=N2R25Dem_GI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9949",
+        "module_name": "N2R25Dem选择_空中慢车",
+        "precondition": "True",
+        "condition": "thrust_level==level_FI",
+        "true_test_case": [
+            "thrust_level = 5;"
+        ],
+        "false_test_case": [
+            "thrust_level = 3;"
+        ],
+        "true_result": "N2R25Dem=N2R25Dem_FI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9950",
+        "module_name": "N2R25Dem选择_进近慢车",
+        "precondition": "True",
+        "condition": "thrust_level==level_AI",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 5;"
+        ],
+        "true_result": "N2R25Dem=N2R25Dem_AI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9951",
+        "module_name": "N2R25Dem选择_反推慢车",
+        "precondition": "True",
+        "condition": "thrust_level==level_RI",
+        "true_test_case": [
+            "thrust_level = 3;"
+        ],
+        "false_test_case": [
+            "thrust_level = 7;"
+        ],
+        "true_result": "N2R25Dem=N2R25Dem_RI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9952",
+        "module_name": "N2R25Dem选择_补充1",
+        "precondition": "True",
+        "condition": "thrust_level!=level_GI&&thrust_level!=level_FI&&thrust_level!=level_AI&&thrust_level!=level_RI&&thrust_level!=level_default",
+        "true_test_case": [
+            "thrust_level = 1;"
+        ],
+        "false_test_case": [],
+        "true_result": "N2R25Dem=N2R25Dem_BAK;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "D_6354",
+        "module_name": "N2R25Dem选择_补充2",
+        "precondition": "True",
+        "condition": "thrust_level==level_default&&engine_state==ES_ground_start",
+        "true_test_case": [
+            "thrust_level = 0; engine_state = 9;"
+        ],
+        "false_test_case": [
+            "thrust_level = 15; engine_state = 9;",
+            "thrust_level = 0; engine_state = 5;"
+        ],
+        "true_result": "N2R25Dem=N2R25Dem_GI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "D_6355",
+        "module_name": "N2R25Dem选择_补充3",
+        "precondition": "True",
+        "condition": "thrust_level==level_default&&(engine_state==ES_windmill_start||engine_state==ES_Qwindmill_start||engine_state==ES_assist_start)",
+        "true_test_case": [
+            "thrust_level = 0; engine_state = 13;",
+            "thrust_level = 0; engine_state = 11;",
+            "thrust_level = 0; engine_state = 10;"
+        ],
+        "false_test_case": [
+            "thrust_level = 21; engine_state = 13;",
+            "thrust_level = 0; engine_state = 8;"
+        ],
+        "true_result": "N2R25Dem=N2R25Dem_FI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "D_6357",
+        "module_name": "N2R25Dem选择_补充4",
+        "precondition": "True",
+        "condition": "thrust_level==level_default&&(engine_state==ES_origin||engine_state==ES_ground_standby||engine_state==ES_flight_standby||engine_state==ES_cold_operation||engine_state==ES_DR_OS_Us||engine_state==ES_normal_stop||engine_state==ES_emergency_stop||engine_state==ES_ground_start_termination||engine_state==ES_flight_start_terminnation)",
+        "true_test_case": [
+            "thrust_level = 0; engine_state = 4;",
+            "thrust_level = 0; engine_state = 0;",
+            "thrust_level = 0; engine_state = 1;",
+            "thrust_level = 0; engine_state = 2;",
+            "thrust_level = 0; engine_state = 3;",
+            "thrust_level = 0; engine_state = 5;",
+            "thrust_level = 0; engine_state = 6;",
+            "thrust_level = 0; engine_state = 7;",
+            "thrust_level = 0; engine_state = 8;"
+        ],
+        "false_test_case": [
+            "thrust_level = 23; engine_state = 6;",
+            "thrust_level = 0; engine_state = 12;",
+            "thrust_level = 0; engine_state = 9;",
+            "thrust_level = 0; engine_state = 14;",
+            "thrust_level = 0; engine_state = 13;",
+            "thrust_level = 0; engine_state = 16;"
+        ],
+        "true_result": "N2R25Dem=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6536",
+        "module_name": "设置起飞锁定指令_有效",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&CAS>PD_ToLockCASHigh&&PLA>71&&PLA<=76",
+        "true_test_case": [
+            "airdis_WOW = true; PD_ToLockCASHigh = 0.1; CAS = 18000.1; PLA = 73.3;",
+            "airdis_WOW = true; PD_ToLockCASHigh = 0.1; CAS = 6000.1; PLA = 73.3;",
+            "airdis_WOW = true; PD_ToLockCASHigh = 0; CAS = 18000.1; PLA = 73.3;"
+        ],
+        "false_test_case": [
+            "airdis_WOW = false; PD_ToLockCASHigh = 0.1; CAS = 18000.1; PLA = 73.3;",
+            "airdis_WOW = true; PD_ToLockCASHigh = 0; CAS = -11999.9; PLA = 73.3;",
+            "airdis_WOW = true; PD_ToLockCASHigh = 0; CAS = 18000.1; PLA = 14.3;"
+        ],
+        "true_result": "to_lock_sig=1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6544",
+        "module_name": "设置起飞锁定指令_无效",
+        "precondition": "True",
+        "condition": "H-H_TO>PD_ToLockHLow||airdis_WOW==1&&CAS<PD_ToLockCASLow||engine_state==ES_flight_interrupt",
+        "true_test_case": [
+            "PD_ToLockHLow = 0; H_TO = 24000.1; PD_ToLockCASLow = 100.1; engine_state = 0; H = 29200.1; CAS = 12000.1;",
+            "PD_ToLockHLow = 18000.1; H_TO = -5999.9; airdis_WOW = true; PD_ToLockCASLow = 700.1; engine_state = 0; H = 3200.1; CAS = -23999.9;",
+            "PD_ToLockHLow = 18000.1; H_TO = 6000.1; airdis_WOW = true; PD_ToLockCASLow = 900.1; engine_state = 0; H = -2000; CAS = -30000;",
+            "PD_ToLockHLow = 18000.1; H_TO = 0.0999999999985448; airdis_WOW = false; PD_ToLockCASLow = 500.1; engine_state = 16; H = -1999.9; CAS = -5999.9;"
+        ],
+        "false_test_case": [
+            "PD_ToLockHLow = 10000.1; H_TO = 18000.1; airdis_WOW = false; PD_ToLockCASLow = 200.1; engine_state = 4; H = 18800.1; CAS = 0.0999999999985448;",
+            "PD_ToLockHLow = 8000.1; H_TO = -5999.9; airdis_WOW = false; PD_ToLockCASLow = 100.1; engine_state = 6; H = -1999.9; CAS = -17999.9;",
+            "PD_ToLockHLow = 8000.1; H_TO = 12000.1; airdis_WOW = true; PD_ToLockCASLow = 200.1; engine_state = 14; H = -1999.9; CAS = 12000.1;",
+            "PD_ToLockHLow = 14000.1; H_TO = 12000.1; airdis_WOW = false; PD_ToLockCASLow = 0.1; engine_state = 13; H = 13600.1; CAS = -30000;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10633",
+        "module_name": "设置起飞锁定指令_无效优先",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&CAS>PD_ToLockCASHigh&&PLA>71&&PLA<=76&&(H-H_TO==PD_ToLockHLow||(airdis_WOW==1&&CAS<PD_ToLockCASLow)&&engine_state==ES_flight_interrupt)",
+        "true_test_case": [
+            "PD_ToLockHLow = 16000.1; PD_ToLockCASHigh = 0; H_TO = -30000; airdis_WOW = true; PD_ToLockCASLow = 800.1; engine_state = 16; H = 13600.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "PD_ToLockHLow = 8000.1; PD_ToLockCASHigh = 0; H_TO = -23999.9; airdis_WOW = true; PD_ToLockCASLow = 900.1; engine_state = 16; H = 44800.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "PD_ToLockHLow = 0; PD_ToLockCASHigh = 400.1; H_TO = 24000.1; airdis_WOW = true; PD_ToLockCASLow = 0; engine_state = 12; H = 24000.1; CAS = 6000.1; PLA = 73.3;",
+            "PD_ToLockHLow = 8000.1; PD_ToLockCASHigh = 0; H_TO = -23999.9; airdis_WOW = true; PD_ToLockCASLow = 900.1; engine_state = 16; H = 29200.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "PD_ToLockHLow = 0; PD_ToLockCASHigh = 600.1; H_TO = 24000.1; airdis_WOW = true; PD_ToLockCASLow = 0.1; engine_state = 2; H = 24000.1; CAS = 6000.1; PLA = 73.3;",
+            "PD_ToLockHLow = 10000.1; PD_ToLockCASHigh = 0; H_TO = 18000.1; airdis_WOW = true; PD_ToLockCASLow = 700.1; engine_state = 16; H = 44800.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "PD_ToLockHLow = 0; PD_ToLockCASHigh = 0; H_TO = -23999.9; airdis_WOW = true; PD_ToLockCASLow = 600.1; engine_state = 16; H = 18800.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "PD_ToLockHLow = 4000.1; PD_ToLockCASHigh = 0; H_TO = -5999.9; airdis_WOW = true; PD_ToLockCASLow = 700.1; engine_state = 16; H = 39600.1; CAS = 0.0999999999985448; PLA = 73.3;"
+        ],
+        "false_test_case": [
+            "PD_ToLockHLow = 0; PD_ToLockCASHigh = 800.1; H_TO = 24000.1; airdis_WOW = false; PD_ToLockCASLow = 800.1; engine_state = 13; H = 24000.1; CAS = 24000.1; PLA = 73.3;",
+            "PD_ToLockHLow = 18000.1; PD_ToLockCASHigh = 300.1; H_TO = -30000; airdis_WOW = true; PD_ToLockCASLow = 100.1; engine_state = 16; H = 13600.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "PD_ToLockHLow = 0; PD_ToLockCASHigh = 0; H_TO = 24000.1; airdis_WOW = true; PD_ToLockCASLow = 0; engine_state = 16; H = 24000.1; CAS = 12000.1; PLA = 49.7;",
+            "PD_ToLockHLow = 0; PD_ToLockCASHigh = 600.1; H_TO = 24000.1; airdis_WOW = true; PD_ToLockCASLow = 300.1; engine_state = 0; H = 34400.1; CAS = 6000.1; PLA = 73.3;",
+            "PD_ToLockHLow = 16000.1; PD_ToLockCASHigh = 700.1; H_TO = -23999.9; airdis_WOW = true; PD_ToLockCASLow = 900.1; engine_state = 16; H = 8400.1; CAS = 18000.1; PLA = 73.3;",
+            "PD_ToLockHLow = 0; PD_ToLockCASHigh = 0; H_TO = 24000.1; airdis_WOW = true; PD_ToLockCASLow = 400.1; engine_state = 4; H = 34400.1; CAS = 0.0999999999985448; PLA = 73.3;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6547",
+        "module_name": "设置起飞阶段指令_有效",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&WOW_ground_time>PD_ToPhaseTime1&&CAS<PD_ToPhaseCASHigh&&PLA>71&&PLA<=76",
+        "true_test_case": [
+            "WOW_ground_time = 0.0999999999985448; airdis_WOW = true; PD_ToPhaseTime1 = -11999.9; PD_ToPhaseCASHigh = 0.0999999999985448; CAS = -17999.9; PLA = 73.3;",
+            "WOW_ground_time = 0.0999999999985448; airdis_WOW = true; PD_ToPhaseTime1 = -5999.9; PD_ToPhaseCASHigh = 0.0999999999985448; CAS = -5999.9; PLA = 73.3;",
+            "WOW_ground_time = 6000.1; airdis_WOW = true; PD_ToPhaseCASHigh = -29999.9; PD_ToPhaseTime1 = -17999.9; CAS = -30000; PLA = 73.3;",
+            "WOW_ground_time = 6000.1; airdis_WOW = true; PD_ToPhaseCASHigh = 18000.1; PD_ToPhaseTime1 = -11999.9; CAS = 12000.1; PLA = 73.3;",
+            "WOW_ground_time = 18000.1; airdis_WOW = true; PD_ToPhaseCASHigh = 6000.1; PD_ToPhaseTime1 = -23999.9; CAS = 0.0999999999985448; PLA = 73.3;"
+        ],
+        "false_test_case": [
+            "WOW_ground_time = 18000.1; airdis_WOW = false; PD_ToPhaseTime1 = -17999.9; PD_ToPhaseCASHigh = 24000.1; CAS = 18000.1; PLA = 73.3;",
+            "WOW_ground_time = -11999.9; airdis_WOW = true; PD_ToPhaseTime1 = -5999.9; PD_ToPhaseCASHigh = -17999.9; CAS = -29999.9; PLA = 73.3;",
+            "WOW_ground_time = -23999.9; airdis_WOW = true; PD_ToPhaseCASHigh = 0.0999999999985448; PD_ToPhaseTime1 = -30000; CAS = 6000.1; PLA = 73.3;",
+            "WOW_ground_time = 0.0999999999985448; airdis_WOW = true; PD_ToPhaseCASHigh = 6000.1; PD_ToPhaseTime1 = -30000; CAS = -23999.9; PLA = 2.5;"
+        ],
+        "true_result": "to_phase_sig=1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6551",
+        "module_name": "设置起飞阶段指令_无效",
+        "precondition": "True",
+        "condition": "WOW_to_ground_time>PD_ToPhaseTime2||H-H_TO>PD_ToPhaseHLow||CAS>PD_ToPhaseCASLow||engine_state==ES_flight_interrupt",
+        "true_test_case": [
+            "WOW_to_ground_time = 6000.1; PD_ToPhaseCASLow = 24000.1; PD_ToPhaseTime2 = -29999.9; H_TO = 6000.1; engine_state = 0; H = 13600.1; CAS = 18000.1; PD_ToPhaseHLow = 12000.1;",
+            "WOW_to_ground_time = -11999.9; PD_ToPhaseCASLow = 18000.1; PD_ToPhaseTime2 = 12000.1; H_TO = 12000.1; engine_state = 0; H = 29200.1; CAS = 0.0999999999985448; PD_ToPhaseHLow = 6000.1;",
+            "WOW_to_ground_time = -23999.9; PD_ToPhaseTime2 = 24000.1; PD_ToPhaseCASLow = 0.0999999999985448; H_TO = 24000.1; engine_state = 0; H = 13600.1; PD_ToPhaseHLow = 24000.1; CAS = 24000.1;",
+            "WOW_to_ground_time = -23999.9; PD_ToPhaseTime2 = 24000.1; PD_ToPhaseCASLow = 18000.1; H_TO = 24000.1; engine_state = 16; H = 44800.1; PD_ToPhaseHLow = 24000.1; CAS = -29999.9;"
+        ],
+        "false_test_case": [
+            "WOW_to_ground_time = -17999.9; PD_ToPhaseCASLow = -17999.9; PD_ToPhaseTime2 = 18000.1; H_TO = 6000.1; engine_state = 0; H = 3200.1; CAS = -30000; PD_ToPhaseHLow = 6000.1;",
+            "WOW_to_ground_time = -11999.9; PD_ToPhaseCASLow = 18000.1; PD_ToPhaseTime2 = 0.0999999999985448; H_TO = 24000.1; engine_state = 0; H = 29200.1; CAS = 18000.1; PD_ToPhaseHLow = 6000.1;",
+            "WOW_to_ground_time = 0.0999999999985448; PD_ToPhaseTime2 = 18000.1; PD_ToPhaseCASLow = -17999.9; H_TO = 0.0999999999985448; engine_state = 0; H = 13600.1; PD_ToPhaseHLow = 24000.1; CAS = -30000;",
+            "WOW_to_ground_time = -23999.9; PD_ToPhaseTime2 = 0.0999999999985448; PD_ToPhaseCASLow = 12000.1; H_TO = -17999.9; engine_state = 14; H = 3200.1; PD_ToPhaseHLow = 24000.1; CAS = -11999.9;"
+        ],
+        "true_result": "to_phase_sig=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10634",
+        "module_name": "设置起飞阶段指令_无效优先",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&WOW_ground_time>PD_ToPhaseTime1&&CAS<PD_ToPhaseCASHigh&&PLA>71&&PLA<=76&&(WOW_to_ground_time>PD_ToPhaseTime2||H-H_TO>PD_ToPhaseHLow||CAS>PD_ToPhaseCASLow||engine_state==ES_flight_interrupt)",
+        "true_test_case": [
+            "WOW_ground_time = 6000.1; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = 12000.1; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = -29999.9; PD_ToPhaseTime2 = -29999.9; H_TO = -30000; airdis_WOW = true; PD_ToPhaseTime1 = -23999.9; engine_state = 4; H = 13600.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "WOW_ground_time = 18000.1; PD_ToPhaseHLow = -29999.9; PD_ToPhaseCASHigh = 24000.1; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = -29999.9; PD_ToPhaseTime2 = -30000; H_TO = -30000; airdis_WOW = true; PD_ToPhaseTime1 = -5999.9; engine_state = 9; H = 29200.1; CAS = 18000.1; PLA = 73.3;",
+            "WOW_ground_time = 18000.1; PD_ToPhaseHLow = -29999.9; PD_ToPhaseCASHigh = 6000.1; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = 12000.1; PD_ToPhaseTime2 = -29999.9; H_TO = -30000; airdis_WOW = true; PD_ToPhaseTime1 = 0.0999999999985448; engine_state = 9; H = 29200.1; CAS = 0.0999999999985448; PLA = 73.3;",
+            "WOW_ground_time = 18000.1; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = 18000.1; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = 0.0999999999985448; PD_ToPhaseTime2 = -30000; H_TO = 12000.1; airdis_WOW = true; PD_ToPhaseTime1 = 12000.1; engine_state = 14; H = 29200.1; CAS = -23999.9; PLA = 73.3;",
+            "WOW_ground_time = 24000.1; PD_ToPhaseHLow = -30000; PD_ToPhaseCASHigh = -17999.9; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = 6000.1; PD_ToPhaseTime2 = -29999.9; H_TO = 18000.1; airdis_WOW = true; PD_ToPhaseTime1 = 18000.1; engine_state = 7; H = -1999.9; CAS = -23999.9; PLA = 73.3;",
+            "WOW_ground_time = -5999.9; PD_ToPhaseHLow = 18000.1; PD_ToPhaseCASHigh = -23999.9; WOW_to_ground_time = 12000.1; PD_ToPhaseCASLow = 12000.1; PD_ToPhaseTime2 = -23999.9; H_TO = -5999.9; airdis_WOW = true; PD_ToPhaseTime1 = -11999.9; engine_state = 1; H = -1999.9; CAS = -29999.9; PLA = 73.3;",
+            "WOW_ground_time = -5999.9; PD_ToPhaseHLow = -17999.9; PD_ToPhaseCASHigh = -29999.9; WOW_to_ground_time = -30000; PD_ToPhaseCASLow = 12000.1; PD_ToPhaseTime2 = -29999.9; H_TO = 6000.1; airdis_WOW = true; PD_ToPhaseTime1 = -17999.9; engine_state = 9; H = -2000; CAS = -30000; PLA = 73.3;",
+            "WOW_ground_time = -5999.9; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = -11999.9; WOW_to_ground_time = -23999.9; PD_ToPhaseTime2 = 6000.1; PD_ToPhaseCASLow = -30000; H_TO = 0.0999999999985448; airdis_WOW = true; PD_ToPhaseTime1 = -11999.9; engine_state = 7; H = 8400.1; CAS = -23999.9; PLA = 73.3;",
+            "WOW_ground_time = -11999.9; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = 12000.1; WOW_to_ground_time = 24000.1; PD_ToPhaseTime2 = 24000.1; PD_ToPhaseCASLow = 18000.1; H_TO = 18000.1; airdis_WOW = true; PD_ToPhaseTime1 = -30000; engine_state = 16; H = 34400.1; CAS = 6000.1; PLA = 73.3;"
+        ],
+        "false_test_case": [
+            "WOW_ground_time = 24000.1; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = 6000.1; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = -17999.9; PD_ToPhaseTime2 = -29999.9; H_TO = 0.0999999999985448; airdis_WOW = false; PD_ToPhaseTime1 = 12000.1; engine_state = 0; H = -1999.9; CAS = 0.0999999999985448; PLA = 73.3;",
+            "WOW_ground_time = 18000.1; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = 12000.1; WOW_to_ground_time = -29999.9; PD_ToPhaseCASLow = -17999.9; PD_ToPhaseTime2 = -30000; H_TO = -11999.9; airdis_WOW = true; PD_ToPhaseTime1 = 18000.1; engine_state = 13; H = 13600.1; CAS = -30000; PLA = 73.3;",
+            "WOW_ground_time = 12000.1; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = -30000; WOW_to_ground_time = -5999.9; PD_ToPhaseCASLow = -23999.9; PD_ToPhaseTime2 = -29999.9; H_TO = -29999.9; airdis_WOW = true; PD_ToPhaseTime1 = -17999.9; engine_state = 7; H = 29200.1; CAS = -30000; PLA = 73.3;",
+            "WOW_ground_time = 0.0999999999985448; PD_ToPhaseHLow = 18000.1; PD_ToPhaseCASHigh = 12000.1; WOW_to_ground_time = 24000.1; PD_ToPhaseCASLow = -5999.9; PD_ToPhaseTime2 = 6000.1; H_TO = 6000.1; airdis_WOW = true; PD_ToPhaseTime1 = -17999.9; engine_state = 9; H = 29200.1; CAS = -11999.9; PLA = -33;",
+            "WOW_ground_time = -5999.9; PD_ToPhaseHLow = 18000.1; PD_ToPhaseCASHigh = 0.0999999999985448; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = 12000.1; PD_ToPhaseTime2 = 18000.1; H_TO = 18000.1; airdis_WOW = true; PD_ToPhaseTime1 = -11999.9; engine_state = 12; H = 18800.1; CAS = -29999.9; PLA = 73.3;",
+            "WOW_ground_time = -11999.9; PD_ToPhaseHLow = 24000.1; PD_ToPhaseCASHigh = -29999.9; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = -30000; PD_ToPhaseTime2 = -23999.9; H_TO = 18000.1; airdis_WOW = true; PD_ToPhaseTime1 = -30000; engine_state = 2; H = -1999.9; CAS = -30000; PLA = 73.3;",
+            "WOW_ground_time = -5999.9; PD_ToPhaseHLow = 18000.1; PD_ToPhaseCASHigh = -11999.9; WOW_to_ground_time = 18000.1; PD_ToPhaseTime2 = 24000.1; PD_ToPhaseCASLow = -29999.9; H_TO = -5999.9; airdis_WOW = true; PD_ToPhaseTime1 = -23999.9; engine_state = 5; H = -2000; CAS = -29999.9; PLA = 73.3;",
+            "WOW_ground_time = 24000.1; PD_ToPhaseHLow = -11999.9; PD_ToPhaseCASHigh = -23999.9; WOW_to_ground_time = -23999.9; PD_ToPhaseCASLow = 24000.1; PD_ToPhaseTime2 = -11999.9; H_TO = 12000.1; airdis_WOW = true; PD_ToPhaseTime1 = 0.0999999999985448; engine_state = 12; H = -2000; CAS = -29999.9; PLA = 73.3;"
+        ],
+        "true_result": "to_phase_sig=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6555",
+        "module_name": "起飞锁定指令有效后锁定参数",
+        "precondition": "True",
+        "condition": "to_lock_sig==1",
+        "true_test_case": [
+            "to_lock_sig = true;"
+        ],
+        "false_test_case": [
+            "to_lock_sig = false;"
+        ],
+        "true_result": "lock_to_params_flag=1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6563",
+        "module_name": "起飞阶段指令与起飞锁定指令同时无效采用实时参数",
+        "precondition": "True",
+        "condition": "to_lock_sig==0&&to_phase_sig==0",
+        "true_test_case": [
+            "to_lock_sig = false; to_phase_sig = false;"
+        ],
+        "false_test_case": [
+            "to_lock_sig = true; to_phase_sig = false;",
+            "to_lock_sig = false; to_phase_sig = true;"
+        ],
+        "true_result": "lock_to_params_flag=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_8267",
+        "module_name": "起飞锁定指令失效后禁止再次启动起飞锁定指令",
+        "precondition": "True",
+        "condition": "to_lock_sig==0",
+        "true_test_case": [
+            "to_lock_sig = false;"
+        ],
+        "false_test_case": [
+            "to_lock_sig = true;"
+        ],
+        "true_result": "to_lock_sig_enable=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_8267",
+        "module_name": "起飞锁定指令失效后禁止再次启动起飞锁定指令",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&CAS<PD_ToLockCASLow",
+        "true_test_case": [
+            "airdis_WOW = true; PD_ToLockCASLow = 900.1; CAS = -30000;"
+        ],
+        "false_test_case": [
+            "airdis_WOW = false; PD_ToLockCASLow = 400.1; CAS = -11999.9;",
+            "airdis_WOW = true; PD_ToLockCASLow = 200.1; CAS = 6000.1;"
+        ],
+        "true_result": "to_lock_sig_enable=1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9267",
+        "module_name": "起飞阶段指令失效后禁止再次启动起飞阶段指令",
+        "precondition": "True",
+        "condition": "to_phase_sig==0",
+        "true_test_case": [
+            "to_phase_sig = false;"
+        ],
+        "false_test_case": [
+            "to_phase_sig = true;"
+        ],
+        "true_result": "to_phase_sig_enable=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9267",
+        "module_name": "起飞阶段指令失效后禁止再次启动起飞阶段指令",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&CAS<PD_ToLockCASLow",
+        "true_test_case": [
+            "airdis_WOW = true; PD_ToLockCASLow = 900.1; CAS = -29999.9;",
+            "airdis_WOW = true; PD_ToLockCASLow = 900.1; CAS = -17999.9;"
+        ],
+        "false_test_case": [
+            "airdis_WOW = false; PD_ToLockCASLow = 0; CAS = -30000;",
+            "airdis_WOW = true; PD_ToLockCASLow = 100.1; CAS = 24000.1;"
+        ],
+        "true_result": "to_phase_sig_enable=1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10806",
+        "module_name": "设置ECS参数(无引气)",
+        "precondition": "True",
+        "condition": "ECSBleedCfg==no_bleed",
+        "true_test_case": [
+            "no_bleed = 0; ECSBleedCfg = 0;"
+        ],
+        "false_test_case": [
+            "no_bleed = 0; ECSBleedCfg = 3;"
+        ],
+        "true_result": "DN1RECSmto=0;DN1RECSmct=0;DN1RECSmcl=0;DN1RECSmcr=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10807",
+        "module_name": "设置ECS参数(正常引气)",
+        "precondition": "True",
+        "condition": "ECSBleedCfg==norm_bleed",
+        "true_test_case": [
+            "norm_bleed = 1; ECSBleedCfg = 1;"
+        ],
+        "false_test_case": [
+            "norm_bleed = 1; ECSBleedCfg = 0;"
+        ],
+        "true_result": "DN1RECSmto=DN1RECSmto1;DN1RECSmct=DN1RECSmct1;DN1RECSmcl=DN1RECSmcl1;DN1RECSmcr=DN1RECSmcr1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10808",
+        "module_name": "设置ECS参数(异常低引气)",
+        "precondition": "True",
+        "condition": "ECSBleedCfg==abn_low_bleed",
+        "true_test_case": [
+            "abn_low_bleed = 2; ECSBleedCfg = 2;"
+        ],
+        "false_test_case": [
+            "abn_low_bleed = 2; ECSBleedCfg = 1;"
+        ],
+        "true_result": "DN1RECSmto=DN1RECSmto2;DN1RECSmct=DN1RECSmct2;DN1RECSmcl=DN1RECSmcl2;DN1RECSmcr=DN1RECSmcr2;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10809",
+        "module_name": "设置ECS参数(异常高引气)",
+        "precondition": "True",
+        "condition": "ECSBleedCfg==abn_high_bleed",
+        "true_test_case": [
+            "ECSBleedCfg = 3; abn_high_bleed = 3;"
+        ],
+        "false_test_case": [
+            "ECSBleedCfg = 0; abn_high_bleed = 3;"
+        ],
+        "true_result": "DN1RECSmto=DN1RECSmto3;DN1RECSmct=DN1RECSmct3;DN1RECSmcl=DN1RECSmcl3;DN1RECSmcr=DN1RECSmcr3;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10821",
+        "module_name": "设置WAI参数(无引气)",
+        "precondition": "True",
+        "condition": "WAIBleedCfg==no_bleed",
+        "true_test_case": [
+            "no_bleed = 0; WAIBleedCfg = 0;"
+        ],
+        "false_test_case": [
+            "no_bleed = 0; WAIBleedCfg = 1;"
+        ],
+        "true_result": "DN1RWAImto=0;DN1RWAImct=0;DN1RWAImcl=0;DN1RWAImcr=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10822",
+        "module_name": "设置WAI参数(正常引气)",
+        "precondition": "True",
+        "condition": "WAIBleedCfg==norm_bleed",
+        "true_test_case": [
+            "WAIBleedCfg = 1; norm_bleed = 1;"
+        ],
+        "false_test_case": [
+            "WAIBleedCfg = 3; norm_bleed = 1;"
+        ],
+        "true_result": "DN1RWAImto=N1RDemWAI1_MTO-N1RDemBase_MTO;DN1RWAImct=N1RDemWAI1_MCT-N1RDemBase_MCT;DN1RWAImcl=DN1RWAImcl1;DN1RWAImcr=DN1RWAImcr1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10823",
+        "module_name": "设置WAI参数(异常高引气)",
+        "precondition": "True",
+        "condition": "WAIBleedCfg==abn_high_bleed",
+        "true_test_case": [
+            "WAIBleedCfg = 3; abn_high_bleed = 3;"
+        ],
+        "false_test_case": [
+            "WAIBleedCfg = 1; abn_high_bleed = 3;"
+        ],
+        "true_result": "DN1RWAImto=N1RDemWAI2_MTO-N1RDemBase_MTO;DN1RWAImct=N1RDemWAI2_MCT-N1RDemBase_MCT;DN1RWAImcl=DN1RWAImcl2;DN1RWAImcr=DN1RWAImcr2;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10828",
+        "module_name": "设置NAI参数(关闭)",
+        "precondition": "True",
+        "condition": "nai_control==0",
+        "true_test_case": [
+            "nai_control = false;"
+        ],
+        "false_test_case": [
+            "nai_control = true;"
+        ],
+        "true_result": "DN1RNAImto=0;DN1RNAImct=0;DN1RNAImcl=0;DN1RNAImcr=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10829",
+        "module_name": "设置NAI参数(打开)",
+        "precondition": "True",
+        "condition": "nai_control==1",
+        "true_test_case": [
+            "nai_control = true;"
+        ],
+        "false_test_case": [
+            "nai_control = false;"
+        ],
+        "true_result": "DN1RNAImto=N1RDemNAI1_MTO-N1RDemBase_MTO;DN1RNAImct=N1RDemNAI1_MCT-N1RDemBase_MCT;DN1RNAImcl=DN1RNAImcl1;DN1RNAImcr=DN1RNAImcr1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6526",
+        "module_name": "推力配平判断",
+        "precondition": "True",
+        "condition": "(N1_trim_enable==1)&&(N1Trim_signal==1)&&(airdis_WOW==0)&&((thrust_level==level_MCR)||(thrust_level==level_MCT)||(thrust_level==level_MCL)||(thrust_level==level_CR)||(thrust_level==level_CT)||(thrust_level==level_CL)||(thrust_level==level_DCL1)||(thrust_level==level_DCL2))&&((dspeed_state==0)||(((dspeed_state==1)||(dspeed_state==2))&&(dPLA<PD_atrimpla)))",
+        "true_test_case": [
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = -33; dPLA = 14.3; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 11; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = -9.3; dPLA = 37.9; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 2; PD_atrimpla = -21.1; dPLA = -32.9; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 61.5; dPLA = 2.5; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 13; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 61.5; dPLA = 49.7; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 9; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 73.3; dPLA = 37.9; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 11; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = -9.3; dPLA = -33; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = -32.9; dPLA = -33; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 1; PD_atrimpla = 61.5; dPLA = 26.1; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 2; PD_atrimpla = 37.9; dPLA = 14.3; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 2; PD_atrimpla = 73.3; dPLA = 61.5; N1Trim_signal = true;"
+        ],
+        "false_test_case": [
+            "N1_trim_enable = false; thrust_level = 9; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 73.3; dPLA = 14.3; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 7; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 37.9; dPLA = 26.1; N1Trim_signal = false;",
+            "N1_trim_enable = true; thrust_level = 9; airdis_WOW = true; dspeed_state = 0; PD_atrimpla = -21.1; dPLA = 73.3; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 0; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = -9.3; dPLA = -32.9; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 1; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 37.9; dPLA = 26.1; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 0; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 37.9; dPLA = -21.1; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 0; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 73.3; dPLA = -32.9; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 5; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 73.3; dPLA = 49.7; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 1; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 49.7; dPLA = -9.3; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 1; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 73.3; dPLA = -32.9; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 1; airdis_WOW = false; dspeed_state = 0; PD_atrimpla = 73.3; dPLA = -9.3; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 11; airdis_WOW = false; dspeed_state = 1; PD_atrimpla = -32.9; dPLA = 73.3; N1Trim_signal = true;",
+            "N1_trim_enable = true; thrust_level = 13; airdis_WOW = false; dspeed_state = 2; PD_atrimpla = -33; dPLA = 49.7; N1Trim_signal = true;"
+        ],
+        "true_result": "atrim=1;",
+        "false_result": "atrim=0;"
+    },
+    {
+        "requirement_id": "R_8443",
+        "module_name": "油门杆插值目标计算-N1RDem_PLATO计算",
+        "precondition": "!( TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&( TL_require!=FLEXTO||( TL_require==FLEXTO&&flex_dT_flag==0 ) ) )&&!( TL_require==DTO1 )&&!( TL_require==DTO2 )&&!( TL_require==GA )&&!( TL_require==FLEXTO&&flex_dT_flag==1 )",
+        "condition": "TL_require==Bump",
+        "true_test_case": [
+            "TL_require = 3;"
+        ],
+        "false_test_case": [],
+        "true_result": "N1RDem_PLATO=N1RDem_Bump;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_8443",
+        "module_name": "油门杆插值目标计算-N1RDem_PLATO计算",
+        "precondition": "!( TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&( TL_require!=FLEXTO||( TL_require==FLEXTO&&flex_dT_flag==0 ) ) )&&!( TL_require==DTO1 )&&!( TL_require==DTO2 )&&!( TL_require==GA )",
+        "condition": "TL_require==FLEXTO&&flex_dT_flag==1",
+        "true_test_case": [
+            "flex_dT_flag = true; TL_require = 4;"
+        ],
+        "false_test_case": [
+            "flex_dT_flag = true; TL_require = 3;"
+        ],
+        "true_result": "N1RDem_PLATO=N1RDem_FLEXTO;",
+        "false_result": "if(TL_require==Bump){N1RDem_PLATO=N1RDem_Bump;}"
+    },
+    {
+        "requirement_id": "R_8443",
+        "module_name": "油门杆插值目标计算-N1RDem_PLATO计算",
+        "precondition": "!( TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&( TL_require!=FLEXTO||( TL_require==FLEXTO&&flex_dT_flag==0 ) ) )&&!( TL_require==DTO1 )&&!( TL_require==DTO2 )",
+        "condition": "TL_require==GA",
+        "true_test_case": [
+            "TL_require = 2;"
+        ],
+        "false_test_case": [
+            "flex_dT_flag = false; TL_require = 3;"
+        ],
+        "true_result": "N1RDem_PLATO=N1RDem_GA;",
+        "false_result": "if(TL_require==FLEXTO&&flex_dT_flag==1){N1RDem_PLATO=N1RDem_FLEXTO;}else{if(TL_require==Bump){N1RDem_PLATO=N1RDem_Bump;}}"
+    },
+    {
+        "requirement_id": "R_8443",
+        "module_name": "油门杆插值目标计算-N1RDem_PLATO计算",
+        "precondition": "!( TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&( TL_require!=FLEXTO||( TL_require==FLEXTO&&flex_dT_flag==0 ) ) )&&!( TL_require==DTO1 )",
+        "condition": "TL_require==DTO2",
+        "true_test_case": [
+            "TL_require = 1;"
+        ],
+        "false_test_case": [
+            "flex_dT_flag = false; TL_require = 2;"
+        ],
+        "true_result": "N1RDem_PLATO=N1RDem_DTO2;",
+        "false_result": "if(TL_require==GA){N1RDem_PLATO=N1RDem_GA;}else{if(TL_require==FLEXTO&&flex_dT_flag==1){N1RDem_PLATO=N1RDem_FLEXTO;}else{if(TL_require==Bump){N1RDem_PLATO=N1RDem_Bump;}}}"
+    },
+    {
+        "requirement_id": "R_8443",
+        "module_name": "油门杆插值目标计算-N1RDem_PLATO计算",
+        "precondition": "!( TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&( TL_require!=FLEXTO||( TL_require==FLEXTO&&flex_dT_flag==0 ) ) )",
+        "condition": "TL_require==DTO1",
+        "true_test_case": [
+            "TL_require = 0;"
+        ],
+        "false_test_case": [
+            "flex_dT_flag = false; TL_require = 3;"
+        ],
+        "true_result": "N1RDem_PLATO=N1RDem_DTO1;",
+        "false_result": "if(TL_require==DTO2){N1RDem_PLATO=N1RDem_DTO2;}else{if(TL_require==GA){N1RDem_PLATO=N1RDem_GA;}else{if(TL_require==FLEXTO&&flex_dT_flag==1){N1RDem_PLATO=N1RDem_FLEXTO;}else{if(TL_require==Bump){N1RDem_PLATO=N1RDem_Bump;}}}}"
+    },
+    {
+        "requirement_id": "R_8443",
+        "module_name": "油门杆插值目标计算-N1RDem_PLATO计算",
+        "precondition": "True",
+        "condition": "TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&(TL_require!=FLEXTO||(TL_require==FLEXTO&&flex_dT_flag==0))",
+        "true_test_case": [
+            "flex_dT_flag = false; TL_require = 6;",
+            "flex_dT_flag = false; TL_require = 5;",
+            "flex_dT_flag = false; TL_require = 4;"
+        ],
+        "false_test_case": [
+            "TL_require = 0;",
+            "TL_require = 1;",
+            "TL_require = 2;",
+            "TL_require = 3;",
+            "flex_dT_flag = true; TL_require = 4;"
+        ],
+        "true_result": "N1RDem_PLATO=N1RDem_MTO;",
+        "false_result": "if(TL_require==DTO1){N1RDem_PLATO=N1RDem_DTO1;}else{if(TL_require==DTO2){N1RDem_PLATO=N1RDem_DTO2;}else{if(TL_require==GA){N1RDem_PLATO=N1RDem_GA;}else{if(TL_require==FLEXTO&&flex_dT_flag==1){N1RDem_PLATO=N1RDem_FLEXTO;}else{if(TL_require==Bump){N1RDem_PLATO=N1RDem_Bump;}}}}}"
+    },
+    {
+        "requirement_id": "R_8447",
+        "module_name": "油门杆插值目标计算-N1RDem_PLACL计算",
+        "precondition": "True",
+        "condition": "TL_require!=DCL1&&TL_require!=DCL2",
+        "true_test_case": [
+            "TL_require = 1;",
+            "TL_require = 3;"
+        ],
+        "false_test_case": [
+            "TL_require = 5;",
+            "TL_require = 6;"
+        ],
+        "true_result": "N1RDem_PLACL=N1RDem_MCL;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_8447",
+        "module_name": "油门杆插值目标计算-N1RDem_PLACL计算",
+        "precondition": "True",
+        "condition": "TL_require==DCL1&&TL_require!=DCL2",
+        "true_test_case": [
+            "TL_require = 5;"
+        ],
+        "false_test_case": [
+            "TL_require = 4;"
+        ],
+        "true_result": "N1RDem_PLACL=N1RDem_DCL1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_8447",
+        "module_name": "油门杆插值目标计算-N1RDem_PLACL计算",
+        "precondition": "True",
+        "condition": "TL_require!=DCL1&&TL_require==DCL2",
+        "true_test_case": [
+            "TL_require = 6;"
+        ],
+        "false_test_case": [],
+        "true_result": "N1RDem_PLACL=N1RDem_DCL2;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9501",
+        "module_name": "油门杆插值目标计算-转换点转速N1Rtr计算-慢车域实时N2R25控制目标计算",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&PLA<0",
+        "true_test_case": [
+            "airdis_WOW = true; PLA = -21.1;",
+            "airdis_WOW = true; PLA = -33;"
+        ],
+        "false_test_case": [
+            "airdis_WOW = false; PLA = -9.3;",
+            "airdis_WOW = true; PLA = 26.1;"
+        ],
+        "true_result": "N2R25Dem_PLAIdle=N2R25Dem_RI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9501",
+        "module_name": "油门杆插值目标计算-转换点转速N1Rtr计算-慢车域实时N2R25控制目标计算",
+        "precondition": "True",
+        "condition": "airdis_WOW==1&&PLA>=0",
+        "true_test_case": [
+            "airdis_WOW = true; PLA = 73.3;",
+            "airdis_WOW = true; PLA = 49.7;"
+        ],
+        "false_test_case": [
+            "airdis_WOW = false; PLA = 26.1;",
+            "airdis_WOW = true; PLA = -33;"
+        ],
+        "true_result": "N2R25Dem_PLAIdle=N2R25Dem_GI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9501",
+        "module_name": "油门杆插值目标计算-转换点转速N1Rtr计算-慢车域实时N2R25控制目标计算",
+        "precondition": "True",
+        "condition": "airdis_WOW==0&&approach_air==1",
+        "true_test_case": [
+            "airdis_WOW = false; approach_air = true;"
+        ],
+        "false_test_case": [
+            "airdis_WOW = true; approach_air = true;",
+            "airdis_WOW = false; approach_air = false;"
+        ],
+        "true_result": "N2R25Dem_PLAIdle=N2R25Dem_FI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9501",
+        "module_name": "油门杆插值目标计算-转换点转速N1Rtr计算-慢车域实时N2R25控制目标计算",
+        "precondition": "True",
+        "condition": "airdis_WOW==0&&approach_air==0",
+        "true_test_case": [
+            "airdis_WOW = false; approach_air = false;"
+        ],
+        "false_test_case": [
+            "airdis_WOW = true; approach_air = false;",
+            "airdis_WOW = false; approach_air = true;"
+        ],
+        "true_result": "N2R25Dem_PLAIdle=N2R25Dem_AI;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10898",
+        "module_name": "油门杆插值目标计算-转换点转速N1Rtr计算-N1r-PLAIdle",
+        "precondition": "True",
+        "condition": "N1r>N1RDem_PLAIdle",
+        "true_test_case": [
+            "N1r = 1200.1; N1RDem_PLAIdle = -11999.9;"
+        ],
+        "false_test_case": [
+            "N1r = 0.1; N1RDem_PLAIdle = 6000.1;"
+        ],
+        "true_result": "N1Rtr=N1r;",
+        "false_result": "N1Rtr=N1RDem_PLAIdle;"
+    },
+    {
+        "requirement_id": "R_6388",
+        "module_name": "油门杆插值目标计算-转换点转速N1Rtr计算-MCR",
+        "precondition": "True",
+        "condition": "N2R25Dem_PLAIdle==N2R25Dem_GI||N2R25Dem_PLAIdle==N2R25Dem_FI||N2R25Dem_PLAIdle==N2R25Dem_AI&&(N1Rtr>N1RDem_MCR)",
+        "true_test_case": [
+            "N2R25Dem_FI = 4000.1; N1RDem_MCR = -23999.9; N2R25Dem_GI = 0.1; N2R25Dem_PLAIdle = 0.1; N1Rtr = -23999.9; N2R25Dem_AI = 2000.1;",
+            "N2R25Dem_FI = 16000.1; N1RDem_MCR = -29999.9; N2R25Dem_PLAIdle = 16000.1; N2R25Dem_GI = 18000.1; N1Rtr = -30000; N2R25Dem_AI = 14000.1;",
+            "N2R25Dem_FI = 0.1; N1RDem_MCR = -30000; N2R25Dem_PLAIdle = 0; N1Rtr = -29999.9; N2R25Dem_GI = 18000.1; N2R25Dem_AI = 0;",
+            "N2R25Dem_FI = 4000.1; N1RDem_MCR = 12000.1; N2R25Dem_PLAIdle = 0; N1Rtr = 24000.1; N2R25Dem_GI = 0.1; N2R25Dem_AI = 0;"
+        ],
+        "false_test_case": [
+            "N2R25Dem_FI = 2000.1; N1RDem_MCR = -5999.9; N2R25Dem_GI = 16000.1; N2R25Dem_PLAIdle = 12000.1; N2R25Dem_AI = 14000.1; N1Rtr = 18000.1;",
+            "N2R25Dem_FI = 0; N1RDem_MCR = -30000; N2R25Dem_PLAIdle = 0.1; N2R25Dem_GI = 8000.1; N2R25Dem_AI = 2000.1; N1Rtr = -17999.9;",
+            "N2R25Dem_FI = 16000.1; N1RDem_MCR = 12000.1; N2R25Dem_GI = 8000.1; N2R25Dem_PLAIdle = 14000.1; N1Rtr = 18000.1; N2R25Dem_AI = 16000.1;",
+            "N2R25Dem_FI = 10000.1; N1RDem_MCR = 18000.1; N2R25Dem_PLAIdle = 0; N1Rtr = 12000.1; N2R25Dem_GI = 18000.1; N2R25Dem_AI = 0;"
+        ],
+        "true_result": "N1Rtr=N1RDem_MCR;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_7831",
+        "module_name": "油门杆插值目标计算-转换点转速N1Rtr计算-MREV",
+        "precondition": "True",
+        "condition": "N2R25Dem_PLAIdle==N2R25Dem_RI&&N1Rtr>N1RDem_MREV",
+        "true_test_case": [
+            "N2R25Dem_RI = 2000.1; N1Rtr = 12000.1; N1RDem_MREV = 6000.1; N2R25Dem_PLAIdle = 2000.1;",
+            "N2R25Dem_RI = 2000.1; N1Rtr = 6000.1; N1RDem_MREV = -11999.9; N2R25Dem_PLAIdle = 2000.1;"
+        ],
+        "false_test_case": [
+            "N2R25Dem_RI = 14000.1; N2R25Dem_PLAIdle = 12000.1; N1RDem_MREV = -17999.9; N1Rtr = 24000.1;",
+            "N2R25Dem_RI = 14000.1; N1Rtr = -23999.9; N1RDem_MREV = 0.0999999999985448; N2R25Dem_PLAIdle = 14000.1;"
+        ],
+        "true_result": "N1Rtr=N1RDem_MREV;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9970",
+        "module_name": "N1R指示量N1RDemInd计算(最大反推)",
+        "precondition": "True",
+        "condition": "thrust_level==level_MREV",
+        "true_test_case": [
+            "thrust_level = 1;"
+        ],
+        "false_test_case": [
+            "thrust_level = 9;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_MREV;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9976",
+        "module_name": "N1R指示量N1RDemInd计算(反推)",
+        "precondition": "True",
+        "condition": "thrust_level==level_REV",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 7;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_REV;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9972",
+        "module_name": "N1R指示量N1RDemInd计算(反推慢车,地面慢车,空中慢车,进近慢车)",
+        "precondition": "True",
+        "condition": "thrust_level==level_RI||thrust_level==level_GI||thrust_level==level_FI||thrust_level==level_AI",
+        "true_test_case": [
+            "thrust_level = 3;",
+            "thrust_level = 5;"
+        ],
+        "false_test_case": [
+            "thrust_level = 13;",
+            "thrust_level = 1;",
+            "thrust_level = 9;",
+            "thrust_level = 0;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9974",
+        "module_name": "N1R指示量N1RDemInd计算(巡航)",
+        "precondition": "True",
+        "condition": "thrust_level==level_CR",
+        "true_test_case": [
+            "thrust_level = 7;"
+        ],
+        "false_test_case": [
+            "thrust_level = 19;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_CR;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9969",
+        "module_name": "N1R指示量N1RDemInd计算(最大巡航)",
+        "precondition": "True",
+        "condition": "thrust_level==level_MCR",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 21;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_MCR;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9977",
+        "module_name": "N1R指示量N1RDemInd计算(爬升)",
+        "precondition": "True",
+        "condition": "thrust_level==level_CL",
+        "true_test_case": [
+            "thrust_level = 9;"
+        ],
+        "false_test_case": [
+            "thrust_level = 21;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_CL;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9966",
+        "module_name": "N1R指示量N1RDemInd计算(最大爬升)",
+        "precondition": "True",
+        "condition": "thrust_level==level_MCL",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 3;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_MCL;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9967",
+        "module_name": "N1R指示量N1RDemInd计算(减推力爬升1)",
+        "precondition": "True",
+        "condition": "thrust_level==level_DCL1",
+        "true_test_case": [
+            "thrust_level = 11;"
+        ],
+        "false_test_case": [
+            "thrust_level = 17;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_DCL1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9968",
+        "module_name": "N1R指示量N1RDemInd计算(减推力爬升2)",
+        "precondition": "True",
+        "condition": "thrust_level==level_DCL2",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 17;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_DCL2;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9973",
+        "module_name": "N1R指示量N1RDemInd计算(连续)",
+        "precondition": "True",
+        "condition": "thrust_level==level_CT",
+        "true_test_case": [
+            "thrust_level = 13;"
+        ],
+        "false_test_case": [
+            "thrust_level = 17;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_CT;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9965",
+        "module_name": "N1R指示量N1RDemInd计算(最大连续)",
+        "precondition": "True",
+        "condition": "thrust_level==level_MCT",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 17;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_MCT;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9978",
+        "module_name": "N1R指示量N1RDemInd计算(起飞)",
+        "precondition": "True",
+        "condition": "thrust_level==level_TO",
+        "true_test_case": [
+            "thrust_level = 15;"
+        ],
+        "false_test_case": [
+            "thrust_level = 17;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_TO;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9959",
+        "module_name": "N1R指示量N1RDemInd计算(最大起飞)",
+        "precondition": "True",
+        "condition": "thrust_level==level_MTO",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 9;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_MTO;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9961",
+        "module_name": "N1R指示量N1RDemInd计算(减推力起飞1)",
+        "precondition": "True",
+        "condition": "thrust_level==level_DTO1",
+        "true_test_case": [
+            "thrust_level = 17;"
+        ],
+        "false_test_case": [
+            "thrust_level = 0;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_DTO1;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9962",
+        "module_name": "N1R指示量N1RDemInd计算(减推力起飞2)",
+        "precondition": "True",
+        "condition": "thrust_level==level_DTO2",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 7;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_DTO2;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9960",
+        "module_name": "N1R指示量N1RDemInd计算(复飞)",
+        "precondition": "True",
+        "condition": "thrust_level==level_GA",
+        "true_test_case": [
+            "thrust_level = 21;"
+        ],
+        "false_test_case": [
+            "thrust_level = 0;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_GA;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9963",
+        "module_name": "N1R指示量N1RDemInd计算(增推力起飞)",
+        "precondition": "True",
+        "condition": "thrust_level==level_Bump",
+        "true_test_case": [
+            "thrust_level = 19;"
+        ],
+        "false_test_case": [
+            "thrust_level = 11;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_Bump;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9964",
+        "module_name": "N1R指示量N1RDemInd计算(灵活起飞)",
+        "precondition": "True",
+        "condition": "thrust_level==level_FLEXTO",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 1;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_FLEXTO;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9975",
+        "module_name": "N1R指示量N1RDemInd计算(准最大推力)",
+        "precondition": "True",
+        "condition": "thrust_level==level_TO2MAX",
+        "true_test_case": [
+            "thrust_level = 23;"
+        ],
+        "false_test_case": [
+            "thrust_level = 11;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_TO2MAX;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_9971",
+        "module_name": "N1R指示量N1RDemInd计算(最大推力)",
+        "precondition": "True",
+        "condition": "thrust_level==level_MAX",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 21;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_MAX;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "D_7842",
+        "module_name": "N1R指示量N1RDemInd计算(无指定推力等级补充1)",
+        "precondition": "True",
+        "condition": "thrust_level==level_default&&(engine_state==ES_ground_start||engine_state==ES_windmill_start||engine_state==ES_Qwindmill_start||engine_state==ES_assist_start)",
+        "true_test_case": [
+            "thrust_level = 0; engine_state = 11;",
+            "thrust_level = 0; engine_state = 9;",
+            "thrust_level = 0; engine_state = 13;",
+            "thrust_level = 0; engine_state = 10;"
+        ],
+        "false_test_case": [
+            "thrust_level = 13; engine_state = 13;",
+            "thrust_level = 0; engine_state = 4;",
+            "thrust_level = 0; engine_state = 5;",
+            "thrust_level = 0; engine_state = 16;",
+            "thrust_level = 0; engine_state = 8;"
+        ],
+        "true_result": "N1RDemInd=N1RDem_BAK;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "D_7843",
+        "module_name": "N1R指示量N1RDemInd计算(无指定推力等级补充2)",
+        "precondition": "True",
+        "condition": "thrust_level==level_default&&(engine_state==ES_origin||engine_state==ES_ground_standby||engine_state==ES_flight_standby||engine_state==ES_cold_operation||engine_state==ES_DR_OS_Us||engine_state==ES_normal_stop||engine_state==ES_emergency_stop||engine_state==ES_ground_start_termination||engine_state==ES_flight_start_terminnation)",
+        "true_test_case": [
+            "thrust_level = 0; engine_state = 6;",
+            "thrust_level = 0; engine_state = 0;",
+            "thrust_level = 0; engine_state = 1;",
+            "thrust_level = 0; engine_state = 2;",
+            "thrust_level = 0; engine_state = 3;",
+            "thrust_level = 0; engine_state = 4;",
+            "thrust_level = 0; engine_state = 5;",
+            "thrust_level = 0; engine_state = 7;",
+            "thrust_level = 0; engine_state = 8;"
+        ],
+        "false_test_case": [
+            "thrust_level = 23; engine_state = 5;",
+            "thrust_level = 0; engine_state = 12;",
+            "thrust_level = 0; engine_state = 14;",
+            "thrust_level = 0; engine_state = 16;",
+            "thrust_level = 0; engine_state = 11;"
+        ],
+        "true_result": "N1RDemInd=0;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10901",
+        "module_name": "N1R控制量N1RDem计算(推力等级为无指定推力等级,最大反推,反推,反推慢车,地面慢车,空中慢车,进近慢车,巡航,最大巡航,最大推力)",
+        "precondition": "True",
+        "condition": "thrust_level==level_default||thrust_level==level_MREV||thrust_level==level_REV||thrust_level==level_RI||thrust_level==level_GI||thrust_level==level_FI||thrust_level==level_AI||thrust_level==level_CR||thrust_level==level_MCR||thrust_level==level_MAX",
+        "true_test_case": [
+            "thrust_level = 0;",
+            "thrust_level = 1;",
+            "thrust_level = 3;",
+            "thrust_level = 5;",
+            "thrust_level = 7;"
+        ],
+        "false_test_case": [
+            "thrust_level = 15;",
+            "thrust_level = 19;",
+            "thrust_level = 21;",
+            "thrust_level = 9;",
+            "thrust_level = 17;",
+            "thrust_level = 13;",
+            "thrust_level = 11;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10902",
+        "module_name": "N1R控制量N1RDem计算(推力等级为最大爬升,减推力爬升1,减推力爬升2,连续,最大连续,起飞,最大起飞,减推力起飞1,减推力起飞2,复飞,增推力起飞,灵活起飞)",
+        "precondition": "True",
+        "condition": "thrust_level==level_MCL||thrust_level==level_DCL1||thrust_level==level_DCL2||thrust_level==level_CT||thrust_level==level_MCT||thrust_level==level_TO||thrust_level==level_MTO||thrust_level==level_DTO1||thrust_level==level_DTO2||thrust_level==level_GA||thrust_level==level_Bump||thrust_level==level_FLEXTO",
+        "true_test_case": [],
+        "false_test_case": [
+            "thrust_level = 5;",
+            "thrust_level = 0;",
+            "thrust_level = 7;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10903",
+        "module_name": "N1R控制量N1RDem计算(推力等级为爬升)",
+        "precondition": "True",
+        "condition": "thrust_level==level_CL",
+        "true_test_case": [
+            "thrust_level = 9;"
+        ],
+        "false_test_case": [
+            "thrust_level = 5;"
+        ],
+        "true_result": "Temp=N1RDem_PLACL+DN1RMod;N1RDem=interpolation(PS_PLA_N1RDem_MCR_N1RDem_PLACL_Plus_DN1RMod,PLA,N1RDem_MCR,Temp);",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10904",
+        "module_name": "N1R控制量N1RDem计算(推力等级为准最大推力)",
+        "precondition": "True",
+        "condition": "thrust_level==level_TO2MAX",
+        "true_test_case": [
+            "thrust_level = 23;"
+        ],
+        "false_test_case": [
+            "thrust_level = 17;"
+        ],
+        "true_result": "Temp=N1RDem_PLATO+DN1RMod;N1RDem=interpolation(PS_PLA_N1RDem_PLATO_Plus_DN1RMod_N1RDem_MAX,PLA,Temp,N1RDem_MAX);",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state==ES_idle",
+        "true_test_case": [
+            "engine_state = 14;"
+        ],
+        "false_test_case": [
+            "engine_state = 2;"
+        ],
+        "true_result": "software_control_mode=High_Press_Control_Mode;N2r25Dmd=N2R25Dem;N1rDmd=N1RDem;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state==ES_above_idle&&((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))",
+        "true_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 35.1; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 45.1; engine_state = 15; PLA = 37.9;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 30.1; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 20.1; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 10.1; engine_state = 15; PLA = 2.5;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 40.1; engine_state = 9; PLA = -32.9;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 30.1; engine_state = 15; PLA = -33;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 30.1; engine_state = 2; PLA = -33;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 25.1; engine_state = 13; PLA = -21.1;"
+        ],
+        "false_test_case": [
+            "last( PLA ) = 0; engine_state = 10; PD_IdleSwitchPlaThsld = 30.1; PLA = 2.5;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 45.1; engine_state = 15; PLA = 61.5;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 20.1; engine_state = 15; PLA = -9.3;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 15.1; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 25.1; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 0; engine_state = 2; PLA = -32.9;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 30.1; engine_state = 1; PLA = 37.9;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 45.1; engine_state = 10; PLA = -21.1;",
+            "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 35.1; engine_state = 9; PLA = -33;"
+        ],
+        "true_result": "software_control_mode=Low_Press_Control_Mode;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state==ES_above_idle&&(PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)",
+        "true_test_case": [],
+        "false_test_case": [],
+        "true_result": "software_control_mode=High_Press_Control_Mode;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state==ES_above_idle&&(PLA>=2+PD_IdleSwitchPlaThsld||PLA<=2||last(PLA)>2||last(PLA)<0)&&(PLA<=-6-PD_IdleSwitchPlaThsld||PLA>=-6||last(PLA)>=0||last(PLA)<=-6)&&(PLA<-6||PLA>2)",
+        "true_test_case": [
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 35.1; engine_state = 15; PLA = 2.5;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 0.1; engine_state = 15; PLA = 2.5;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 35.1; engine_state = 15; PLA = -32.9;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 20.1; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 45.1; engine_state = 15; PLA = 37.9;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 15.1; engine_state = 15; PLA = -21.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 0; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 35.1; engine_state = 15; PLA = -9.3;",
+            "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 35.1; engine_state = 15; PLA = -33;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 20.1; engine_state = 15; PLA = -33;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 15.1; engine_state = 15; PLA = 14.3;"
+        ],
+        "false_test_case": [
+            "last( PLA ) = 3; engine_state = 0; PD_IdleSwitchPlaThsld = 45.1; PLA = 37.9;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 45.1; engine_state = 15; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 10.1; engine_state = 15; PLA = 2.5;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 35.1; engine_state = 15; PLA = 26.1;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 25.1; engine_state = 15; PLA = 26.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 15.1; engine_state = 15; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 10.1; engine_state = 15; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 35.1; engine_state = 15; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 25.1; engine_state = 15; PLA = -21.1;"
+        ],
+        "true_result": "software_control_mode=Low_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state==ES_above_idle&&((PLA>=2+PD_IdleSwitchPlaThsld||PLA<=2||last(PLA)>2||last(PLA)<0)&&(PLA<=-6-PD_IdleSwitchPlaThsld||PLA>=-6||last(PLA)>=0||last(PLA)<=-6)&&(PLA>=0||PLA<-6||last(PLA)<-33||last(PLA)>=-6)&&(PLA>2||PLA<0||last(PLA)<=2||last(PLA)>85)&&PLA<=2&&PLA>=-6)",
+        "true_test_case": [],
+        "false_test_case": [],
+        "true_result": "software_control_mode=High_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state==ES_Hwindmill_start&&thrust_level!=level_RI&&thrust_level!=level_GI&&thrust_level!=level_FI&&thrust_level!=level_AI",
+        "true_test_case": [
+            "thrust_level = 23; engine_state = 12;",
+            "thrust_level = 1; engine_state = 12;",
+            "thrust_level = 11; engine_state = 12;"
+        ],
+        "false_test_case": [
+            "thrust_level = 1; engine_state = 4;",
+            "thrust_level = 3; engine_state = 12;",
+            "thrust_level = 5; engine_state = 12;"
+        ],
+        "true_result": "software_control_mode=Low_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state==ES_Hwindmill_start&&thrust_level==level_RI&&thrust_level==level_GI&&thrust_level==level_FI&&thrust_level==level_AI",
+        "true_test_case": [],
+        "false_test_case": [],
+        "true_result": "software_control_mode=High_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10254",
+        "module_name": "高低压切换控制(无N2双通道传感器故障)",
+        "precondition": "True",
+        "condition": "engine_state!=ES_Hwindmill_start&&engine_state!=ES_above_idle&&engine_state!=ES_idle",
+        "true_test_case": [
+            "engine_state = 3;",
+            "engine_state = 6;",
+            "engine_state = 1;"
+        ],
+        "false_test_case": [
+            "engine_state = 12;",
+            "engine_state = 15;",
+            "engine_state = 14;"
+        ],
+        "true_result": "software_control_mode=High_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_8107",
+        "module_name": "慢车到慢车以上切换控制(进入转换逻辑一)",
+        "precondition": "True",
+        "condition": "((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))",
+        "true_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 15.1; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 40.1; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 45.1; PLA = 26.1;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 15.1; PLA = 2.5;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 30.1; PLA = -21.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 40.1; PLA = -21.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 45.1; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 5.1; PLA = -9.3;"
+        ],
+        "false_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 30.1; PLA = 73.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 0.1; PLA = -32.9;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 10.1; PLA = 2.5;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 40.1; PLA = 14.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 10.1; PLA = -21.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 0; PLA = 73.3;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 35.1; PLA = -32.9;",
+            "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 35.1; PLA = -9.3;"
+        ],
+        "true_result": "software_control_mode=Low_Press_Control_Mode;",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10209",
+        "module_name": "慢车到慢车以上切换控制(处于转换逻辑一,控制模式设置)",
+        "precondition": "True",
+        "condition": "((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))",
+        "true_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 25.1; PLA = 26.1;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 20.1; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 35.1; PLA = 26.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 40.1; PLA = -33;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 30.1; PLA = -33;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 20.1; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 40.1; PLA = -32.9;"
+        ],
+        "false_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 35.1; PLA = 61.5;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 30.1; PLA = -33;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 35.1; PLA = 26.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 45.1; PLA = 26.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 0.1; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 40.1; PLA = 73.3;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 45.1; PLA = -33;",
+            "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 30.1; PLA = -33;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10210",
+        "module_name": "慢车到慢车以上切换控制(处于转换逻辑一,N1R最终控制目标设置)",
+        "precondition": "True",
+        "condition": "((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))",
+        "true_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 40.1; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 40.1; PLA = 26.1;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 35.1; PLA = 26.1;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 20.1; PLA = 2.5;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 35.1; PLA = -32.9;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 30.1; PLA = -32.9;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 45.1; PLA = -32.9;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 25.1; PLA = -21.1;"
+        ],
+        "false_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 35.1; PLA = 37.9;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 45.1; PLA = -33;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 30.1; PLA = 26.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 35.1; PLA = 26.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 25.1; PLA = -33;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 0.1; PLA = 37.9;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 30.1; PLA = -33;",
+            "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 10.1; PLA = -9.3;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10473",
+        "module_name": "慢车到慢车以上切换控制(处于转换逻辑一,N2R25最终控制目标设置)",
+        "precondition": "True",
+        "condition": "((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))",
+        "true_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 40.1; PLA = 2.5;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 25.1; PLA = 26.1;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 30.1; PLA = 26.1;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 10.1; PLA = 2.5;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 45.1; PLA = -21.1;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 15.1; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 10.1; PLA = -9.3;"
+        ],
+        "false_test_case": [
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 5.1; PLA = 14.3;",
+            "last( PLA ) = 0; PD_IdleSwitchPlaThsld = 45.1; PLA = -32.9;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 5.1; PLA = 2.5;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 5.1; PLA = 2.5;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 0; PLA = -9.3;",
+            "last( PLA ) = -1; PD_IdleSwitchPlaThsld = 10.1; PLA = 37.9;",
+            "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 35.1; PLA = -32.9;",
+            "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 5.1; PLA = -9.3;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10211",
+        "module_name": "慢车到慢车以上切换控制(PLA大于等于零,计算转换过程N1R控制目标)",
+        "precondition": "True",
+        "condition": "PLA>=0",
+        "true_test_case": [
+            "PLA = 73.3;"
+        ],
+        "false_test_case": [
+            "PLA = -21.1;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10217",
+        "module_name": "慢车到慢车以上切换控制(PLA小于零,计算转换过程N1R控制目标N1Rrd)",
+        "precondition": "True",
+        "condition": "PLA<0",
+        "true_test_case": [
+            "PLA = -9.3;"
+        ],
+        "false_test_case": [
+            "PLA = 73.3;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_8109",
+        "module_name": "慢车到慢车以上切换控制(应用软件应退出转换逻辑一)",
+        "precondition": "True",
+        "condition": "(abs(N1Rrd-N1Rtr)<PD_N1RpIdleOut*N1RDesign)||(duration(PLA>2,PD_IdleOutTime,miniSecond))||(duration(PLA<-6,PD_IdleOutTime,miniSecond))||(N2R25p>PD_IdleSwitchN2R25pMax)||(N1Rp>PD_IdleSwitchN1RpMax)||(PLA<=-6-PD_IdleSwitchPlaThsld)||(PLA>=2+PD_IdleSwitchPlaThsld)||((PLA<=2)&&(PLA>=-6))||(duration(logic_transition_mode==Logic1_Control_Mode,PD_IdleOutTime,miniSecond))",
+        "true_test_case": [
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1158.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = true; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = true; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = 12000.1; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = 0.0999999999985448; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 15.1; N1Rp = -11999.9; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = 61.5; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = true; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;"
+        ],
+        "false_test_case": [
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = -32.9; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;",
+            "PD_IdleSwitchN2R25pMax = 0.58; PD_IdleSwitchN1RpMax = 0; PD_N1RpIdleOut = 0.3; N2R25p = -30000; PD_IdleSwitchPlaThsld = 30.1; N1Rp = -11999.9; PLA = 26.1; abs(N1Rrd-N1Rtr) = 1159.8; duration(PLA>2, PD_IdleOutTime, miniSecond) = false; duration(logic_transition_mode==Logic1_Control_Mode, PD_IdleOutTime, miniSecond) = false; duration(PLA<-6, PD_IdleOutTime, miniSecond) = false; N1RDesign = 3866;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_6424",
+        "module_name": "慢车以上到慢车切换控制(油门杆从(2,85]推至[0,2]时)",
+        "precondition": "True",
+        "condition": "(PLA<=2&&PLA>=0)&&(last(PLA)>2&&last(PLA)<=85)&&(N2r25<=N2R25Dem+N2R25Design*PD_DN2R25Switch)&&(N2r25>=N2R25Dem-N2R25Design*PD_DN2R25Switch)",
+        "true_test_case": [],
+        "false_test_case": [
+            "last( PLA ) = 3; N2R25Dem = 16000.1; N2r25 = 18000.1; PD_DN2R25Switch = 0.2; PLA = 61.5; N2R25Design = 16680;",
+            "last( PLA ) = 3; N2R25Dem = 16000.1; N2r25 = 18000.1; PD_DN2R25Switch = 0.2; PLA = -32.9; N2R25Design = 16680;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10222",
+        "module_name": "慢车以上到慢车切换控制(油门杆从[-33,-6)推至[-6,0)时)",
+        "precondition": "True",
+        "condition": "(PLA<0)&&(PLA>=-6)&&(last(PLA)>=-33)&&(last(PLA)<-6)&&(N2r25<=N2R25Dem+N2R25Design*PD_DN2R25Switch)&&(N2r25>=N2R25Dem-N2R25Design*PD_DN2R25Switch)",
+        "true_test_case": [],
+        "false_test_case": [
+            "last( PLA ) = -32; N2R25Dem = 16000.1; N2r25 = 18000.1; PD_DN2R25Switch = 0.2; PLA = 61.5; N2R25Design = 16680;",
+            "last( PLA ) = -32; N2R25Dem = 16000.1; N2r25 = 18000.1; PD_DN2R25Switch = 0.2; PLA = -32.9; N2R25Design = 16680;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10220",
+        "module_name": "慢车以上到慢车切换控制(处于转换逻辑二,控制模式设置)",
+        "precondition": "True",
+        "condition": "(PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)",
+        "true_test_case": [],
+        "false_test_case": [
+            "last( PLA ) = -7; PLA = 2.5;",
+            "last( PLA ) = -7; PLA = -32.9;",
+            "last( PLA ) = 3; PLA = 2.5;",
+            "last( PLA ) = 3; PLA = -33;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10474",
+        "module_name": "慢车以上到慢车切换控制(处于转换逻辑二,N1R最终控制目标设置)",
+        "precondition": "True",
+        "condition": "(PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)",
+        "true_test_case": [],
+        "false_test_case": [
+            "last( PLA ) = -7; PLA = 37.9;",
+            "last( PLA ) = -7; PLA = -33;",
+            "last( PLA ) = 3; PLA = 37.9;",
+            "last( PLA ) = 3; PLA = -32.9;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10221",
+        "module_name": "慢车以上到慢车切换控制(处于转换逻辑二,N2R25最终控制目标设置)",
+        "precondition": "True",
+        "condition": "(PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)",
+        "true_test_case": [],
+        "false_test_case": [
+            "last( PLA ) = -7; PLA = 14.3;",
+            "last( PLA ) = -7; PLA = -33;",
+            "last( PLA ) = 3; PLA = 2.5;",
+            "last( PLA ) = 3; PLA = -33;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    },
+    {
+        "requirement_id": "R_10224",
+        "module_name": "慢车以上到慢车切换控制(计算转换过程N2R25控制目标N2R25rd)",
+        "precondition": "True",
+        "condition": "N2r25<=N2R25_1",
+        "true_test_case": [
+            "N2r25 = -29999.9; N2R25_1 = 24000.1;"
+        ],
+        "false_test_case": [
+            "N2r25 = -29999.9; N2R25_1 = -30000;"
+        ],
+        "true_result": "N2R25rd=N2r25+N2R25Design*PD_DeltN2R25Co;",
+        "false_result": "N2R25rd=N2r25-N2R25Design*PD_DeltN2R25Co;"
+    },
+    {
+        "requirement_id": "R_6450",
+        "module_name": "慢车以上到慢车切换控制(应用软件应退出转换逻辑二)",
+        "precondition": "True",
+        "condition": "(abs(N2R25rd-N2R25_1)<N2R25Design*PD_N2R25pIdleIn1)||(duration(logic_transition_mode==Logic2_Control_Mode,PD_IdleInTime,miniSecond))||(N2r25p<PD_IdleSwitchN2R25pMin)||(N1rp<PD_IdleSwitchN1RpMin)||(abs(N2r25-N2R25Dem)>N2R25Design*PD_N2R25pIdleIn3)||(PLA>2&&last(PLA)<=2)||(last(PLA)>=-6&&PLA<-6)",
+        "true_test_case": [
+            "N2r25p = 0.1; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = -7; PD_N2R25pIdleIn1 = 0.8; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn3 = 0.4; N1rp = 0.82; PLA = -32.9; abs(N2R25rd-N2R25_1) = 13343; abs(N2r25-N2R25Dem) = 6672; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;",
+            "N2r25p = 0.1; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = -7; PD_N2R25pIdleIn1 = 0.8; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn3 = 0.4; N1rp = 0.82; PLA = -32.9; abs(N2R25rd-N2R25_1) = 13344; abs(N2r25-N2R25Dem) = 6672; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = true; N2R25Design = 16680;",
+            "N2r25p = 0; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = -7; PD_N2R25pIdleIn1 = 0.8; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn3 = 0.4; N1rp = 0.82; PLA = -32.9; abs(N2R25rd-N2R25_1) = 13344; abs(N2r25-N2R25Dem) = 6672; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;",
+            "N1rp = 0; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = -7; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn1 = 0.8; PD_N2R25pIdleIn3 = 0.4; N2r25p = 0.1; PLA = -32.9; abs(N2R25rd-N2R25_1) = 13344; abs(N2r25-N2R25Dem) = 6672; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;",
+            "N1rp = 0.82; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = -7; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn1 = 0.8; PD_N2R25pIdleIn3 = 0.4; N2r25p = 0.1; PLA = -32.9; abs(N2R25rd-N2R25_1) = 13344; abs(N2r25-N2R25Dem) = 6673; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;",
+            "PLA = 61.5; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = 1; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn1 = 0.8; PD_N2R25pIdleIn3 = 0.4; N2r25p = 0.1; N1rp = 0.82; abs(N2r25-N2R25Dem) = 6672; abs(N2R25rd-N2R25_1) = 13344; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;",
+            "PLA = -32.9; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = -5; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn1 = 0.8; PD_N2R25pIdleIn3 = 0.4; N2r25p = 0.1; N1rp = 0.82; abs(N2r25-N2R25Dem) = 6672; abs(N2R25rd-N2R25_1) = 13344; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;"
+        ],
+        "false_test_case": [
+            "N2r25p = 0.1; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = -7; PD_N2R25pIdleIn1 = 0.8; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn3 = 0.4; N1rp = 0.82; PLA = -32.9; abs(N2R25rd-N2R25_1) = 13344; abs(N2r25-N2R25Dem) = 6672; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;",
+            "PLA = 61.5; PD_IdleSwitchN2R25pMin = 0.1; last( PLA ) = 3; PD_IdleSwitchN1RpMin = 0.82; PD_N2R25pIdleIn1 = 0.8; PD_N2R25pIdleIn3 = 0.4; N2r25p = 0.1; N1rp = 0.82; abs(N2r25-N2R25Dem) = 6672; abs(N2R25rd-N2R25_1) = 13344; duration(logic_transition_mode==Logic2_Control_Mode, PD_IdleInTime, miniSecond) = false; N2R25Design = 16680;"
+        ],
+        "true_result": "",
+        "false_result": ""
+    }
+]

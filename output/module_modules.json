@@ -1,0 +1,2417 @@
+[
+    {
+        "name": "确定推力控制转速目标值的计算周期",
+        "number": "D_7720",
+        "function": "确定推力控制转速目标值的计算周期",
+        "precondition": "1",
+        "inputs": [],
+        "outputs": [
+            "thrust_calculate_circle"
+        ],
+        "formula": "thrust_calculate_circle=60;"
+    },
+    {
+        "name": "确定选定推力等级_无指定推力等级",
+        "number": "R_8479",
+        "function": "当发动机不处于慢车状态、慢车以上状态、高转速风车起动状态时，置选定推力等级为无指定推力等级",
+        "precondition": "1",
+        "inputs": [
+            "engine_state"
+        ],
+        "outputs": [
+            "thrust_level"
+        ],
+        "formula": "if(engine_state!=ES_idle&&engine_state!=ES_above_idle&&engine_state!=ES_Hwindmill_start){thrust_level=level_default;}"
+    },
+    {
+        "name": "高压换算转速控制目标计算_地面慢车",
+        "number": "R_6268",
+        "function": "控制软件应根据地面慢车调节计划表(PS_GI_H1~9)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_GI",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_GI_H"
+        ],
+        "outputs": [
+            "N2R25Dem_GI"
+        ],
+        "formula": "N2R25Dem_GI=interpolation(PS_GI_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "高压换算转速控制目标计算_空中慢车",
+        "number": "R_6270",
+        "function": "控制软件应根据地面慢车调节计划表(PS_FI_H1~15)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_FI",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_FI_H"
+        ],
+        "outputs": [
+            "N2R25Dem_FI"
+        ],
+        "formula": "N2R25Dem_FI=interpolation(PS_FI_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "高压换算转速控制目标计算_进近慢车",
+        "number": "R_3879",
+        "function": "控制软件应根据进近慢车调节计划表(PS_AI_H1~15)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_AI",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_AI_H"
+        ],
+        "outputs": [
+            "N2R25Dem_AI"
+        ],
+        "formula": "N2R25Dem_AI=interpolation(PS_AI_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "高压换算转速控制目标计算_反推慢车",
+        "number": "R_6275",
+        "function": "控制软件应根据反推慢车调节计划表(PS_RI_H1~9)，通过高度H、环境温差Dtamb和马赫数Ma计算N2R25Dem_RI",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_RI_H"
+        ],
+        "outputs": [
+            "N2R25Dem_RI"
+        ],
+        "formula": "N2R25Dem_RI=interpolation(PS_RI_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "N2R25Dem_BAK计算",
+        "number": "R_6631",
+        "function": "控制软件应根据N1RDem和Ma通过高低压换算转速N2R25-N1R转换关系表N2R25N1Rbak(可调)计算出N2R25备份控制目标N2R25Dem_BAK。",
+        "precondition": "1",
+        "inputs": [
+            "Ma",
+            "N1RDem",
+            "N2R25N1Rbak"
+        ],
+        "outputs": [
+            "N2R25Dem_BAK"
+        ],
+        "formula": "N2R25Dem_BAK=interpolation(N2R25N1Rbak,N1RDem,Ma);"
+    },
+    {
+        "name": "N2R25Dem选择_地面慢车",
+        "number": "R_9948",
+        "function": "当选定推力等级为地面慢车，控制软件应置N2R25Dem=N2R25Dem_GI",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "N2R25Dem_GI"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level==level_GI){N2R25Dem=N2R25Dem_GI;}"
+    },
+    {
+        "name": "N2R25Dem选择_空中慢车",
+        "number": "R_9949",
+        "function": "当选定推力等级为空中慢车，控制软件应置N2R25Dem=N2R25Dem_FI",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "N2R25Dem_FI"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level==level_FI){N2R25Dem=N2R25Dem_FI;}"
+    },
+    {
+        "name": "N2R25Dem选择_进近慢车",
+        "number": "R_9950",
+        "function": "当选定推力等级为进近慢车，控制软件应置N2R25Dem=N2R25Dem_AI",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "N2R25Dem_AI"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level==level_AI){N2R25Dem=N2R25Dem_AI;}"
+    },
+    {
+        "name": "N2R25Dem选择_反推慢车",
+        "number": "R_9951",
+        "function": "当选定推力等级为反推慢车，控制软件应置N2R25Dem=N2R25Dem_RI",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "N2R25Dem_RI"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level==level_RI){N2R25Dem=N2R25Dem_RI;}"
+    },
+    {
+        "name": "N2R25Dem选择_补充1",
+        "number": "R_9952",
+        "function": "当选定推力等级为除：地面慢车、空中慢车、进近慢车、反推慢车、无指定推力等级以外的推力等级，N2R25Dem=N2R25Dem_BAK。",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "N2R25Dem_ BAK"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level!=level_GI&&thrust_level!=level_FI&&thrust_level!=level_AI&&thrust_level!=level_RI&&thrust_level!=level_default){N2R25Dem=N2R25Dem_BAK;}"
+    },
+    {
+        "name": "N2R25Dem选择_补充2",
+        "number": "D_6354",
+        "function": "当选定推力等级为无指定推力等级，且发动机状态为正常地面起动状态，应用软件应置N2R25控制目标N2R25Dem=N2R25Dem_GI。",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "engine_state",
+            "N2R25Dem_GI"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level==level_default&&engine_state==ES_ground_start){N2R25Dem=N2R25Dem_GI;}"
+    },
+    {
+        "name": "N2R25Dem选择_补充3",
+        "number": "D_6355",
+        "function": "当选定推力等级为无指定推力等级，且发动机状态为稳态风车起动状态、快速风车起动状态、空中辅助起动状态，应用软件应置N2R25控制目标N2R25Dem=N2R25Dem_FI。",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "engine_state",
+            "N2R25Dem_FI"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level==level_default&&(engine_state==ES_windmill_start||engine_state==ES_Qwindmill_start||engine_state==ES_assist_start)){N2R25Dem=N2R25Dem_FI;}"
+    },
+    {
+        "name": "N2R25Dem选择_补充4",
+        "number": "D_6357",
+        "function": "当选定推力等级为无指定推力等级，且发动机状态为初始状态、地面待机状态、空中待机状态、冷运转、假开车/油封/启封、正常停车、紧急停车、地面起动中止、空中起动中止状态，应用软件应置N2R25控制目标N2R25Dem=0。",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "engine_state"
+        ],
+        "outputs": [
+            "N2R25Dem"
+        ],
+        "formula": "if(thrust_level==level_default&&(engine_state==ES_origin||engine_state==ES_ground_standby||engine_state==ES_flight_standby||engine_state==ES_cold_operation||engine_state==ES_DR_OS_Us||engine_state==ES_normal_stop||engine_state==ES_emergency_stop||engine_state==ES_ground_start_termination||engine_state==ES_flight_start_terminnation)){N2R25Dem=0;}"
+    },
+    {
+        "name": "设置起飞锁定指令_有效",
+        "number": "R_6536",
+        "function": "当同时满足以下条件时，置起飞锁定指令有效：",
+        "precondition": "1",
+        "inputs": [
+            "airdis_WOW",
+            "CAS",
+            "PLA",
+            "PD_ToLockCASHigh"
+        ],
+        "outputs": [
+            "to_lock_sig"
+        ],
+        "formula": "if(airdis_WOW==1&&CAS>PD_ToLockCASHigh&&PLA>71&&PLA<=76){to_lock_sig=1;}"
+    },
+    {
+        "name": "设置起飞锁定指令_无效",
+        "number": "R_6544",
+        "function": "满足以下任一条件时，置起飞锁定指令无效；",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "H_TO",
+            "airdis_WOW",
+            "PD_ToLockHLow",
+            "CAS",
+            "PD_ToLockCASLow",
+            "engine_state"
+        ],
+        "outputs": [
+            "to_lock_sig"
+        ],
+        "formula": "if(H–H_TO>PD_ToLockHLow||airdis_WOW==1&&CAS<PD_ToLockCASLow||engine_state==ES_flight_interrupt){to_lock_sig=0;}"
+    },
+    {
+        "name": "设置起飞锁定指令_无效优先",
+        "number": "R_10633",
+        "function": "当置起飞锁定指令有效的条件和置起飞锁定指令无效的条件同时满足时，置起飞锁定指令无效优先。",
+        "precondition": "1",
+        "inputs": [
+            "airdis_WOW",
+            "CAS",
+            "PLA",
+            "PD_ToLockCASHigh",
+            "H",
+            "H_TO",
+            "PD_ToLockHLow",
+            "PD_ToLockCASLow",
+            "engine_state"
+        ],
+        "outputs": [
+            "to_lock_sig"
+        ],
+        "formula": "if(airdis_WOW==1&&CAS>PD_ToLockCASHigh&&PLA>71&&PLA<=76&&(H–H_TO==PD_ToLockHLow||(airdis_WOW==1&&CAS<PD_ToLockCASLow)&&engine_state==ES_flight_interrupt)){to_lock_sig=0;}"
+    },
+    {
+        "name": "设置起飞阶段指令_有效",
+        "number": "R_6547",
+        "function": "同时满足以下条件，置起飞阶段指令有效：",
+        "precondition": "1",
+        "inputs": [
+            "WOW_ground_time",
+            "airdis_WOW",
+            "CAS",
+            "PD_ToPhaseCASHigh",
+            "PLA",
+            "PD_ToPhaseTime1"
+        ],
+        "outputs": [
+            "to_phase_sig"
+        ],
+        "formula": "if(airdis_WOW==1&&WOW_ground_time>PD_ToPhaseTime1&&CAS<PD_ToPhaseCASHigh&&PLA>71&&PLA<=76){to_phase_sig=1;}"
+    },
+    {
+        "name": "设置起飞阶段指令_无效",
+        "number": "R_6551",
+        "function": "满足以下任一条件时，置起飞阶段指令无效：",
+        "precondition": "1",
+        "inputs": [
+            "WOW_to_ground_time",
+            "H",
+            "H_TO",
+            "PD_ToPhaseHLow",
+            "PD_ToPhaseCASLow",
+            "CAS",
+            "PD_ToPhaseTime2",
+            "engine_state"
+        ],
+        "outputs": [
+            "to_phase_sig"
+        ],
+        "formula": "if(WOW_to_ground_time>PD_ToPhaseTime2||H-H_TO>PD_ToPhaseHLow||CAS>PD_ToPhaseCASLow||engine_state==ES_flight_interrupt){to_phase_sig=0;}"
+    },
+    {
+        "name": "设置起飞阶段指令_无效优先",
+        "number": "R_10634",
+        "function": "当置起飞阶段指令有效的条件和置起飞阶段指令无效的条件同时满足时，置起飞阶段指令无效优先。",
+        "precondition": "1",
+        "inputs": [
+            "WOW_ground_time",
+            "airdis_WOW",
+            "CAS",
+            "PD_ToPhaseTime1",
+            "PD_ToPhaseCASHigh",
+            "PLA",
+            "WOW_to_ground_time",
+            "H",
+            "H_TO",
+            "PD_ToPhaseHLow",
+            "PD_ToPhaseCASLow",
+            "PD_ToPhaseTime2",
+            "engine_state"
+        ],
+        "outputs": [
+            "to_phase_sig"
+        ],
+        "formula": "if(airdis_WOW==1&&WOW_ground_time>PD_ToPhaseTime1&&CAS<PD_ToPhaseCASHigh&&PLA>71&&PLA<=76&&(WOW_to_ground_time>PD_ToPhaseTime2||H-H_TO>PD_ToPhaseHLow||CAS>PD_ToPhaseCASLow||engine_state==ES_flight_interrupt)){to_phase_sig=0;}"
+    },
+    {
+        "name": "起飞锁定指令有效后锁定参数",
+        "number": "R_6555",
+        "function": "起飞锁定指令有效后，应用软件应锁定环境温差Dtamb、灵活温度、NAI、WAI和ECS引气构型和推力等级需求为锁定时刻的前一时刻值。",
+        "precondition": "1",
+        "inputs": [
+            "to_lock_sig"
+        ],
+        "outputs": [
+            "lock_to_params_flag"
+        ],
+        "formula": "if(to_lock_sig==1){lock_to_params_flag=1;}"
+    },
+    {
+        "name": "起飞阶段指令与起飞锁定指令同时无效采用实时参数",
+        "number": "R_6563",
+        "function": "起飞阶段指令与起飞锁定指令同时无效时，应采用实时的环境温差Dtamb、推力等级需求、灵活温度、NAI、WAI和ECS引气构型参与控制。",
+        "precondition": "1",
+        "inputs": [
+            "to_lock_sig",
+            "to_phase_sig"
+        ],
+        "outputs": [
+            "lock_to_params_flag"
+        ],
+        "formula": "if(to_lock_sig==0&&to_phase_sig==0){lock_to_params_flag=0;}"
+    },
+    {
+        "name": "起飞锁定指令失效后禁止再次启动起飞锁定指令",
+        "number": "R_8267",
+        "function": "当起飞锁定指令失效后，禁止再次启动起飞锁定指令直到飞机再次回到地面(即轮载信号由空中变为地面)后并且飞机校准表速CAS小于PD_ToLockCASLow(可调)。",
+        "precondition": "1",
+        "inputs": [
+            "to_lock_sig",
+            "airdis_WOW",
+            "CAS",
+            "PD_ToLockCASLow"
+        ],
+        "outputs": [
+            "to_lock_sig_enable"
+        ],
+        "formula": "if(to_lock_sig==0){to_lock_sig_enable=0;}if(airdis_WOW==1&&CAS<PD_ToLockCASLow){to_lock_sig_enable=1;}"
+    },
+    {
+        "name": "起飞阶段指令失效后禁止再次启动起飞阶段指令",
+        "number": "R_9267",
+        "function": "当起飞阶段指令失效后，禁止再次启动起飞阶段指令直到飞机再次回到地面(即轮载信号由空中变为地面)后并且飞机校准表速CAS小于PD_ToLockCASLow(可调)。",
+        "precondition": "1",
+        "inputs": [
+            "to_phase_sig",
+            "airdis_WOW",
+            "CAS",
+            "PD_ToLockCASLow"
+        ],
+        "outputs": [
+            "to_phase_sig_enable"
+        ],
+        "formula": "if(to_phase_sig==0){to_phase_sig_enable=0;}if(airdis_WOW==1&&CAS<PD_ToLockCASLow){to_phase_sig_enable=1;}"
+    },
+    {
+        "name": "基本推力计划计算_最大起飞(MTO)",
+        "number": "R_6284",
+        "function": "应用软件应根据最大起飞调节计划(PS_MTO_H1~21)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大起飞N1R基准控制目标N1RDemBase_MTO。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_MTO_H"
+        ],
+        "outputs": [
+            "N1RDemBase_MTO"
+        ],
+        "formula": "N1RDemBase_MTO=interpolation(PS_MTO_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_复飞(GA)",
+        "number": "R_6297",
+        "function": "应用软件应根据复飞调节计划(PS_GA_H1~21)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算复飞N1R基准控制目标N1RDemBase_GA。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_GA_H"
+        ],
+        "outputs": [
+            "N1RDemBase_GA"
+        ],
+        "formula": "N1RDemBase_GA=interpolation(PS_GA_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_减推力起飞1(DTO1)",
+        "number": "R_6300",
+        "function": "应用软件应根据减推力起飞1调节计划(PS_DTO1_H1~21)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力起飞1N1R基准控制目标N1RDemBase_DTO1。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_DTO1_H"
+        ],
+        "outputs": [
+            "N1RDemBase_DTO1"
+        ],
+        "formula": "N1RDemBase_DTO1=interpolation(PS_DTO1_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_减推力起飞2(DTO2)",
+        "number": "R_6311",
+        "function": "应用软件应根据减推力起飞2调节计划(PS_DTO2_H1~21)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力起飞2N1R基准控制目标N1RDemBase_DTO2。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_DTO2_H"
+        ],
+        "outputs": [
+            "N1RDemBase_DTO2"
+        ],
+        "formula": "N1RDemBase_DTO2=interpolation(PS_DTO2_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_增推力起飞(Bump)",
+        "number": "R_6313",
+        "function": "应用软件应根据增推力起飞调节计划(PS_Bump_H1~21)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算增推力起飞N1R基准控制目标N1RDemBase_Bump。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_Bump_H"
+        ],
+        "outputs": [
+            "N1RDemBase_Bump"
+        ],
+        "formula": "N1RDemBase_Bump=interpolation(PS_Bump_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_ 灵活起飞(FLEXTO)",
+        "number": "R_6315",
+        "function": "应用软件应根据最大起飞调节计划，通过高度H、马赫数Ma、灵活温差DTFLEX插值计算得到灵活起飞N1R目标转速N1RDem_FLEXTO，计算过程中用灵活温差DTFLEX代替环境温差Dtamb进行插值计算。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "DTFLEX",
+            "Ma",
+            "PS_MTO_H"
+        ],
+        "outputs": [
+            "N1RDem_FLEXTO"
+        ],
+        "formula": "N1RDem_FLEXTO=interpolation(PS_MTO_H,H,DTFLEX,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_最大连续(MCT)",
+        "number": "R_6317",
+        "function": "应用软件应根据最大连续调节计划(PS_MCT_H1~21)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大连续N1R基准控制目标N1RDemBase_MCT。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_MCT_H"
+        ],
+        "outputs": [
+            "N1RDemBase_MCT"
+        ],
+        "formula": "N1RDemBase_MCT=interpolation(PS_MCT_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_最大爬升(MCL)",
+        "number": "R_6319",
+        "function": "应用软件应根据最大爬升调节计划(PS_MCL_H1~18)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大爬升N1R基准控制目标N1RDemBase_MCL。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_MCL_H"
+        ],
+        "outputs": [
+            "N1RDemBase_MCL"
+        ],
+        "formula": "N1RDemBase_MCL=interpolation(PS_MCL_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_减推力爬升1",
+        "number": "R_6321",
+        "function": "应用软件应根据减推力爬升1调节计划(PS_DCL1_H1~18)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力爬升1N1R基准控制目标N1RDemBase_DCL1。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_DCL1_H"
+        ],
+        "outputs": [
+            "N1RDemBase_DCL1"
+        ],
+        "formula": "N1RDemBase_DCL1=interpolation(PS_DCL1_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_减推力爬升2",
+        "number": "R_6324",
+        "function": "应用软件应根据减推力爬升2调节计划(PS_DCL2_H1~18)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算减推力爬升2N1R基准控制目标N1RDemBase_DCL2。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_DCL2_H"
+        ],
+        "outputs": [
+            "N1RDemBase_DCL2"
+        ],
+        "formula": "N1RDemBase_DCL2=interpolation(PS_DCL2_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "基本推力计划计算_最大巡航(MCR)",
+        "number": "R_6326",
+        "function": "应用软件应根据最大巡航调节计划(PS_MCR_H1~15)，通过高度H、马赫数Ma、环境温差Dtamb线性插值计算最大巡航N1R基准控制目标N1RDemBase_MCR。",
+        "precondition": "1",
+        "inputs": [
+            "H",
+            "Dtamb",
+            "Ma",
+            "PS_MCR_H"
+        ],
+        "outputs": [
+            "N1RDemBase_MCR"
+        ],
+        "formula": "N1RDemBase_MCR=interpolation(PS_MCR_H,H,Dtamb,Ma);"
+    },
+    {
+        "name": "计算最大起飞正常引气修正",
+        "number": "R_10794",
+        "function": "应用软件应根据最大起飞MTO的ECS正常引气修正表(可调，PS_ECSNormalMTO)通过高度H、马赫数Ma线性插值计算得到DN1RECSmto1",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSNormalMTO",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmto1"
+        ],
+        "formula": "DN1RECSmto1=interpolation(PS_ECSNormalMTO,H,Ma);"
+    },
+    {
+        "name": "计算最大连续正常引气修正",
+        "number": "R_10795",
+        "function": "应用软件应根据最大连续MCT的ECS正常引气修正表(可调，PS_ECSNormalMCT)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmct1。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSNormalMCT",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmct1"
+        ],
+        "formula": "DN1RECSmct1=interpolation(PS_ECSNormalMCT,H,Ma);"
+    },
+    {
+        "name": "计算最大爬升正常引气修正",
+        "number": "R_10796",
+        "function": "应用软件应根据最大爬升MCL的ECS正常引气修正表(可调，PS_ECSNormalMCL)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcl1。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSNormalMCL",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmcl1"
+        ],
+        "formula": "DN1RECSmcl1=interpolation(PS_ECSNormalMCL,H,Ma);"
+    },
+    {
+        "name": "计算最大巡航正常引气修正",
+        "number": "R_10797",
+        "function": "应用软件应根据最大巡航MCR的ECS正常引气修正表(可调，PS_ECSNormalMCR)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcr1。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSNormalMCR",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmcr1"
+        ],
+        "formula": "DN1RECSmcr1=interpolation(PS_ECSNormalMCR,H,Ma);"
+    },
+    {
+        "name": "计算最大起飞异常低引气修正",
+        "number": "R_10798",
+        "function": "应用软件应根据最大起飞MTO的ECS异常低引气修正表(可调，PS_ECSAbnLowMTO)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmto2。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnLowMTO",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmto2"
+        ],
+        "formula": "DN1RECSmto2=interpolation(PS_ECSAbnLowMTO,H,Ma);"
+    },
+    {
+        "name": "计算最大连续异常低引气修正",
+        "number": "R_10799",
+        "function": "应用软件应根据最大连续MCT的ECS异常低引气修正表(可调，PS_ECSAbnLowMCT)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmct2。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnLowMCT",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmct2"
+        ],
+        "formula": "DN1RECSmct2=interpolation(PS_ECSAbnLowMCT,H,Ma);"
+    },
+    {
+        "name": "计算最大爬升异常低引气修正",
+        "number": "R_10800",
+        "function": "应用软件应根据最大爬升MCL的ECS异常低引气修正表(可调，PS_ECSAbnLowMCL)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcl2。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnLowMCL",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmcl2"
+        ],
+        "formula": "DN1RECSmcl2=interpolation(PS_ECSAbnLowMCL,H,Ma);"
+    },
+    {
+        "name": "计算最大巡航异常低引气修正",
+        "number": "R_10801",
+        "function": "应用软件应根据最大巡航MCR的ECS异常低引气修正表(可调，PS_ECSAbnLowMCR)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcr2。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnLowMCR",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmcr2"
+        ],
+        "formula": "DN1RECSmcr2=interpolation(PS_ECSAbnLowMCR,H,Ma);"
+    },
+    {
+        "name": "计算最大起飞异常高引气修正",
+        "number": "R_10802",
+        "function": "应用软件应根据最大起飞MTO的ECS异常高引气修正表(可调，PS_ECSAbnHighMTO)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmto3。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnHighMTO",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmto3"
+        ],
+        "formula": "DN1RECSmto3=interpolation(PS_ECSAbnHighMTO,H,Ma);"
+    },
+    {
+        "name": "计算最大连续异常高引气修正",
+        "number": "R_10803",
+        "function": "应用软件应根据最大连续MCT的ECS异常高引气修正表(可调，PS_ECSAbnHighMCT)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmct3。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnHighMCT",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmct3"
+        ],
+        "formula": "DN1RECSmct3=interpolation(PS_ECSAbnHighMCT,H,Ma);"
+    },
+    {
+        "name": "计算最大爬升异常高引气修正",
+        "number": "R_10804",
+        "function": "应用软件应根据最大爬升MCL的ECS异常高引气修正表(可调，PS_ECSAbnHighMCL)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcl3。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnHighMCL",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmcl3"
+        ],
+        "formula": "DN1RECSmcl3=interpolation(PS_ECSAbnHighMCL,H,Ma);"
+    },
+    {
+        "name": "计算最大巡航异常高引气修正",
+        "number": "R_10805",
+        "function": "应用软件应根据最大巡航MCR的异常高引气修正表(PS_ECSAbnHighMCR)通过高度H、马赫数Ma线性线性插值计算得到DN1RECSmcr3。",
+        "precondition": "1",
+        "inputs": [
+            "PS_ECSAbnHighMCR",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RECSmcr3"
+        ],
+        "formula": "DN1RECSmcr3=interpolation(PS_ECSAbnHighMCR,H,Ma);"
+    },
+    {
+        "name": "设置ECS参数(无引气)",
+        "number": "R_10806",
+        "function": "当ECS引气构型ECSBleedCfg为无引气，DN1RECSmto=0，DN1RECSmct=0，DN1RECSmcl=0，DN1RECSmcr=0。",
+        "precondition": "1",
+        "inputs": [
+            "ECSBleedCfg"
+        ],
+        "outputs": [
+            "DN1RECSmto",
+            "DN1RECSmct",
+            "DN1RECSmcl",
+            "DN1RECSmcr"
+        ],
+        "formula": "if(ECSBleedCfg==no_bleed){DN1RECSmto=0;DN1RECSmct=0;DN1RECSmcl=0;DN1RECSmcr=0;}"
+    },
+    {
+        "name": "设置ECS参数(正常引气)",
+        "number": "R_10807",
+        "function": "当ECS引气构型ECSBleedCfg为正常引气，DN1RECSmto=DN1RECSmto1，DN1RECSmct=DN1RECSmct1，DN1RECSmcl=DN1RECSmcl1，DN1RECSmcr=DN1RECSmcr1。",
+        "precondition": "1",
+        "inputs": [
+            "ECSBleedCfg",
+            "DN1RECSmto1",
+            "DN1RECSmct1",
+            "DN1RECSmcl1",
+            "DN1RECSmcr1"
+        ],
+        "outputs": [
+            "DN1RECSmto",
+            "DN1RECSmct",
+            "DN1RECSmcl",
+            "DN1RECSmcr"
+        ],
+        "formula": "if(ECSBleedCfg==norm_bleed){DN1RECSmto=DN1RECSmto1;DN1RECSmct=DN1RECSmct1;DN1RECSmcl=DN1RECSmcl1;DN1RECSmcr=DN1RECSmcr1;}"
+    },
+    {
+        "name": "设置ECS参数(异常低引气)",
+        "number": "R_10808",
+        "function": "当ECS引气构型ECSBleedCfg为异常低引气，DN1RECSmto=DN1RECSmto2，DN1RECSmct=DN1RECSmct2，DN1RECSmcl=DN1RECSmcl2，DN1RECSmcr=DN1RECSmcr2。",
+        "precondition": "1",
+        "inputs": [
+            "ECSBleedCfg",
+            "DN1RECSmto2",
+            "DN1RECSmct2",
+            "DN1RECSmcl2",
+            "DN1RECSmcr2"
+        ],
+        "outputs": [
+            "DN1RECSmto",
+            "DN1RECSmct",
+            "DN1RECSmcl",
+            "DN1RECSmcr"
+        ],
+        "formula": "if(ECSBleedCfg==abn_low_bleed){DN1RECSmto=DN1RECSmto2;DN1RECSmct=DN1RECSmct2;DN1RECSmcl=DN1RECSmcl2;DN1RECSmcr=DN1RECSmcr2;}"
+    },
+    {
+        "name": "设置ECS参数(异常高引气)",
+        "number": "R_10809",
+        "function": "当ECS引气构型ECSBleedCfg为异常高引气，DN1RECSmto=DN1RECSmto3，DN1RECSmct=DN1RECSmct3，DN1RECSmcl=DN1RECSmcl3，DN1RECSmcr=DN1RECSmcr3",
+        "precondition": "1",
+        "inputs": [
+            "ECSBleedCfg",
+            "DN1RECSmto3",
+            "DN1RECSmct3",
+            "DN1RECSmcl3",
+            "DN1RECSmcr3"
+        ],
+        "outputs": [
+            "DN1RECSmto",
+            "DN1RECSmct",
+            "DN1RECSmcl",
+            "DN1RECSmcr"
+        ],
+        "formula": "if(ECSBleedCfg==abn_high_bleed){DN1RECSmto=DN1RECSmto3;DN1RECSmct=DN1RECSmct3;DN1RECSmcl=DN1RECSmcl3;DN1RECSmcr=DN1RECSmcr3;}"
+    },
+    {
+        "name": "计算N1RDemWAI1_MTO",
+        "number": "R_10813",
+        "function": "应用软件应通过H、Ma、根据最大起飞WAI正常引气修正系数表(可调，PS_WAINormalMTO)线性插值得到DDTwaimto1，通过H、Ma和Dtamb+DDTwaimto1根据最大起飞调节计划表计算得到N1RDemWAI1_MTO",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAINormalMTO",
+            "H",
+            "Ma",
+            "Dtamb",
+            "PS_MTO_H",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDemWAI1_MTO"
+        ],
+        "formula": "DDTwaimto1=interpolation(PS_WAINormalMTO,H,Ma);Temp=Dtamb+DDTwaimto1;N1RDemWAI1_MTO=interpolation(PS_MTO_H,H,Ma,Temp);"
+    },
+    {
+        "name": "计算N1RDemWAI1_MCT",
+        "number": "R_10814",
+        "function": "应用软件应通过H、Ma、根据最大连续WAI正常引气修正系数表(可调，PS_WAINormalMCT)线性插值得到DDTwaimct1，通过H、Ma和Dtamb+DDTwaimct1根据最大连续调节计划表计算得到N1RDemWAI1_MCT。",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAINormalMCT",
+            "H",
+            "Ma",
+            "PS_MCT_H",
+            "Dtamb",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDemWAI1_MCT"
+        ],
+        "formula": "DDTwaimct1=interpolation(PS_WAINormalMCT,H,Ma);Temp=Dtamb+DDTwaimct1;N1RDemWAI1_MCT=interpolation(PS_MCT_H,H,Ma,Temp);"
+    },
+    {
+        "name": "计算N1RDemWAI2_MTO",
+        "number": "R_10815",
+        "function": "应用软件应通过H、Ma、根据最大起飞WAI异常高引气修正系数表(可调，PS_WAIAbnHighMTO)线性插值得到DDTwaimto2，通过H、Ma和Dtamb+DDTwaimto2根据最大起飞调节计划表计算得到N1RDemWAI2_MTO。",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAIAbnHighMTO",
+            "H",
+            "Ma",
+            "PS_MTO_H",
+            "Dtamb",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDemWAI2_MTO"
+        ],
+        "formula": "DDTwaimto2=interpolation(PS_WAIAbnHighMTO,H,Ma);Temp=Dtamb+DDTwaimto2;N1RDemWAI2_MTO=interpolation(PS_MTO_H,H,Ma,Temp);"
+    },
+    {
+        "name": "计算N1RDemWAI2_MCT",
+        "number": "R_10816",
+        "function": "应用软件应通过H、Ma、根据最大连续WAI异常高引气修正系数表(可调，PS_WAIAbnHighMCT)线性插值得到DDTwaimct2，通过H、Ma和Dtamb+DDTwaimct2根据最大连续调节计划表计算得到N1RDemWAI2_MCT。",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAIAbnHighMCT",
+            "H",
+            "Ma",
+            "PS_MCT_H",
+            "Dtamb",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDemWAI2_MCT"
+        ],
+        "formula": "DDTwaimct2=interpolation(PS_WAIAbnHighMCT,H,Ma);Temp=Dtamb+DDTwaimct2;N1RDemWAI2_MCT=interpolation(PS_MCT_H,H,Ma,Temp);"
+    },
+    {
+        "name": "计算DN1RWAImcl1",
+        "number": "R_10817",
+        "function": "应用软件应根据最大爬升MCL的WAI正常引气修正系数表(可调，PS_WAINormalMCL)通过高度H、马赫数Ma线性插值计算得到DN1RWAImcl1。",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAINormalMCL",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RWAImcl1"
+        ],
+        "formula": "DN1RWAImcl1=interpolation(PS_WAINormalMCL,H,Ma);"
+    },
+    {
+        "name": "计算DN1RWAImcr1",
+        "number": "R_10818",
+        "function": "应用软件应根据最大巡航MCR的WAI正常引气修正系数表(可调，PS_WAINormalMCR)通过高度H、马赫数Ma线性插值计算得到DN1RWAImcr1",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAINormalMCR",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RWAImcr1"
+        ],
+        "formula": "DN1RWAImcr1=interpolation(PS_WAINormalMCR,H,Ma);"
+    },
+    {
+        "name": "计算DN1RWAImcl2",
+        "number": "R_10819",
+        "function": "应用软件应根据最大爬升MCL的WAI异常高引气修正系数表(可调，PS_WAIAbnHighMCL)通过高度H、马赫数Ma线性插值计算得到DN1RWAImcl2。",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAIAbnHighMCL",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RWAImcl2"
+        ],
+        "formula": "DN1RWAImcl2=interpolation(PS_WAIAbnHighMCL,H,Ma);"
+    },
+    {
+        "name": "计算DN1RWAImcr2",
+        "number": "R_10820",
+        "function": "应用软件应根据最大巡航MCR的WAI异常高引气修正系数表(可调，PS_WAIAbnHighMCR)通过高度H、马赫数Ma线性插值计算得到DN1RWAImcr2。",
+        "precondition": "1",
+        "inputs": [
+            "PS_WAIAbnHighMCR",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RWAImcr2"
+        ],
+        "formula": "DN1RWAImcr2=interpolation(PS_WAIAbnHighMCR,H,Ma);"
+    },
+    {
+        "name": "设置WAI参数(无引气)",
+        "number": "R_10821",
+        "function": "当WAI引气构型WAIBleedCfg为无引气，DN1RWAImto=0，DN1RWAImct=0，DN1RWAImcl=0，DN1RWAImcr=0。",
+        "precondition": "1",
+        "inputs": [
+            "WAIBleedCfg"
+        ],
+        "outputs": [
+            "DN1RWAImto",
+            "DN1RWAImct",
+            "DN1RWAImcl",
+            "DN1RWAImcr"
+        ],
+        "formula": "if(WAIBleedCfg==no_bleed){DN1RWAImto=0;DN1RWAImct=0;DN1RWAImcl=0;DN1RWAImcr=0;}"
+    },
+    {
+        "name": "设置WAI参数(正常引气)",
+        "number": "R_10822",
+        "function": "当WAI引气构型WAIBleedCfg为正常引气，",
+        "precondition": "1",
+        "inputs": [
+            "WAIBleedCfg",
+            "N1RDemWAI1_MTO",
+            "N1RDemBase_MTO",
+            "N1RDemWAI1_MCT",
+            "N1RDemBase_MCT",
+            "DN1RWAImcl1",
+            "DN1RWAImcr1"
+        ],
+        "outputs": [
+            "DN1RWAImto",
+            "DN1RWAImct",
+            "DN1RWAImcl",
+            "DN1RWAImcr"
+        ],
+        "formula": "if(WAIBleedCfg==norm_bleed){DN1RWAImto=N1RDemWAI1_MTO-N1RDemBase_MTO;DN1RWAImct=N1RDemWAI1_MCT-N1RDemBase_MCT;DN1RWAImcl=DN1RWAImcl1;DN1RWAImcr=DN1RWAImcr1;}"
+    },
+    {
+        "name": "设置WAI参数(异常高引气)",
+        "number": "R_10823",
+        "function": "当WAI引气构型WAIBleedCfg为异常高引气",
+        "precondition": "1",
+        "inputs": [
+            "WAIBleedCfg",
+            "N1RDemWAI2_MTO",
+            "N1RDemBase_MTO",
+            "N1RDemWAI2_MCT",
+            "N1RDemBase_MCT",
+            "DN1RWAImcl2",
+            "DN1RWAImcr2"
+        ],
+        "outputs": [
+            "DN1RWAImto",
+            "DN1RWAImct",
+            "DN1RWAImcl",
+            "DN1RWAImcr"
+        ],
+        "formula": "if(WAIBleedCfg==abn_high_bleed){DN1RWAImto=N1RDemWAI2_MTO-N1RDemBase_MTO;DN1RWAImct=N1RDemWAI2_MCT-N1RDemBase_MCT;DN1RWAImcl=DN1RWAImcl2;DN1RWAImcr=DN1RWAImcr2;}"
+    },
+    {
+        "name": "计算N1RDemNAI1_MTO",
+        "number": "R_10824",
+        "function": "应用软件应通过H、Ma根据最大起飞NAI引气修正系数表(可调，PS_NAIOpenMTO )线性插值得到DDTnaimto1，通过H、Ma和Dtamb+ DDTnaimto1根据最大起飞调节计划表计算得到N1RDemNAI1_MTO。",
+        "precondition": "1",
+        "inputs": [
+            "PS_NAIOpenMTO",
+            "H",
+            "Ma",
+            "PS_MTO_H",
+            "Dtamb",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDemNAI1_MTO"
+        ],
+        "formula": "DDTnaimto1=interpolation(PS_NAIOpenMTO,H,Ma);Temp=Dtamb+DDTnaimto1;N1RDemNAI1_MTO=interpolation(PS_MTO_H,H,Ma,Temp);"
+    },
+    {
+        "name": "计算N1RDemNAI1_MCT",
+        "number": "R_10825",
+        "function": "应用软件应通过H、Ma根据最大连续NAI引气修正系数表(可调，PS_NAIOpenMCT)线性插值得到DDTnaimct1，通过H、Ma和Dtamb+ DDTnaimct1根据最大连续调节计划表计算得到N1RDemNAI1_MCT。",
+        "precondition": "1",
+        "inputs": [
+            "PS_NAIOpenMCT",
+            "H",
+            "Ma",
+            "PS_MCT_H",
+            "Dtamb",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDemNAI1_MCT"
+        ],
+        "formula": "DDTnaimct1=interpolation(PS_NAIOpenMCT,H,Ma);Temp=Dtamb+DDTnaimct1;N1RDemNAI1_MCT=interpolation(PS_MCT_H,H,Ma,Temp);"
+    },
+    {
+        "name": "计算DN1RNAImcl1",
+        "number": "R_10826",
+        "function": "应用软件应根据最大爬升MCL的NAI引气修正表(可调，PS_NAIOpenMCL)通过高度H、马赫数Ma线性插值计算得到DN1RNAImcl1。",
+        "precondition": "1",
+        "inputs": [
+            "PS_NAIOpenMCL",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RNAImcl1"
+        ],
+        "formula": "DN1RNAImcl1=interpolation(PS_NAIOpenMCL,H,Ma);"
+    },
+    {
+        "name": "计算DN1RNAImcr1",
+        "number": "R_10827",
+        "function": "应用软件应根据最大巡航MCR的NAI引气修正表(可调，PS_NAIOpenMCR)通过高度H、马赫数Ma线性插值计算得到DN1RNAImcr1。",
+        "precondition": "1",
+        "inputs": [
+            "PS_NAIOpenMCR",
+            "H",
+            "Ma"
+        ],
+        "outputs": [
+            "DN1RNAImcr1"
+        ],
+        "formula": "DN1RNAImcr1=interpolation(PS_NAIOpenMCR,H,Ma);"
+    },
+    {
+        "name": "设置NAI参数(关闭)",
+        "number": "R_10828",
+        "function": "当短舱防冰控制指令为关闭，DN1RNAImto=0，DN1RNAImct=0，DN1RNAImcl=0，DN1RNAImcr=0。",
+        "precondition": "1",
+        "inputs": [
+            "nai_control"
+        ],
+        "outputs": [
+            "DN1RNAImto",
+            "DN1RNAImct",
+            "DN1RNAImcl",
+            "DN1RNAImcr"
+        ],
+        "formula": "if(nai_control==0){DN1RNAImto=0;DN1RNAImct=0;DN1RNAImcl=0;DN1RNAImcr=0;}"
+    },
+    {
+        "name": "设置NAI参数(打开)",
+        "number": "R_10829",
+        "function": "当短舱防冰控制指令为打开",
+        "precondition": "1",
+        "inputs": [
+            "nai_control",
+            "N1RDemNAI1_MTO",
+            "N1RDemBase_MTO",
+            "N1RDemNAI1_MCT",
+            "N1RDemBase_MCT",
+            "DN1RNAImcl1",
+            "DN1RNAImcr1"
+        ],
+        "outputs": [
+            "DN1RNAImto",
+            "DN1RNAImct",
+            "DN1RNAImcl",
+            "DN1RNAImcr"
+        ],
+        "formula": "if(nai_control==1){DN1RNAImto=N1RDemNAI1_MTO-N1RDemBase_MTO;DN1RNAImct=N1RDemNAI1_MCT-N1RDemBase_MCT;DN1RNAImcl=DN1RNAImcl1;DN1RNAImcr=DN1RNAImcr1;}"
+    },
+    {
+        "name": "计算最大起飞引气修正量",
+        "number": "R_10830",
+        "function": "应用软件应根据以下公式计算最大起飞引气修正量 DN1Rbleedmto: DN1Rbleedmto=DN1RECSmto+DN1RWAImto+DN1RNAImto。",
+        "precondition": "1",
+        "inputs": [
+            "DN1RECSmto",
+            "DN1RWAImto",
+            "DN1RNAImto"
+        ],
+        "outputs": [
+            "DN1Rbleedmto"
+        ],
+        "formula": "DN1Rbleedmto=DN1RECSmto+DN1RWAImto+DN1RNAImto;"
+    },
+    {
+        "name": "计算最大连续引气修正量",
+        "number": "R_10831",
+        "function": "应用软件应根据以下公式计算最大连续引气修正量 DN1Rbleedmct: DN1Rbleedmct=DN1RECSmct+DN1RWAImct+DN1RNAImct。",
+        "precondition": "1",
+        "inputs": [
+            "DN1RECSmct",
+            "DN1RWAImct",
+            "DN1RNAImct"
+        ],
+        "outputs": [
+            "DN1Rbleedmct"
+        ],
+        "formula": "DN1Rbleedmct=DN1RECSmct+DN1RWAImct+DN1RNAImct;"
+    },
+    {
+        "name": "计算最大爬升引气修正量",
+        "number": "R_10832",
+        "function": "应用软件应根据以下公式计算最大爬升引气修正量 DN1Rbleedmcl: DN1Rbleedmcl=DN1RECSmcl+DN1RWAImcl+DN1RNAImcl。",
+        "precondition": "1",
+        "inputs": [
+            "DN1RECSmcl",
+            "DN1RWAImcl",
+            "DN1RNAImcl"
+        ],
+        "outputs": [
+            "DN1Rbleedmcl"
+        ],
+        "formula": "DN1Rbleedmcl=DN1RECSmcl+DN1RWAImcl+DN1RNAImcl;"
+    },
+    {
+        "name": "计算最大巡航引气修正量",
+        "number": "R_10833",
+        "function": "应用软件应根据以下公式计算最大巡航引气修正量DN1Rbleedmcr: DN1Rbleedmcr=DN1RECSmcr+DN1RWAImcr+DN1RNAImcr。",
+        "precondition": "1",
+        "inputs": [
+            "DN1RECSmcr",
+            "DN1RWAImcr",
+            "DN1RNAImcr"
+        ],
+        "outputs": [
+            "DN1Rbleedmcr"
+        ],
+        "formula": "DN1Rbleedmcr=DN1RECSmcr+DN1RWAImcr+DN1RNAImcr;"
+    },
+    {
+        "name": "设置减推力起飞DTO1、DTO2、灵活起飞FLEXTO、复飞GA、增推力起飞Bump的引气修正量",
+        "number": "R_10834",
+        "function": "减推力起飞DTO1、DTO2、灵活起飞FLEXTO、复飞GA、增推力起飞Bump的引气修正量与最大起飞MTO相同，即DN1Rbleeddto1=DN1Rbleeddto2= DN1Rbleedflexto=DN1Rbleedga=DN1Rbleedbump=DN1Rbleedmto。",
+        "precondition": "1",
+        "inputs": [
+            "DN1Rbleedmto"
+        ],
+        "outputs": [
+            "DN1Rbleeddto1",
+            "DN1Rbleeddto2",
+            "DN1Rbleedflexto",
+            "DN1Rbleedga",
+            "DN1Rbleedbump"
+        ],
+        "formula": "DN1Rbleeddto1=DN1Rbleedmto;DN1Rbleeddto2=DN1Rbleedmto;DN1Rbleedflexto=DN1Rbleedmto;DN1Rbleedga=DN1Rbleedmto;DN1Rbleedbump=DN1Rbleedmto;"
+    },
+    {
+        "name": "设置减推力爬升DCL1、DCL2的引气修正量",
+        "number": "R_10835",
+        "function": "减推力爬升DCL1、DCL2的引气修正量与最大爬升MCL相同，即DN1Rbleeddcl1=DN1Rbleeddcl2=DN1Rbleedmcl",
+        "precondition": "1",
+        "inputs": [
+            "DN1Rbleedmcl"
+        ],
+        "outputs": [
+            "DN1Rbleeddcl1",
+            "DN1Rbleeddcl2"
+        ],
+        "formula": "DN1Rbleeddcl1=DN1Rbleedmcl;DN1Rbleeddcl2=DN1Rbleedmcl;"
+    },
+    {
+        "name": "推力配平判断",
+        "number": "R_6526",
+        "function": "应用软件进行推力配平判断，置推力配平标志atrim=1或atrim=0",
+        "precondition": "1",
+        "inputs": [
+            "N1_trim_enable",
+            "N1Trim_signal",
+            "airdis_WOW",
+            "thrust_level",
+            "dspeed_state",
+            "dPLA",
+            "PD_atrimpla"
+        ],
+        "outputs": [
+            "atrim"
+        ],
+        "formula": "if((N1_trim_enable==1)&&(N1Trim_signal==1)&&(airdis_WOW==0)&&((thrust_level==level_MCR)||(thrust_level==level_MCT)||(thrust_level==level_MCL)||(thrust_level==level_CR)||(thrust_level==level_CT)||(thrust_level==level_CL)||(thrust_level==level_DCL1)||(thrust_level==level_DCL2))&&((dspeed_state==0)||(((dspeed_state==1)||(dspeed_state==2))&&(dPLA<PD_atrimpla)))){atrim=1;}else{atrim=0;}"
+    },
+    {
+        "name": "计算推力配平修正量",
+        "number": "R_6519",
+        "function": "推力配平修正量DN1RDemTrim计算公式应为：",
+        "precondition": "1",
+        "inputs": [
+            "PD_N1TrimLowCo",
+            "N1Trim",
+            "PD_N1TrimUpCo",
+            "N1Design",
+            "atrim",
+            "T12"
+        ],
+        "outputs": [
+            "DN1RDemTrim"
+        ],
+        "formula": "DN1DemTrim=min(max(PD_N1TrimLowCo,N1Trim),PD_N1TrimUpCo)*N1Design*0.01*atrim;DN1RDemTrim=DN1DemTrim/sqrt(T12/288.15);"
+    },
+    {
+        "name": "设置最大巡航、最大爬升、减推力爬升1、减推力爬升2、最大连续的推力配平修正量",
+        "number": "R_10837",
+        "function": "设置最大巡航、最大爬升、减推力爬升1、减推力爬升2、最大连续的推力配平修正量",
+        "precondition": "1",
+        "inputs": [
+            "DN1RDemTrim"
+        ],
+        "outputs": [
+            "DN1RTrimmcr",
+            "DN1RTrimmcl",
+            "DN1RTrimdcl1",
+            "DN1RTrimdcl2",
+            "DN1RTrimmct"
+        ],
+        "formula": "DN1RTrimmcr=DN1RDemTrim;DN1RTrimmcl=DN1RDemTrim;DN1RTrimdcl1=DN1RDemTrim;DN1RTrimdcl2=DN1RDemTrim;DN1RTrimmct=DN1RDemTrim;"
+    },
+    {
+        "name": "设置最大起飞、减推力起飞1、减推力起飞2、复飞、灵活起飞、增推力起飞的推力配平修正量",
+        "number": "R_10838",
+        "function": "设置最大起飞、减推力起飞1、减推力起飞2、复飞、灵活起飞、增推力起飞的推力配平修正量",
+        "precondition": "1",
+        "inputs": [],
+        "outputs": [
+            "DN1RTrimmto",
+            "DN1RTrimdto1",
+            "DN1RTrimdto2",
+            "DN1RTrimga",
+            "DN1RTrimflexto",
+            "DN1RTrimbump"
+        ],
+        "formula": "DN1RTrimmto=0;DN1RTrimdto1=0;DN1RTrimdto2=0;DN1RTrimga=0;DN1RTrimflexto=0;DN1RTrimbump=0;"
+    },
+    {
+        "name": "油门杆插值目标计算-最大起飞",
+        "number": "R_10850",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的最大起飞N1R控制目标N1RDem_MTO。其中PD_N1RDemTOLmt为可调。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MAX",
+            "N1RDemBase_MTO",
+            "DN1Rbleedmto",
+            "DN1RTrimmto",
+            "PD_N1RDemTOLmt",
+            "N1RDesign"
+        ],
+        "outputs": [
+            "N1RDem_MTO"
+        ],
+        "formula": "N1RDem_MTO=min(N1RDem_MAX,max(N1RDemBase_MTO+DN1Rbleedmto+DN1RTrimmto,PD_N1RDemTOLmt*N1RDesign));"
+    },
+    {
+        "name": "油门杆插值目标计算-复飞",
+        "number": "R_10865",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的复飞N1R控制目标N1RDem_GA.",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MAX",
+            "N1RDemBase_GA",
+            "DN1Rbleedga",
+            "DN1RTrimga",
+            "PD_N1RDemTOLmt",
+            "N1RDesign"
+        ],
+        "outputs": [
+            "N1RDem_GA"
+        ],
+        "formula": "N1RDem_GA=min(N1RDem_MAX,max(N1RDemBase_GA+DN1Rbleedga+DN1RTrimga,PD_N1RDemTOLmt*N1RDesign));"
+    },
+    {
+        "name": "油门杆插值目标计算-减推力起飞1",
+        "number": "R_10871",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的减推力起飞1 N1R控制目标N1RDem_DTO1",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MAX",
+            "N1RDemBase_DTO1",
+            "DN1Rbleeddto1",
+            "DN1RTrimdto1",
+            "PD_N1RDemTOLmt",
+            "N1RDesign"
+        ],
+        "outputs": [
+            "N1RDem_DTO1"
+        ],
+        "formula": "N1RDem_DTO1=min(N1RDem_MAX,max(N1RDemBase_DTO1+DN1Rbleeddto1+DN1RTrimdto1,PD_N1RDemTOLmt*N1RDesign));"
+    },
+    {
+        "name": "油门杆插值目标计算-减推力起飞2",
+        "number": "R_10874",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的减推力起飞2 N1R控制目标N1RDem_DTO2",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MAX",
+            "N1RDemBase_DTO2",
+            "DN1Rbleeddto2",
+            "DN1RTrimdto2",
+            "PD_N1RDemTOLmt",
+            "N1RDesign"
+        ],
+        "outputs": [
+            "N1RDem_DTO2"
+        ],
+        "formula": "N1RDem_DTO2=min(N1RDem_MAX,max(N1RDemBase_DTO2+DN1Rbleeddto2+DN1RTrimdto2,PD_N1RDemTOLmt*N1RDesign));"
+    },
+    {
+        "name": "油门杆插值目标计算-增推力起飞",
+        "number": "R_10877",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的增推力起飞N1R控制目标N1RDem_Bump。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MAX",
+            "N1RDemBase_Bump",
+            "DN1Rbleedbump",
+            "DN1RTrimbump",
+            "PD_N1RDemTOLmt",
+            "N1RDesign"
+        ],
+        "outputs": [
+            "N1RDem_Bump"
+        ],
+        "formula": "N1RDem_Bump=min(N1RDem_MAX,max(N1RDemBase_Bump+DN1Rbleedbump+DN1RTrimbump,PD_N1RDemTOLmt*N1RDesign));"
+    },
+    {
+        "name": "油门杆插值目标计算-灵活起飞",
+        "number": "R_10880",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的灵活起飞N1R控制目标N1RDem_FLEXTO。其中PD_N1RdemFlexLmt为可调。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MAX",
+            "N1RDemBase_FLEXTO",
+            "DN1Rbleedflexto",
+            "DN1RTrimflexto",
+            "PD_N1RDemFlexLmt",
+            "N1RDesign"
+        ],
+        "outputs": [
+            "N1RDem_FLEXTO"
+        ],
+        "formula": "N1RDem_FLEXTO=min(N1RDem_MAX,max(N1RDemBase_FLEXTO+DN1Rbleedflexto+DN1RTrimflexto,PD_N1RDemFlexLmt*N1RDesign));"
+    },
+    {
+        "name": "油门杆插值目标计算-最大连续",
+        "number": "R_10884",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的最大连续N1R控制目标N1RDem_MCT。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDemBase_MCT",
+            "DN1Rbleedmct",
+            "DN1RTrimmct",
+            "N1RDem_PLATO"
+        ],
+        "outputs": [
+            "N1RDem_MCT"
+        ],
+        "formula": "N1RDem_MCT=min(N1RDemBase_MCT+DN1Rbleedmct+DN1RTrimmct,N1RDem_PLATO);"
+    },
+    {
+        "name": "油门杆插值目标计算-最大爬升",
+        "number": "R_10887",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的最大爬升N1R控制目标N1RDem_MCL。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDemBase_MCL",
+            "DN1Rbleedmcl",
+            "DN1RTrimmcl",
+            "N1RDem_MCT"
+        ],
+        "outputs": [
+            "N1RDem_MCL"
+        ],
+        "formula": "N1RDem_MCL=min(N1RDemBase_MCL+DN1Rbleedmcl+DN1RTrimmcl,N1RDem_MCT);"
+    },
+    {
+        "name": "油门杆插值目标计算-减推力爬升1",
+        "number": "R_10890",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的减推力爬升1 N1R控制目标N1RDem_DCL1。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDemBase_DCL1",
+            "DN1Rbleeddcl1",
+            "DN1RTrimdcl1",
+            "N1RDem_MCT"
+        ],
+        "outputs": [
+            "N1RDem_DCL1"
+        ],
+        "formula": "N1RDem_DCL1=min(N1RDemBase_DCL1+DN1Rbleeddcl1+DN1RTrimdcl1，N1RDem_MCT);"
+    },
+    {
+        "name": "油门杆插值目标计算-减推力爬升2",
+        "number": "R_10893",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的减推力爬升2 N1R控制目标N1RDem_DCL2。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDemBase_DCL2",
+            "DN1Rbleeddcl2",
+            "DN1RTrimdcl2",
+            "N1RDem_MCT"
+        ],
+        "outputs": [
+            "N1RDem_DCL2"
+        ],
+        "formula": "N1RDem_DCL2=min(N1RDemBase_DCL2+DN1Rbleeddcl2+DN1RTrimdcl2，N1RDem_MCT);"
+    },
+    {
+        "name": "油门杆插值目标计算-最大巡航",
+        "number": "R_10896",
+        "function": "应用软件应按照以下公式计算用于油门杆插值的最大巡航N1R控制目标N1RDem_MCR。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDemBase_MCR",
+            "DN1Rbleedmcr",
+            "DN1RTrimmcr",
+            "N1RDem_PLACL"
+        ],
+        "outputs": [
+            "N1RDem_MCR"
+        ],
+        "formula": "N1RDem_MCR=min(N1RDemBase_MCR+DN1Rbleedmcr+DN1RTrimmcr，N1RDem_PLACL);"
+    },
+    {
+        "name": "油门杆插值目标计算-最大反推(MREV)",
+        "number": "R_6279",
+        "function": "应用软件应根据最大反推调节计划(PS_MREV_H1~10)，通过高度H、马赫数Ma计算、环境温差Dtamb线性插值计算最大反推N1R控制目标N1RDem_MREV。",
+        "precondition": "1",
+        "inputs": [
+            "PS_MREV_H",
+            "H",
+            "Ma",
+            "Dtamb"
+        ],
+        "outputs": [
+            "N1RDem_MREV"
+        ],
+        "formula": "N1RDem_MREV=interpolation(PS_MREV_H,H,Ma,Dtamb);"
+    },
+    {
+        "name": "油门杆插值目标计算-最大推力增量计算",
+        "number": "R_9500",
+        "function": "应用软件应根据最大推力增量调节计划表(PS_MAX_Ma1~3)，通过高度H、马赫数Ma计算、环境温差Dtamb线性插值计算最大推力N1R控制目标增量dN1RDem_MAX。",
+        "precondition": "1",
+        "inputs": [
+            "PS_MAX_Ma",
+            "H",
+            "Ma",
+            "Dtamb"
+        ],
+        "outputs": [
+            "dN1RDem_MAX"
+        ],
+        "formula": "dN1RDem_MAX=interpolation(PS_MAX_Ma,H,Ma,Dtamb);"
+    },
+    {
+        "name": "油门杆插值目标计算-最大推力计算",
+        "number": "R_7656",
+        "function": "应用软件应根据公式计算最大推力N1R控制目标N1RDem_MAX。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MTO",
+            "dN1RDem_MAX"
+        ],
+        "outputs": [
+            "N1RDem_MAX"
+        ],
+        "formula": "N1RDem_MAX=N1RDem_MTO+dN1RDem_MAX;"
+    },
+    {
+        "name": "油门杆插值目标计算-N1RDem_PLATO计算",
+        "number": "R_8443",
+        "function": "应用软件应根据飞机信号按照表7825计算起飞域N1R控制目标N1RDem_PLATO。",
+        "precondition": "1",
+        "inputs": [
+            "TL_require",
+            "DTO1",
+            "DTO2",
+            "GA",
+            "Bump",
+            "FLEXTO",
+            "flex_dT_flag",
+            "N1RDem_MTO",
+            "N1RDem_DTO1",
+            "N1RDem_DTO2",
+            "N1RDem_GA",
+            "N1RDem_FLEXTO",
+            "N1RDem_Bump"
+        ],
+        "outputs": [
+            "N1RDem_PLATO"
+        ],
+        "formula": "if(TL_require!=DTO1&&TL_require!=DTO2&&TL_require!=GA&&TL_require!=Bump&&(TL_require!=FLEXTO||(TL_require==FLEXTO&&flex_dT_flag==0))){N1RDem_PLATO=N1RDem_MTO;}else{if(TL_require==DTO1){N1RDem_PLATO=N1RDem_DTO1;}else{if(TL_require==DTO2){N1RDem_PLATO=N1RDem_DTO2;}else{if(TL_require==GA){N1RDem_PLATO=N1RDem_GA;}else{if(TL_require==FLEXTO&&flex_dT_flag==1){N1RDem_PLATO=N1RDem_FLEXTO;}else{if(TL_require==Bump){N1RDem_PLATO=N1RDem_Bump;}}}}}}"
+    },
+    {
+        "name": "油门杆插值目标计算-N1RDem_PLACL计算",
+        "number": "R_8447",
+        "function": "应用软件应根据飞机信号按照表8217计算爬升域N1R控制目标N1RDem_PLACL。",
+        "precondition": "1",
+        "inputs": [
+            "TL_require",
+            "DCL1",
+            "DCL2",
+            "N1RDem_MCL",
+            "N1RDem_DCL1",
+            "N1RDem_DCL2"
+        ],
+        "outputs": [
+            "N1RDem_PLACL"
+        ],
+        "formula": "if(TL_require!=DCL1&&TL_require!=DCL2){N1RDem_PLACL=N1RDem_MCL;}if(TL_require==DCL1&&TL_require!=DCL2){N1RDem_PLACL=N1RDem_DCL1;}if(TL_require!=DCL1&&TL_require==DCL2){N1RDem_PLACL=N1RDem_DCL2;}"
+    },
+    {
+        "name": "油门杆插值目标计算-转换点转速N1Rtr计算-慢车域实时N2R25控制目标计算",
+        "number": "R_9501",
+        "function": "应用软件应根据飞机信号按照表9953计算慢车域实时N2R25控制目标N2R25Dem_PLAIdle(慢车转速)。",
+        "precondition": "1",
+        "inputs": [
+            "airdis_WOW",
+            "PLA",
+            "N2R25Dem_RI",
+            "N2R25Dem_GI",
+            "approach_air",
+            "N2R25Dem_FI",
+            "N2R25Dem_AI"
+        ],
+        "outputs": [
+            "N2R25Dem_PLAIdle"
+        ],
+        "formula": "if(airdis_WOW==1&&PLA<0){N2R25Dem_PLAIdle=N2R25Dem_RI;}if(airdis_WOW==1&&PLA>=0){N2R25Dem_PLAIdle=N2R25Dem_GI;}if(airdis_WOW==0&&approach_air==1){N2R25Dem_PLAIdle=N2R25Dem_FI;}if(airdis_WOW==0&&approach_air==0){N2R25Dem_PLAIdle=N2R25Dem_AI;}"
+    },
+    {
+        "name": "油门杆插值目标计算-转换点转速N1Rtr计算-高低压换算转速",
+        "number": "R_6376",
+        "function": "应用软件应将N2R25Dem_PLAIdle通过“高低压换算转速N2R25-N1R转换关系”表N2R25N1Rbak(可调)转换为N1RDem_PLAIdle。",
+        "precondition": "1",
+        "inputs": [
+            "N2R25N1Rbak",
+            "N2R25Dem_PLAIdle"
+        ],
+        "outputs": [
+            "N1RDem_PLAIdle"
+        ],
+        "formula": "N1RDem_PLAIdle=interpolation(N2R25N1Rbak,N2R25Dem_PLAIdle);"
+    },
+    {
+        "name": "油门杆插值目标计算-转换点转速N1Rtr计算-N1r-PLAIdle",
+        "number": "R_10898",
+        "function": "转换点转速N1Rtr应为转换前一时刻慢车状态(距当前时刻最近的慢车状态时刻)的N1r与N1RDem_PLAIdle两者的高选值。",
+        "precondition": "1",
+        "inputs": [
+            "N1r",
+            "N1RDem_PLAIdle"
+        ],
+        "outputs": [
+            "N1Rtr"
+        ],
+        "formula": "if(N1r>N1RDem_PLAIdle){N1Rtr=N1r;}else{N1Rtr=N1RDem_PLAIdle;}"
+    },
+    {
+        "name": "油门杆插值目标计算-转换点转速N1Rtr计算-MCR",
+        "number": "R_6388",
+        "function": "若N2R25Dem_PLAIdle选择N2R25Dem_GI、N2R25Dem_FI或N2R25Dem_AI，且N1Rtr>N1RDem_MCR，则应用软件应置N1Rtr = N1RDem_MCR。",
+        "precondition": "1",
+        "inputs": [
+            "N2R25Dem_PLAIdle",
+            "N2R25Dem_GI",
+            "N2R25Dem_FI",
+            "N2R25Dem_AI",
+            "N1RDem_MCR",
+            "N1Rtr"
+        ],
+        "outputs": [
+            "N1Rtr"
+        ],
+        "formula": "if(N2R25Dem_PLAIdle==N2R25Dem_GI||N2R25Dem_PLAIdle==N2R25Dem_FI||N2R25Dem_PLAIdle==N2R25Dem_AI&&(N1Rtr>N1RDem_MCR)){N1Rtr=N1RDem_MCR;}"
+    },
+    {
+        "name": "油门杆插值目标计算-转换点转速N1Rtr计算-MREV",
+        "number": "R_7831",
+        "function": "若N2R25Dem_PLAIdle选择N2R25Dem_RI，且N1Rtr>N1RDem_MREV，则将应用软件应置N1Rtr = N1RDem_MREV。",
+        "precondition": "1",
+        "inputs": [
+            "N2R25Dem_PLAIdle",
+            "N2R25Dem_RI",
+            "N1Rtr",
+            "N1RDem_MREV"
+        ],
+        "outputs": [
+            "N1Rtr"
+        ],
+        "formula": "if(N2R25Dem_PLAIdle==N2R25Dem_RI&&N1Rtr>N1RDem_MREV){N1Rtr=N1RDem_MREV;}"
+    },
+    {
+        "name": "油门杆插值目标计算-准最大推力",
+        "number": "R_6345",
+        "function": "应用软件应根据PLA在N1RDem_PLATO和N1RDem_MAX之间进行一维线性插值得到准最大推力N1R控制目标N1RDem_TO2MAX。",
+        "precondition": "1",
+        "inputs": [
+            "PS_PLA_N1RDem_PLATO_MAX",
+            "PLA",
+            "N1RDem_PLATO",
+            "N1RDem_MAX"
+        ],
+        "outputs": [
+            "N1RDem_TO2MAX"
+        ],
+        "formula": "N1RDem_TO2MAX=interpolation(PS_PLA_N1RDem_PLATO_MAX,PLA,N1RDem_PLATO,N1RDem_MAX);"
+    },
+    {
+        "name": "油门杆插值目标计算-起飞(TO)",
+        "number": "R_6333",
+        "function": "应用软件应根据PLA在N1RDem_MCT和N1RDem_PLATO之间进行一维线性插值得到起飞N1R控制目标N1RDem_TO。",
+        "precondition": "1",
+        "inputs": [
+            "PS_PLA_N1RDem_MCT_PLATO",
+            "PLA",
+            "N1RDem_MCT",
+            "N1RDem_PLATO"
+        ],
+        "outputs": [
+            "N1RDem_TO"
+        ],
+        "formula": "N1RDem_TO=interpolation(PS_PLA_N1RDem_MCT_PLATO,PLA,N1RDem_MCT,N1RDem_PLATO);"
+    },
+    {
+        "name": "油门杆插值目标计算-连续(CT)",
+        "number": "R_6335",
+        "function": "应用软件应根据PLA在N1RDem_PLACL和N1RDem_MCT之间进行一维线性插值得到连续N1R控制目标N1RDem_CT。",
+        "precondition": "1",
+        "inputs": [
+            "PS_PLA_N1RDem_PLACL_MCT",
+            "PLA",
+            "N1RDem_PLACL",
+            "N1RDem_MCT"
+        ],
+        "outputs": [
+            "N1RDem_CT"
+        ],
+        "formula": "N1RDem_CT=interpolation(PS_PLA_N1RDem_PLACL_MCT,PLA,N1RDem_PLACL,N1RDem_MCT);"
+    },
+    {
+        "name": "油门杆插值目标计算-爬升(CL)",
+        "number": "R_6337",
+        "function": "应用软件应根据PLA在N1RDem_MCR和N1RDem_PLACL之间进行一维线性插值得到爬升N1R控制目标N1RDem_CL。",
+        "precondition": "1",
+        "inputs": [
+            "PS_PLA_N1RDem_MCR_PLACL",
+            "PLA",
+            "N1RDem_MCR",
+            "N1RDem_PLACL"
+        ],
+        "outputs": [
+            "N1RDem_CL"
+        ],
+        "formula": "N1RDem_CL=interpolation(PS_PLA_N1RDem_MCR_PLACL,PLA,N1RDem_MCR,N1RDem_PLACL);"
+    },
+    {
+        "name": "油门杆插值目标计算-巡航(CR)",
+        "number": "R_6339",
+        "function": "应用软件应根据PLA在转换点转速N1Rtr和最大巡航N1R控制目标N1RDem_MCR之间进行一维线性插值得到巡航N1R控制目标N1RDem_CR。",
+        "precondition": "1",
+        "inputs": [
+            "PS_PLA_N1Rtr_N1RDem_MCR",
+            "PLA",
+            "N1Rtr",
+            "N1RDem_MCR"
+        ],
+        "outputs": [
+            "N1RDem_CR"
+        ],
+        "formula": "N1RDem_CR=interpolation(PS_PLA_N1Rtr_N1RDem_MCR,PLA,N1Rtr,N1RDem_MCR);"
+    },
+    {
+        "name": "油门杆插值目标计算-反推(REV)",
+        "number": "R_6352",
+        "function": "应用软件应根据PLA在转换点转速N1Rtr和N1RDem_MREV之间进行一维线性插值得到反推N1R控制目标值N1RDem_REV。",
+        "precondition": "1",
+        "inputs": [
+            "PS_PLA_N1Rtr_N1RDem_MREV",
+            "PLA",
+            "N1Rtr",
+            "N1RDem_MREV"
+        ],
+        "outputs": [
+            "N1RDem_REV"
+        ],
+        "formula": "N1RDem_REV=interpolation(PS_PLA_N1Rtr_N1RDem_MREV,PLA,N1Rtr,N1RDem_MREV);"
+    },
+    {
+        "name": "油门杆插值目标计算-N1RDem_BAK计算",
+        "number": "R_6347",
+        "function": "应用软件应根据N2R25Dem和Ma通过高低压换算转速N2R25-N1R转换关系表N2R25N1Rbak(可调)反算出N1R备份控制目标N1RDem_BAK。",
+        "precondition": "1",
+        "inputs": [
+            "N2R25N1Rbak",
+            "N2R25Dem",
+            "Ma"
+        ],
+        "outputs": [
+            "N1RDem_BAK"
+        ],
+        "formula": "N1RDem_BAK=interpolation(N2R25N1Rbak,N2R25Dem,Ma);"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(最大反推)",
+        "number": "R_9970",
+        "function": "当选定推力等级为最大反推时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MREV",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_MREV){N1RDemInd=N1RDem_MREV;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(反推)",
+        "number": "R_9976",
+        "function": "当选定推力等级为反推时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_REV",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_REV){N1RDemInd=N1RDem_REV;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(反推慢车、地面慢车、空中慢车、进近慢车)",
+        "number": "R_9972",
+        "function": "当选定推力等级为反推慢车、地面慢车、空中慢车、进近慢车时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_BAK",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_RI||thrust_level==level_GI||thrust_level==level_FI||thrust_level==level_AI){N1RDemInd=N1RDem_BAK;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(巡航)",
+        "number": "R_9974",
+        "function": "当选定推力等级为巡航时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_CR",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_CR){N1RDemInd=N1RDem_CR;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(最大巡航)",
+        "number": "R_9969",
+        "function": "当选定推力等级为最大巡航时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MCR",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_MCR){N1RDemInd=N1RDem_MCR;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(爬升)",
+        "number": "R_9977",
+        "function": "当选定推力等级为爬升时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_CL",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_CL){N1RDemInd=N1RDem_CL;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(最大爬升)",
+        "number": "R_9966",
+        "function": "当选定推力等级为最大爬升时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MCL",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_MCL){N1RDemInd=N1RDem_MCL;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(减推力爬升1)",
+        "number": "R_9967",
+        "function": "当选定推力等级为减推力爬升1时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_DCL1",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_DCL1){N1RDemInd=N1RDem_DCL1;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(减推力爬升2)",
+        "number": "R_9968",
+        "function": "当选定推力等级为减推力爬升2时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_DCL2",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_DCL2){N1RDemInd=N1RDem_DCL2;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(连续)",
+        "number": "R_9973",
+        "function": "当选定推力等级为连续时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_CT",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_CT){N1RDemInd=N1RDem_CT;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(最大连续)",
+        "number": "R_9965",
+        "function": "当选定推力等级为最大连续时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MCT",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_MCT){N1RDemInd=N1RDem_MCT;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(起飞)",
+        "number": "R_9978",
+        "function": "当选定推力等级为起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_TO",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_TO){N1RDemInd=N1RDem_TO;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(最大起飞)",
+        "number": "R_9959",
+        "function": "当选定推力等级为最大起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MTO",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_MTO){N1RDemInd=N1RDem_MTO;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(减推力起飞1)",
+        "number": "R_9961",
+        "function": "当选定推力等级为减推力起飞1时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_DTO1",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_DTO1){N1RDemInd=N1RDem_DTO1;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(减推力起飞2)",
+        "number": "R_9962",
+        "function": "当选定推力等级为减推力起飞2时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_DTO2",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_DTO2){N1RDemInd=N1RDem_DTO2;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(复飞)",
+        "number": "R_9960",
+        "function": "当选定推力等级为复飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_GA",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_GA){N1RDemInd=N1RDem_GA;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(增推力起飞)",
+        "number": "R_9963",
+        "function": "当选定推力等级为增推力起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_Bump",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_Bump){N1RDemInd=N1RDem_Bump;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(灵活起飞)",
+        "number": "R_9964",
+        "function": "当选定推力等级为灵活起飞时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_FLEXTO",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_FLEXTO){N1RDemInd=N1RDem_FLEXTO;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(准最大推力)",
+        "number": "R_9975",
+        "function": "当选定推力等级为准最大推力时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_TO2MAX",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_TO2MAX){N1RDemInd=N1RDem_TO2MAX;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(最大推力)",
+        "number": "R_9971",
+        "function": "当选定推力等级为最大推力时，应用软件需要计算N1R指示量N1RDemInd用于飞机指示。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_MAX",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_MAX){N1RDemInd=N1RDem_MAX;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(无指定推力等级补充1)",
+        "number": "D_7842",
+        "function": "当选定推力等级为无指定推力等级，且发动机状态为正常地面起动状态、稳态风车起动、快速风车起动、空中辅助起动状态，应用软件应置N1RDemInd = N1RDem_BAK。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem_BAK",
+            "thrust_level",
+            "engine_state"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_default&&(engine_state==ES_ground_start||engine_state==ES_windmill_start||engine_state==ES_Qwindmill_start||engine_state==ES_assist_start)){N1RDemInd=N1RDem_BAK;}"
+    },
+    {
+        "name": "N1R指示量N1RDemInd计算(无指定推力等级补充2)",
+        "number": "D_7843",
+        "function": "当选定推力等级为无指定推力等级，且发动机状态为初始状态、地面待机状态、空中待机状态、冷运转、假开车/油封/启封、正常停车、紧急停车、地面起动中止、空中起动中止状态，应用软件应置N1RDemInd = 0。",
+        "precondition": "1",
+        "inputs": [
+            "thrust_level",
+            "engine_state"
+        ],
+        "outputs": [
+            "N1RDemInd"
+        ],
+        "formula": "if(thrust_level==level_default&&(engine_state==ES_origin||engine_state==ES_ground_standby||engine_state==ES_flight_standby||engine_state==ES_cold_operation||engine_state==ES_DR_OS_Us||engine_state==ES_normal_stop||engine_state==ES_emergency_stop||engine_state==ES_ground_start_termination||engine_state==ES_flight_start_terminnation)){N1RDemInd=0;}"
+    },
+    {
+        "name": "N1公差修正量计算",
+        "number": "R_7661",
+        "function": "应用软件应根据N1公差修正等级PD_N1RMod1~8选择对应的N1公差修正量DN1RMod。",
+        "precondition": "1",
+        "inputs": [
+            "DN1RMod"
+        ],
+        "outputs": [],
+        "formula": ""
+    },
+    {
+        "name": "N1R控制量N1RDem计算(推力等级为无指定推力等级、最大反推、反推、反推慢车、地面慢车、空中慢车、进近慢车、巡航、最大巡航、最大推力)",
+        "number": "R_10901",
+        "function": "当选定推力等级为无指定推力等级、最大反推、反推、反推慢车、地面慢车、空中慢车、进近慢车、巡航、最大巡航、最大推力，N1RDem = N1RDemInd。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDemInd",
+            "thrust_level"
+        ],
+        "outputs": [
+            "N1RDem"
+        ],
+        "formula": "if(thrust_level==level_default||thrust_level==level_MREV||thrust_level==level_REV||thrust_level==level_RI||thrust_level==level_GI||thrust_level==level_FI||thrust_level==level_AI||thrust_level==level_CR||thrust_level==level_MCR||thrust_level==level_MAX){N1RDem=N1RDemInd;}"
+    },
+    {
+        "name": "N1R控制量N1RDem计算(推力等级为最大爬升、减推力爬升1、减推力爬升2、连续、最大连续、起飞、最大起飞、减推力起飞1、减推力起飞2、复飞、增推力起飞、灵活起飞)",
+        "number": "R_10902",
+        "function": "当选定推力等级为最大爬升、减推力爬升1、减推力爬升2、连续、最大连续、起飞、最大起飞、减推力起飞1、减推力起飞2、复飞、增推力起飞、灵活起飞，N1RDem = N1RDemInd + DN1RMod。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDemInd",
+            "thrust_level",
+            "DN1RMod"
+        ],
+        "outputs": [
+            "N1RDem"
+        ],
+        "formula": "if(thrust_level==level_MCL||thrust_level==level_DCL1||thrust_level==level_DCL2||thrust_level==level_CT||thrust_level==level_MCT||thrust_level==level_TO||thrust_level==level_MTO||thrust_level==level_DTO1||thrust_level==level_DTO2||thrust_level==level_GA||thrust_level==level_Bump||thrust_level==level_FLEXTO){N1RDem=N1RDemInd+DN1RMod;}"
+    },
+    {
+        "name": "N1R控制量N1RDem计算(推力等级为爬升)",
+        "number": "R_10903",
+        "function": "当选定推力等级为爬升，应用软件应根据PLA在N1RDem_MCR和N1RDem_PLACL+DN1RMod之间进行一维线性插值得到N1RDem。",
+        "precondition": "1",
+        "inputs": [
+            "PLA",
+            "thrust_level",
+            "N1RDem_MCR",
+            "N1RDem_PLACL",
+            "DN1RMod",
+            "level_CL",
+            "PS_PLA_N1RDem_MCR_N1RDem_PLACL_Plus_DN1RMod",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDem"
+        ],
+        "formula": "if(thrust_level==level_CL){Temp=N1RDem_PLACL+DN1RMod;N1RDem=interpolation(PS_PLA_N1RDem_MCR_N1RDem_PLACL_Plus_DN1RMod,PLA,N1RDem_MCR,Temp);}"
+    },
+    {
+        "name": "N1R控制量N1RDem计算(推力等级为准最大推力)",
+        "number": "R_10904",
+        "function": "当选定推力等级为准最大推力，应用软件应根据PLA在N1RDem_PLATO+DN1RMod和N1RDem_MAX之间进行一维线性插值得到N1RDem。",
+        "precondition": "1",
+        "inputs": [
+            "PLA",
+            "thrust_level",
+            "N1RDem_PLATO",
+            "N1RDem_MAX",
+            "DN1RMod",
+            "level_TO2MAX",
+            "PS_PLA_N1RDem_PLATO_Plus_DN1RMod_N1RDem_MAX",
+            "Temp"
+        ],
+        "outputs": [
+            "N1RDem"
+        ],
+        "formula": "if(thrust_level==level_TO2MAX){Temp=N1RDem_PLATO+DN1RMod;N1RDem=interpolation(PS_PLA_N1RDem_PLATO_Plus_DN1RMod_N1RDem_MAX,PLA,Temp,N1RDem_MAX);}"
+    },
+    {
+        "name": "高低压切换控制(无N2双通道传感器故障)",
+        "number": "R_10254",
+        "function": "当无N2双通道传感器故障，控制模式应按以下逻辑设置：",
+        "precondition": "N2_dual_channel_sensor_fault_flag == 0",
+        "inputs": [
+            "engine_state",
+            "PLA",
+            "thrust_level",
+            "N2R25Dem",
+            "N1RDem",
+            "software_control_mode",
+            "PD_IdleSwitchPlaThsld"
+        ],
+        "outputs": [
+            "N2r25Dmd",
+            "N1rDmd",
+            "software_control_mode"
+        ],
+        "formula": "if(engine_state==ES_idle){software_control_mode=High_Press_Control_Mode;N2r25Dmd=N2R25Dem;N1rDmd=N1RDem;}if(engine_state==ES_above_idle&&((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))){software_control_mode=Low_Press_Control_Mode;}if(engine_state==ES_above_idle&&(PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)){software_control_mode=High_Press_Control_Mode;}if(engine_state==ES_above_idle&&(PLA>=2+PD_IdleSwitchPlaThsld||PLA<=2||last(PLA)>2||last(PLA)<0)&&(PLA<=-6-PD_IdleSwitchPlaThsld||PLA>=-6||last(PLA)>=0||last(PLA)<=-6)&&(PLA<-6||PLA>2)){software_control_mode=Low_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;}if(engine_state==ES_above_idle&&((PLA>=2+PD_IdleSwitchPlaThsld||PLA<=2||last(PLA)>2||last(PLA)<0)&&(PLA<=-6-PD_IdleSwitchPlaThsld||PLA>=-6||last(PLA)>=0||last(PLA)<=-6)&&(PLA>=0||PLA<-6||last(PLA)<-33||last(PLA)>=-6)&&(PLA>2||PLA<0||last(PLA)<=2||last(PLA)>85)&&PLA<=2&&PLA>=-6)){software_control_mode=High_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;}if(engine_state==ES_Hwindmill_start&&thrust_level!=level_RI&&thrust_level!=level_GI&&thrust_level!=level_FI&&thrust_level!=level_AI){software_control_mode=Low_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;}if(engine_state==ES_Hwindmill_start&&thrust_level==level_RI&&thrust_level==level_GI&&thrust_level==level_FI&&thrust_level==level_AI){software_control_mode=High_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;}if(engine_state!=ES_Hwindmill_start&&engine_state!=ES_above_idle&&engine_state!=ES_idle){software_control_mode=High_Press_Control_Mode;N1rDmd=N1RDem;N2r25Dmd=N2R25Dem;}"
+    },
+    {
+        "name": "高低压切换控制(N2双通道传感器故障)",
+        "number": "R_10905",
+        "function": "当N2双通道传感器故障，应用软件应该设置控制模式为低压控制模式，置N2R25最终控制目标N2r25Dmd = N2R25Dem,并按如下公式计算N1R最终控制目标N1rDmd：",
+        "precondition": "N2_dual_channel_sensor_fault_flag == 1",
+        "inputs": [
+            "N1r",
+            "N2R25Dem",
+            "N1RDem",
+            "N1RDesign",
+            "PD_DN1RCoN2Flt"
+        ],
+        "outputs": [
+            "N2r25Dmd",
+            "N1rDmd",
+            "software_control_mode"
+        ],
+        "formula": "software_control_mode=Low_Press_Control_Mode;N2r25Dmd=N2R25Dem;N1rDmd=min(N1r+N1RDesign*PD_DN1RCoN2Flt,max(N1RDem,N1r-N1RDesign*PD_DN1RCoN2Flt));"
+    },
+    {
+        "name": "慢车到慢车以上切换控制(进入转换逻辑一)",
+        "number": "R_8107",
+        "function": "当满足以下任一条件时，应用软件应进入转换逻辑一：",
+        "precondition": "1",
+        "inputs": [
+            "PLA",
+            "PD_IdleSwitchPlaThsld"
+        ],
+        "outputs": [
+            "software_control_mode"
+        ],
+        "formula": "if(((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))){software_control_mode=Low_Press_Control_Mode;}"
+    },
+    {
+        "name": "慢车到慢车以上切换控制(处于转换逻辑一，控制模式设置)",
+        "number": "R_10209",
+        "function": "处于转换逻辑一过程中，应用软件应设置控制模式为低压控制模式。",
+        "precondition": "1",
+        "inputs": [
+            "PLA",
+            "PD_IdleSwitchPlaThsld"
+        ],
+        "outputs": [
+            "software_control_mode"
+        ],
+        "formula": "if(((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))){software_control_mode=Low_Press_Control_Mode;}"
+    },
+    {
+        "name": "慢车到慢车以上切换控制(处于转换逻辑一，N1R最终控制目标设置)",
+        "number": "R_10210",
+        "function": "处于转换逻辑一过程中，应用软件应置N1R最终控制目标N1rDmd = N1Rrd。",
+        "precondition": "1",
+        "inputs": [
+            "N1Rrd",
+            "PLA",
+            "PD_IdleSwitchPlaThsld"
+        ],
+        "outputs": [
+            "N1rDmd"
+        ],
+        "formula": "if(((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))){N1rDmd=N1Rrd;}"
+    },
+    {
+        "name": "慢车到慢车以上切换控制(处于转换逻辑一，N2R25最终控制目标设置)",
+        "number": "R_10473",
+        "function": "处于转换逻辑一过程中，应用软件应置N2R25最终控制目标N2r25Dmd = N2R25Dem。",
+        "precondition": "1",
+        "inputs": [
+            "N2R25Dem",
+            "PLA",
+            "PD_IdleSwitchPlaThsld"
+        ],
+        "outputs": [
+            "N2r25Dmd"
+        ],
+        "formula": "if(((PLA<2+PD_IdleSwitchPlaThsld&&PLA>2)&&(last(PLA)<=2&&last(PLA)>=0))||((PLA>-6-PD_IdleSwitchPlaThsld&&PLA<-6)&&(last(PLA)<0&&last(PLA)>-6))){N2r25Dmd=N2R25Dem;}"
+    },
+    {
+        "name": "慢车到慢车以上切换控制(PLA大于等于零，计算转换过程N1R控制目标)",
+        "number": "R_10211",
+        "function": "若油门杆PLA大于等于零，应用软件应按以下逻辑计算转换过程N1R控制目标N1Rrd:",
+        "precondition": "1",
+        "inputs": [
+            "N1Rtr",
+            "N1RDem_MCR",
+            "PLA",
+            "N1RPre",
+            "PD_DeltN1RCo",
+            "PS_PLA_N1Rtr_N1RDem_MCR"
+        ],
+        "outputs": [
+            "N1Rrd"
+        ],
+        "formula": "if(PLA>=0){N1R_1=interpolation(PS_PLA_N1Rtr_N1RDem_MCR,N1Rtr,N1RDem_MCR,PLA);N1R_2=N1RPre+N1RPre*PD_DeltN1RCo;N1Rrd=min(N1R_1,N1R_2);}"
+    },
+    {
+        "name": "慢车到慢车以上切换控制(PLA小于零，计算转换过程N1R控制目标N1Rrd)",
+        "number": "R_10217",
+        "function": "若油门杆PLA小于零，应用软件应按以下逻辑计算转换过程N1R控制目标N1Rrd:",
+        "precondition": "1",
+        "inputs": [
+            "N1Rtr",
+            "N1RDem_MREV",
+            "PLA",
+            "N1RPre",
+            "PD_DeltN1RCo"
+        ],
+        "outputs": [
+            "N1Rrd"
+        ],
+        "formula": "if(PLA<0){N1R_1=interpolation(PS_PLA_N1Rtr_N1RDem_MREV,N1Rtr,N1RDem_MREV,PLA);N1R_2=N1RPre+N1RPre*PD_DeltN1RCo;N1Rrd=min(N1R_1,N1R_2);}"
+    },
+    {
+        "name": "慢车到慢车以上切换控制(应用软件应退出转换逻辑一)",
+        "number": "R_8109",
+        "function": "当满足以下任一条件时，应用软件应退出转换逻辑一：",
+        "precondition": "1",
+        "inputs": [
+            "N1Rtr",
+            "N1Rrd",
+            "PD_N1RpIdleOut",
+            "N1RDesign",
+            "PLA",
+            "PD_IdleOutTime",
+            "N2R25p",
+            "N1Rp",
+            "PD_IdleSwitchN2R25pMax",
+            "PD_IdleSwitchN1RpMax",
+            "PD_IdleSwitchPlaThsld",
+            "logic_transition_mode"
+        ],
+        "outputs": [
+            "software_control_mode"
+        ],
+        "formula": "if((abs(N1Rrd-N1Rtr)<PD_N1RpIdleOut*N1RDesign)||(duration(PD_IdleOutTime,ms,PLA>2))||(duration(PD_IdleOutTime,ms,PLA<-6))||(N2R25p>PD_IdleSwitchN2R25pMax)||(N1Rp>PD_IdleSwitchN1RpMax)||(PLA<=-6-PD_IdleSwitchPlaThsld)||(PLA>=2+PD_IdleSwitchPlaThsld)||((PLA<=2)&&(PLA>=-6))||(duration(PD_IdleOutTime,ms,logic_transition_mode==Logic1_Control_Mode))){software_control_mode=last(software_control_mode);}"
+    },
+    {
+        "name": "慢车以上到慢车切换控制(油门杆从(2,85]推至[0,2]时)",
+        "number": "R_6424",
+        "function": "油门杆从(2,85]推至[0,2]时，若N2r25 转速进入N2R25Dem±N2R25Design*PD_DN2R25Switch(可调)范围内，应用软件应进入转换逻辑二",
+        "precondition": "1",
+        "inputs": [
+            "PLA",
+            "N2r25",
+            "N2R25Dem",
+            "N2R25Design",
+            "PD_DN2R25Switch"
+        ],
+        "outputs": [
+            "software_control_mode"
+        ],
+        "formula": "if((PLA<=2&&PLA>=0)&&(last(PLA)>2&&last(PLA)<=85)&&(N2r25<=(N2R25Dem+N2R25Design*PD_DN2R25Switch))&&(N2r25>=(N2R25Dem-N2R25Design*PD_DN2R25Switch))){software_control_mode=High_Press_Control_Mode;}"
+    },
+    {
+        "name": "慢车以上到慢车切换控制(油门杆从[-33,-6)推至[-6,0)时)",
+        "number": "R_10222",
+        "function": "油门杆从[-33,-6)推至[-6,0)时，若N2r25 转速进入N2R25Dem±N2R25Design*PD_DN2R25Switch(可调)范围内，应用软件应进入转换逻辑二",
+        "precondition": "1",
+        "inputs": [
+            "PLA",
+            "N2r25",
+            "N2R25Dem",
+            "N2R25Design",
+            "PD_DN2R25Switch"
+        ],
+        "outputs": [
+            "software_control_mode"
+        ],
+        "formula": "if((PLA<0)&&(PLA>=-6)&&(last(PLA)>=-33)&&(last(PLA)<-6)&&(N2r25<=(N2R25Dem+N2R25Design*PD_DN2R25Switch))&&(N2r25>=(N2R25Dem-N2R25Design*PD_DN2R25Switch))){software_control_mode=High_Press_Control_Mode;}"
+    },
+    {
+        "name": "慢车以上到慢车切换控制(处于转换逻辑二，控制模式设置)",
+        "number": "R_10220",
+        "function": "处于转换逻辑二过程中，应用软件应设置控制模式为高压控制模式。",
+        "precondition": "1",
+        "inputs": [
+            "PLA"
+        ],
+        "outputs": [
+            "software_control_mode"
+        ],
+        "formula": "if((PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)){software_control_mode=High_Press_Control_Mode;}"
+    },
+    {
+        "name": "慢车以上到慢车切换控制(处于转换逻辑二，N1R最终控制目标设置)",
+        "number": "R_10474",
+        "function": "PLA处于转换逻辑二过程中，应用软件应置N1R最终控制目标N1rDmd = N1RDem。",
+        "precondition": "1",
+        "inputs": [
+            "N1RDem",
+            "PLA"
+        ],
+        "outputs": [
+            "N1rDmd"
+        ],
+        "formula": "if((PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)){N1rDmd=N1RDem;}"
+    },
+    {
+        "name": "慢车以上到慢车切换控制(处于转换逻辑二，N2R25最终控制目标设置)",
+        "number": "R_10221",
+        "function": "处于转换逻辑二过程中，应用软件应置N2R25最终控制目标N2r25Dmd = N2R25rd。",
+        "precondition": "1",
+        "inputs": [
+            "N2R25rd",
+            "PLA"
+        ],
+        "outputs": [
+            "N2r25Dmd"
+        ],
+        "formula": "if((PLA<0&&PLA>=-6&&last(PLA)>=-33&&last(PLA)<-6||PLA<=2&&PLA>=0&&last(PLA)>2&&last(PLA)<=85)){N2r25Dmd=N2R25rd;}"
+    },
+    {
+        "name": "慢车以上到慢车切换控制(计算转换过程N2R25控制目标N2R25rd)",
+        "number": "R_10224",
+        "function": "应用软件应按以下逻辑计算转换过程N2R25控制目标N2R25rd:",
+        "precondition": "1",
+        "inputs": [
+            "N2R25Dem",
+            "N2r25",
+            "N2R25Design",
+            "PD_DeltN2R25Co"
+        ],
+        "outputs": [
+            "N2R25rd"
+        ],
+        "formula": "N2R25_1=N2R25Dem;if(N2r25<=N2R25_1){N2R25rd=N2r25+N2R25Design*PD_DeltN2R25Co;}else{N2R25rd=N2r25-N2R25Design*PD_DeltN2R25Co;}"
+    },
+    {
+        "name": "慢车以上到慢车切换控制(应用软件应退出转换逻辑二)",
+        "number": "R_6450",
+        "function": "当满足以下任一条件时，应用软件应退出转换逻辑二：",
+        "precondition": "1",
+        "inputs": [
+            "N2R25rd",
+            "N2R25Dem",
+            "N2R25Design",
+            "PD_N2R25pIdleIn",
+            "PD_IdleInTime",
+            "N2r25p",
+            "PD_IdleSwitchN2R25pMin",
+            "N1rp",
+            "PD_IdleSwitchN1RpMin",
+            "N2r25",
+            "N2R25Dem",
+            "PLA",
+            "logic_transition_mode"
+        ],
+        "outputs": [
+            "software_control_mode"
+        ],
+        "formula": "N2R25_1=N2R25Dem;if((abs(N2R25rd-N2R25_1)<N2R25Design*PD_N2R25pIdleIn1)||(duration(PD_IdleInTime,ms,logic_transition_mode==Logic2_Control_Mode))||(N2r25p<PD_IdleSwitchN2R25pMin)||(N1rp<PD_IdleSwitchN1RpMin)||(abs(N2r25-N2R25Dem)>N2R25Design*PD_N2R25pIdleIn3)||(PLA>2&&last(PLA)<=2)||(last(PLA)>=-6&&PLA<-6)){software_control_mode=last(software_control_mode);}"
+    }
+]
