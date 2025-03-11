@@ -175,7 +175,7 @@
             "PD_ToLockHLow = 8000.1; H_TO = 12000.1; airdis_WOW = true; PD_ToLockCASLow = 200.1; engine_state = 14; H = -1999.9; CAS = 12000.1;",
             "PD_ToLockHLow = 14000.1; H_TO = 12000.1; airdis_WOW = false; PD_ToLockCASLow = 0.1; engine_state = 13; H = 13600.1; CAS = -30000;"
         ],
-        "true_result": "",
+        "true_result": "to_lock_sig=0;",
         "false_result": ""
     },
     {
@@ -201,7 +201,7 @@
             "PD_ToLockHLow = 16000.1; PD_ToLockCASHigh = 700.1; H_TO = -23999.9; airdis_WOW = true; PD_ToLockCASLow = 900.1; engine_state = 16; H = 8400.1; CAS = 18000.1; PLA = 73.3;",
             "PD_ToLockHLow = 0; PD_ToLockCASHigh = 0; H_TO = 24000.1; airdis_WOW = true; PD_ToLockCASLow = 400.1; engine_state = 4; H = 34400.1; CAS = 0.0999999999985448; PLA = 73.3;"
         ],
-        "true_result": "",
+        "true_result": "to_lock_sig=0;",
         "false_result": ""
     },
     {
@@ -807,7 +807,7 @@
             "thrust_level = 9;",
             "thrust_level = 0;"
         ],
-        "true_result": "",
+        "true_result": "N1RDemInd=N1RDem_BAK;",
         "false_result": ""
     },
     {
@@ -1100,7 +1100,7 @@
             "thrust_level = 13;",
             "thrust_level = 11;"
         ],
-        "true_result": "",
+        "true_result": "N1RDem=N1RDemInd;",
         "false_result": ""
     },
     {
@@ -1114,7 +1114,7 @@
             "thrust_level = 0;",
             "thrust_level = 7;"
         ],
-        "true_result": "",
+        "true_result": "N1RDem=N1RDemInd+DN1RMod;",
         "false_result": ""
     },
     {
@@ -1339,7 +1339,7 @@
             "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 45.1; PLA = -33;",
             "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 30.1; PLA = -33;"
         ],
-        "true_result": "",
+        "true_result": "software_control_mode=Low_Press_Control_Mode;",
         "false_result": ""
     },
     {
@@ -1367,7 +1367,7 @@
             "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 30.1; PLA = -33;",
             "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 10.1; PLA = -9.3;"
         ],
-        "true_result": "",
+        "true_result": "N1rDmd=N1Rrd;",
         "false_result": ""
     },
     {
@@ -1394,7 +1394,7 @@
             "last( PLA ) = 3; PD_IdleSwitchPlaThsld = 35.1; PLA = -32.9;",
             "last( PLA ) = -6; PD_IdleSwitchPlaThsld = 5.1; PLA = -9.3;"
         ],
-        "true_result": "",
+        "true_result": "N2r25Dmd=N2R25Dem;",
         "false_result": ""
     },
     {
@@ -1408,7 +1408,7 @@
         "false_test_case": [
             "PLA = -21.1;"
         ],
-        "true_result": "",
+        "true_result": "N1R_1=interpolation(PS_PLA_N1Rtr_N1RDem_MCR,N1Rtr,N1RDem_MCR,PLA);N1R_2=N1RPre+N1RPre*PD_DeltN1RCo;N1Rrd=min(N1R_1,N1R_2);",
         "false_result": ""
     },
     {
@@ -1422,7 +1422,7 @@
         "false_test_case": [
             "PLA = 73.3;"
         ],
-        "true_result": "",
+        "true_result": "N1R_1=interpolation(PS_PLA_N1Rtr_N1RDem_MREV,N1Rtr,N1RDem_MREV,PLA);N1R_2=N1RPre+N1RPre*PD_DeltN1RCo;N1Rrd=min(N1R_1,N1R_2);",
         "false_result": ""
     },
     {
@@ -1485,7 +1485,7 @@
             "last( PLA ) = 3; PLA = 2.5;",
             "last( PLA ) = 3; PLA = -33;"
         ],
-        "true_result": "",
+        "true_result": "software_control_mode=High_Press_Control_Mode;",
         "false_result": ""
     },
     {
@@ -1500,7 +1500,7 @@
             "last( PLA ) = 3; PLA = 37.9;",
             "last( PLA ) = 3; PLA = -32.9;"
         ],
-        "true_result": "",
+        "true_result": "N1rDmd=N1RDem;",
         "false_result": ""
     },
     {
@@ -1515,7 +1515,7 @@
             "last( PLA ) = 3; PLA = 2.5;",
             "last( PLA ) = 3; PLA = -33;"
         ],
-        "true_result": "",
+        "true_result": "N2r25Dmd=N2R25rd;",
         "false_result": ""
     },
     {

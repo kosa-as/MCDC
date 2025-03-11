@@ -2,6 +2,8 @@ import os
 import subprocess
 import sys
 import time
+import json
+import re
 
 def run_script(script_name):
     """
@@ -83,6 +85,75 @@ def check_output_files():
     
     return True
 
+def process_module_json(file_path):
+    """
+    处理module_modules.json文件，替换所有中文标点符号为英文格式
+    
+    Args:
+        file_path (str): JSON文件路径
+    
+    Returns:
+        bool: 处理是否成功
+    """
+    print(f"\n{'='*80}")
+    print(f"正在处理 {file_path}，替换中文标点符号...")
+    print(f"{'='*80}\n")
+    
+    try:
+        # 读取JSON文件
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        # 中文标点符号替换为英文标点符号的映射
+        punctuation_map = {
+            '（': '(',
+            '）': ')',
+            '，': ',',
+            '。': '.',
+            '：': ':',
+            '；': ';',
+            '"': '"',
+            '"': '"',
+            ''': "'",
+            ''': "'",
+            '【': '[',
+            '】': ']',
+            '《': '<',
+            '》': '>',
+            '！': '!',
+            '？': '?',
+            '、': ',',
+            '…': '...',
+            '–': '-'  # 非标准短横线到标准减号的映射
+        }
+        
+        # 递归处理JSON对象中的所有字符串值
+        def process_value(value):
+            if isinstance(value, str):
+                # 替换所有中文标点符号
+                for cn_punct, en_punct in punctuation_map.items():
+                    value = value.replace(cn_punct, en_punct)
+                return value
+            elif isinstance(value, list):
+                return [process_value(item) for item in value]
+            elif isinstance(value, dict):
+                return {k: process_value(v) for k, v in value.items()}
+            else:
+                return value
+        
+        # 处理数据
+        processed_data = process_value(data)
+        
+        # 保存处理后的数据
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(processed_data, f, ensure_ascii=False, indent=4)
+        
+        print(f"处理完成，已替换中文标点符号")
+        return True
+    except Exception as e:
+        print(f"错误: 处理 {file_path} 时发生异常: {e}")
+        return False
+
 def main():
     """主函数，按顺序执行所有处理步骤"""
     start_time = time.time()
@@ -99,6 +170,14 @@ def main():
     if not run_script("testcase_parser.py"):
         print("处理终止: testcase_parser.py 执行失败")
         return
+    
+    # 处理module_modules.json文件，替换中文标点符号
+    module_json_file = "output/module_modules.json"
+    if os.path.exists(module_json_file):
+        if not process_module_json(module_json_file):
+            print("警告: module_modules.json 处理失败，但将继续执行")
+    else:
+        print(f"警告: 未找到 {module_json_file} 文件")
     
     # 检查中间文件是否生成
     if not check_output_files():

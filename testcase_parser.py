@@ -540,13 +540,6 @@ def match_and_extract_results(testcase_file, module_file, output_file=None):
     with open(module_file, 'r', encoding='utf-8') as f:
         modules = json.load(f)
     
-    # 创建模块查找索引
-    module_index = {}
-    for module in modules:
-        # 使用number和name作为键
-        key = f"{module['number']}_{module['name']}"
-        module_index[key] = module
-    
     # 中文标点符号替换为英文标点符号的映射
     punctuation_map = {
         '（': '(',
@@ -566,8 +559,28 @@ def match_and_extract_results(testcase_file, module_file, output_file=None):
         '！': '!',
         '？': '?',
         '、': ',',
-        '…': '...'
+        '…': '...',
+        '–': '-'  # 添加非标准短横线到标准减号的映射
     }
+    
+    # 创建模块查找索引
+    module_index = {}
+    for module in modules:
+        # 替换模块名称中的中文标点符号
+        module_name = module['name']
+        module_number = module['number']
+        
+        for cn_punct, en_punct in punctuation_map.items():
+            module_name = module_name.replace(cn_punct, en_punct)
+            module_number = module_number.replace(cn_punct, en_punct)
+        
+        # 使用处理后的number和name作为键
+        key = f"{module_number}_{module_name}"
+        module_index[key] = module
+        
+        # 统一替换公式中的非标准短横线为标准减号
+        if 'formula' in module:
+            module['formula'] = module['formula'].replace('–', '-')  # 替换En Dash为Hyphen
     
     # 遍历测试用例，匹配模块并提取结果
     for testcase in testcases:
@@ -577,11 +590,20 @@ def match_and_extract_results(testcase_file, module_file, output_file=None):
         
         print(f"\n处理测试用例: {req_id} - {module_name}")
         
-        # 替换中文标点符号
+        # 替换中文标点符号和非标准短横线
+        original_req_id = req_id
+        original_module_name = module_name
+        
         for cn_punct, en_punct in punctuation_map.items():
             req_id = req_id.replace(cn_punct, en_punct)
             module_name = module_name.replace(cn_punct, en_punct)
             condition = condition.replace(cn_punct, en_punct)
+        
+        # 如果有替换，输出替换前后的对比
+        if original_req_id != req_id or original_module_name != module_name:
+            print(f"标点符号替换:")
+            print(f"  原需求编号: {original_req_id} -> 替换后: {req_id}")
+            print(f"  原模块名称: {original_module_name} -> 替换后: {module_name}")
         
         # 更新测试用例中的字段
         testcase["requirement_id"] = req_id
@@ -604,11 +626,25 @@ def match_and_extract_results(testcase_file, module_file, output_file=None):
         
         # 查找匹配的模块
         found_module = False
+        
+        # 输出所有模块的名称和编号，用于调试
+        print(f"正在查找匹配的模块...")
+        print(f"当前测试用例: 需求编号={req_id}, 模块名称={module_name}")
+        
         for module in modules:
-            if module['number'] == req_id and module['name'] == module_name:
+            # 替换模块名称和编号中的中文标点符号
+            module_name_clean = module['name']
+            module_number_clean = module['number']
+            
+            for cn_punct, en_punct in punctuation_map.items():
+                module_name_clean = module_name_clean.replace(cn_punct, en_punct)
+                module_number_clean = module_number_clean.replace(cn_punct, en_punct)
+            
+            # 检查是否匹配
+            if module_number_clean == req_id and module_name_clean == module_name:
                 found_module = True
                 formula = module.get("formula", "")
-                print(f"找到匹配的模块: {module['number']} - {module['name']}")
+                print(f"找到匹配的模块: {module_number_clean} - {module_name_clean}")
                 print(f"公式长度: {len(formula)}")
                 
                 # 提取结果
@@ -619,6 +655,20 @@ def match_and_extract_results(testcase_file, module_file, output_file=None):
         
         if not found_module:
             print(f"未找到匹配的模块")
+            # 输出所有可能的模块，帮助调试
+            print("可能的模块:")
+            for module in modules:
+                module_name_clean = module['name']
+                module_number_clean = module['number']
+                
+                for cn_punct, en_punct in punctuation_map.items():
+                    module_name_clean = module_name_clean.replace(cn_punct, en_punct)
+                    module_number_clean = module_number_clean.replace(cn_punct, en_punct)
+                
+                if module_number_clean == req_id:
+                    print(f"  需求编号匹配: {module_number_clean} - {module_name_clean}")
+                elif module_name_clean == module_name:
+                    print(f"  模块名称匹配: {module_number_clean} - {module_name_clean}")
     
     # 保存结果
     with open(output_file, 'w', encoding='utf-8') as f:

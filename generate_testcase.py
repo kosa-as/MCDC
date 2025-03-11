@@ -240,10 +240,21 @@ def generate_excel(testcases_file, constants_file, output_file):
                 true_result
             ])
         
-        # 处理false_test_case - 条件取反
+        # 处理false_test_case - 分析条件并修改错误的子条件
         for test in testcase.get("false_test_case", []):
-            # 对于false_test_case，直接在整个条件外添加!()
-            modified_condition = f"!({condition})"
+            # 分解条件为子条件
+            atoms = split_condition(condition)
+            modified_condition = condition
+            
+            # 评估每个子条件
+            for atom in atoms:
+                is_true = evaluate_atom_condition(atom, test, constants)
+                if not is_true:
+                    # 如果子条件为假，在该子条件外添加!()
+                    # 需要小心处理，确保只替换完整的子条件
+                    # 使用正则表达式确保只替换完整的子条件
+                    pattern = r'\b' + re.escape(atom) + r'\b'
+                    modified_condition = re.sub(pattern, f"!({atom})", modified_condition)
             
             data.append([
                 req_id,
